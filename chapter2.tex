@@ -1,0 +1,200 @@
+\chapter{Curve Selection}
+
+Let $E$ be an elliptic curve defined over a finite field $K$.
+Let $P \in E(K)$ be a point of prime order $r$. Let $G = \langle P \rangle$.
+
+If $L$ is a field extension of $K$
+that contains the $r$th roots of unity (so $r$ divides $|L| - 1$),
+then the Tate pairing
+on $G$ can be computed by performing operations in $L$.
+
+On the other hand,
+let $E[r]$ denote the group of points of order $r$.
+The Weil pairing is defined on $E[r]$. For some field extension
+$L'$ of $K$, $E(L')$ contains $E[r]$, and the Weil pairing can be
+computed by performing operations in $L'$.
+
+In order for the Tate pairing to be efficiently computable,
+operations must be efficient in $L$.
+Similarly, for the Weil pairing to be efficiently
+computable, operations must be efficient in $L'$.
+
+Thus we seek fields $L$ or $L'$ that are small enough so that field
+operations are still fast.
+
+It turns out that such a field $L'$ will always contain the $n$th
+roots of unity, but the converse is not true: it is possible
+for a field $L$ to contain the $r$th roots of unity but
+at the same time part of $E[r]$ lies outside $E(L)$.
+
+However, the converse is almost true:
+
+\section {The Embedding Degree}
+
+\begin{theorem} \cite{BK}
+Let $E$ be an elliptic curve defined over $\mathbb{F}_q$.
+Let $r$ be a prime dividing $N = \#(\mathbb{F}_q$) with
+$r \nmid q-1$. Then $E(\mathbb{F}_{q^k})$ contains all $r^2$
+points of order $r$ if and only if $r \mid q^k - 1$.
+\end{theorem}
+
+\begin{proof}
+It is well-known that if $E(\mathbb{F}_{q^k})$ contains $E[r]$
+then $r \mid q^k - 1$, even without assuming $r \mid N$ or
+$r \nmid q-1$.
+
+Conversely, suppose $k > 1$ and $r \mid q^k - 1$.
+Let $\Phi$ denote the Frobenius map. Consider the subgroup $T$ of $E[r]$
+consisting of all points of trace zero, that is
+\[
+T = \{ Q \in E[r] : \tr Q = Q + \Phi(Q) + ... + \Phi^{k-1}(Q) = O \}
+\]
+(The group $T$ may be explicitly constructed by using the map $P \mapsto
+P - \Phi(P)$ on points of $E(\mathbb{F}_{q^k})$.)
+Now we have $\Phi(T) = T$, and also $T$ is not contained
+in $E(\mathbb{F}_q)$ by assumption.
+
+Hence $T$ is an eigenspace of $\Phi$, but not the $1$-eigenspace. Since the
+eigenvalues of $\Phi$ are $1$ and $q$, we see that $T$ must be the
+$q$-eigenspace of $\Phi$ and hence
+\[
+\Phi^k(Q) = q^k Q = Q
+\]
+since $r | q^k - 1$. Thus $T$, like $E(\mathbb{F}_q)$ is fixed under
+$\Phi^k$, and since these groups are linearly independent they generate all
+of $E[r]$, implying that all of $E[r]$ is fixed under $\Phi^k$. Hence
+$E[r] \subset E(\mathbb{F}_{q^k})$.
+\end{proof}
+
+The $k$ in the above theorem is referred to as the \emph{embedding degree}.
+
+\begin{definition}
+Let $E$ be an elliptic curve defined over $\mathbb{F}_q$.
+Let $P \in E(K)$ be a point of prime order $r$.
+Let $G = \langle P \rangle$.
+The \emph{embedding degree} of $G$ is the smallest positive integer $k$
+such that $r \mid q^k - 1$.
+\end{definition}
+
+Thus we have shown that if the embedding degree $k$ is greater than 1,
+then both the Tate pairing and the Weil pairing may be computed by
+performing field arithmetic in $\mathbb{F}_{q^k}$.
+
+However, if the embedding degree $k$ is 1, the Tate pairing may
+be computable in $\mathbb{F}_q$, but the Weil pairing may not be.
+In practice this is not significant because we shall see we prefer
+$k > 1$. However, the Tate pairing turns out to have other benefits.
+
+For example, consider the curve $E: Y^2 = X^3 + X + 6$ which has
+18 points over $\mathbb{F}_{19}$.
+The point $R=(0,5)$ generates a cyclic group of order 18,
+so the point $P = 6R = (12,13)$ generates a cyclic group of order 3.
+
+We see $E[3]$ cannot be contained in $\langle R \rangle = E(\mathbb{F}_{19})$
+since $E[3]$ is not cyclic, thus the Weil pairing cannot be computed.
+(It turns out we must move to $\mathbb{F}_{19^3}$ to do so.)
+
+In contrast, $3 \mid 19-1$ hence the Tate pairing can be
+computed in $\mathbb{F}_{19}$. In fact, we find $e(P, P) = 7$, where
+$e$ denotes the Tate pairing.
+
+\section { Security Considerations }
+
+Thus our goal is to find curves $E(\mathbb{F}_q)$ containing a subgroup
+$G$ of prime order $r$ with embedding degree $k$ small enough so that
+operations in $\mathbb{F}_{q^k}$ are efficiently computable.
+All other things being equal, we prefer $q$ to be small as possible so
+that operations in $G$ are fast as possible and can be represented by
+as few bits as possible.
+
+On such curves, the Tate pairing is always efficiently computable.
+If $k > 1$ then the Weil pairing is also efficiently computable.
+
+On the other hand, we must consider the lower bounds on $q$ and $q^k$.
+Recall elliptic curves are attractive for cryptography
+because unlike finite fields,
+no specialized discrete logarithm algorithm is known for a general elliptic
+curve.
+
+Generally speaking, for a cryptographically useful elliptic curve
+we need only ensure that $r$ is large enough to foil generic attacks
+(e.g. Pollard rho, baby-step-giant-step).
+
+However, a low embedding degree $k$ complicates matters. A bilinear map
+sends points of an elliptic curve to elements of a finite field
+$\mathbb{F}_{q^k}$. In particular, given a subgroup $G$ of $E(\mathbb{F}_q)$
+of prime order $r$, by bilinearity and nondegeneracy we have
+\[ \dlog (P, nP) = \dlog ( e(P,P), e(P, nP) )
+= \dlog (e(P,P),e(P,P)^n) = n \]
+for $n \in \{0,...,r-1\}$.
+Thus if the discrete logarithm problem can be solved
+in $\mathbb{F}_{q^k}$, then it can also be solved in $G$ \cite{mov, fr}.
+
+Hence we must also ensure $q^k$ is large enough so that
+finite field discrete logarithm algorithms such as index calculus are
+infeasible in $\mathbb{F}_{q^k}$.
+
+The curves used in pairing-based cryptography are special in other senses.
+They are supersingular, or have complex multiplication. This possibly means
+they are vulnerable, but no specific attacks for either case are known.
+
+We have now described all necessary conditions on the sizes of
+$r$ and $q^k$:
+
+\begin{enumerate}
+\item
+$r$ must be a large enough prime so that generic discrete logarithm attacks
+in a group of order $r$ are ineffective. Since $q \approx \#E(\mathbb{F}_q)$,
+this places a similar lower bound on $q$.
+\item
+$q$ ought to be as small as possible, so that computations in $\mathbb{F}_q$
+are as fast as possible.
+\item
+$q^k$ must be large enough so that finite field discrete logarithm attacks
+in $\mathbb{F}_{q^k}$ are ineffective.
+\item
+$q^k$ must be small enough so that operations in $\mathbb{F}_{q^k}$
+are efficient. $q^k$ should be small as possible so that operations
+are as fast as possible.
+\end{enumerate}
+
+Of course, the first three statements are true for any cryptographically
+useful elliptic curve, not just for pairing-based cryptography.
+
+Currently it is considered acceptable to have $r$ about 160-bits.
+As for $q^k$, 1024 bits is adequate for many applications, and calculations
+in fields of this size can certainly be performed.
+Ideally we have $r \approx \#E(\mathbb{F}_q) \approx q$
+and hence $q$ is also about 160 bits. This gives an
+embedding degree $k$ around $1024 / 160 = 6.4$.
+
+We shall see how to construct curves of embedding degree 6 and 12.
+For the near future, embedding degree 6 should be reasonable if used along
+with an $r$ that is at lesat $170$ bits long,
+and embedding degree 12 curves may be more desirable as time passes.
+
+\section { Approaches to Finding Curves }
+
+A randomly-chosen elliptic curve will have a large embedding
+degree, giving resistance to the aforementioned discrete logarithm
+attack, but also making it useless for pairing-based cryptography.
+We must take one of two approaches to find curves suitable for pairings:
+
+\begin{enumerate}
+\item
+Supersingular curves are guaranteed to have a small embedding degree,
+and are easy to construct. They have been completely classified. Operations
+on some of them can be highly optimized.
+\item
+By carefully tailoring the complex multiplication method of constructing
+elliptic curves, we can produce curves of a certain embedding degree. 
+\end{enumerate}
+
+We note that supersingular hyperelliptic curves have also been considered,
+and it is thought that using the hyperelliptic equivalent of the
+complex multiplication method may lead to more curves with low
+embedding degrees, though further research in this area is required.
+
+\section { Supersingular Curves }
+
+\section { Complex Multiplication }

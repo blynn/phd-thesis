@@ -1,0 +1,133 @@
+\chapter{Bilinear Maps}
+
+We shall begin with the simplest definition of the pairing.
+
+\section{The Symmetric Pairing}
+
+Let $G, G_T$ be cyclic groups of prime order $r$.
+Let $g$ be a generator of $G$. We shall use multiplicative group
+notation.
+A bilinear pairing (or map) $e$ be an efficiently computable function
+\[
+e:G \times G \rightarrow G_T
+\]
+such that $e(g,g) \ne 1$ ($e$ is nondegenerate) and
+$e(g^a, g^b) = e(g,g)^{a b}$ for all $a, b \in \mathbb{Z}$ ($e$ is
+bilinear).
+
+TODO: Assume the Diffie-Hellman problem is hard in $G$.
+TODO: formal defn of "hard".
+
+\section{The Asymmetric Pairing}
+
+In practice, pairing-based cryptosystems can be implemented
+by using suitable supersingular elliptic curves.
+However, in order to allow a wider range of curves to be used,
+sometimes the defintion is modified as follows.
+
+Let $G_1, G_2, G_T$ be cyclic groups of prime order $r$.
+Assume the Diffie-Hellman problem is hard in $G_1$.
+Let $\phi : G_2 \rightarrow G_1$ be an efficiently computable group
+isomorphism. Let $g_2$ be a generator of $G_2$.
+Set $g_1 = \phi(g_2)$ (so $g_1$ generates $G_1$). 
+A bilinear pairing or map $e$ be an efficiently computable function
+\[
+e:G_1 \times G_2 \rightarrow G_T
+\]
+such that $e(g_1,g_2) \ne 1$ and
+$e(g_1^a, g_2^b) = e(g_1,g_2)^{a b}$ for all $a, b \in \mathbb{Z}$.
+
+%If the group isomorphism $\phi$ is not required, we may still have a
+%cryptographically useful function $e$, but we will not classify this
+%as pairing-based cryptography. For example, if we take
+%$G_1 = G_T = \mathbb{Z}_r^*$ and $G_2 = \mathbb{Z}_{r-1}^+$ and
+%set $e(g, a)= g^a$ we see that exponentiation in a cyclic group satisfies
+%the other requirements for a pairing.
+
+\section{The General Bilinear Pairing}
+
+It turns out that in order to perform some optimizations on bilinear maps,
+it is more desirable to use the following definition.
+
+Let $r$ be a prime.
+Let $G_1, G_T$ be cyclic groups of order $r$.
+Let $G_2$ be a group isomorphic to $G_1 \times G_1$.
+Again we use multiplicative group notation.
+A bilinear pairing or map $e$ be an efficiently computable function
+\[
+e:G_1 \times G_2 \rightarrow G_T
+\]
+such that for all $g_1 \in G_1$ and $g_2 \in G_2$:
+\begin{enumerate}
+\item
+$e(g_1,g_2) = 1$ if and only if $g_1 = 1_{G_1}$ and $g_2 = 1_{G_2}$
+($e$ is nondegenerate)
+\item
+$e(g_1^a, g_2^b) = e(g_1,g_2)^{a b}$ for all $a, b \in \mathbb{Z}$ ($e$ is
+bilinear)
+\end{enumerate}
+
+\section{A Discrete Log Attack}
+
+Although pairings have proven useful in the construction of many
+cryptosystems, their first use in the literature was destructive, which
+we now describe.
+
+Suppose we have such a pairing. Let $g, g^x \in G_1$ for some
+$x \in \mathbb{Z}_r$. Then for all $g_2 \in G_2$, by
+bilinearity and nondegeneracy we have
+\[
+Dlog(g, g^x) = Dlog({e(g,g_2)}, e(g^x, g_2))
+\]
+thus if we can solve discrete log in $G_T$, we can now solve it in $G_1$
+(and similarly for $G_2$). TODO: cite MOV, FR
+
+For example suppose we wish to implement a standard elliptic curve
+cryptosystem based on the discrete log problem such as ECDSA or El Gamal.
+To resist generic discrete log attacks, we choose a curve over the field
+$\mathbb{F}_q$ where $q$ is some 160-bit prime.
+Let $G_1$ denote the group of points of this curve.
+
+It is well-known that in general we can find a nondegenerate
+bilinear pairing where $G_T$ is some subgroup of
+$\mathbb{F}_q^k$ for some $k$.
+From above, we can solve discrete log in $G_1$ by first reducing
+to discrete log on $\mathbb{F}_q^k$.
+If it turns out that $k = 2$ say, then we can use a subexponential
+method to quickly solve discrete log in a 320-bit finite field and
+break the cryptosystem.
+
+Hence it is important to determine the value of $k$
+when designing an elliptic curve cryptosystem.
+
+\section{Differences Between the Pairings}
+
+TODO: rewrite!
+
+Most cryptosystems designed under the original version of the pairing can
+be trivially modified so that they remain secure under the revised
+definition.
+
+However, there are some subtle caveats. For example, suppose that
+cryptosystems based on the discrete log problem on a 1024-bit finite field
+are considered
+secure. Then it is not known how to construct equally secure pairings
+under the symmetric definition where the group elements can be represented
+with less than 512 bits. On the other hand, for asymmetric pairings,
+it is known how to construct groups where elements of $G_1$ can be
+represented with 160 bits and those of $G_2$ with 320 bits.
+
+For example, if a design goal of a cryptosystem is to minimize the
+number of bits needed to represent a group element,
+one cannot start with the asymmetric version to get
+160-bit elements, decide that the symmetric version is in fact needed for
+some particular feature of the cryptosystem and switch over and presume
+elements can still be 160-bits long.
+
+\section{Notes}
+
+Although the pairing as we have defined it is already useful for constructing
+cryptosystems, additional assumptions are often introduced.
+
+It may be useful to allow $r$ to be a composite number,
+such as an RSA modulus.

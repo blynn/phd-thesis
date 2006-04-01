@@ -1,0 +1,46 @@
+\chapter{Optimizing the Pairing}
+
+Let $E$ be an elliptic curve over $\mathbb{F}_q$.
+Let $P \in E(\mathbb{F}_q)$ be a point of prime order $r$.
+Let $G = \langle P \rangle$, and let $k$ be the embedding degree of $G$.
+
+\begin{theorem}
+If $k > 1$ then
+\[
+e(P,Q) = f_P(Q)^{(q^k-1)/r}
+\]
+where $f_P$ is a function with divisor $r(P) - r(O)$.
+\end{theorem}
+
+\begin{proof}
+Choose any point $R \in E(\mathbb{F}_q)$ that is not one of
+$O, -P, Q, -Q, Q - P$,
+and consider the function $f'_P$ that satisfies $(f'_P) = r(P+R) - r(R)$,
+so that the Tate pairing can be computed by
+\[
+f'_P((Q)-(O))^{(q^k-1)/r}
+\]
+We have $f'(O) \in \mathbb{F}_q^*$ since it does not have a zero or pole
+at $O$. Hence
+$f'(O)^{(q^k-1)/r} = 1$ by Fermat's Little Theorem (we know $q-1$ must
+divide $(q^k - 1)/r$ since $r\nmid q-1$) so the pairing can be computed using
+
+\[ e(P,Q) = f'_P(Q)^{(q^k-1)/r} . \]
+
+Let $g_R(X,Y)$ be the equation of a vertical line through $R$,
+let $g_P(X,Y)$ be the equation of a vertical line through $P$,
+and let $h(X,Y)$ be the equation of a line through $P+R$ and $-R$ (and hence
+$-P$).
+Thus we have
+
+\[ (f'_P g_R^r g_P^r / h^r) = r (P) - r(O) = (f_P) \]
+
+Each of $g_R(Q), g_P(Q), h(Q)$ lie in $\mathbb{F}_q^*$ since none
+of the three lines go through $Q$ by choice of $R$.
+Again by Fermat we have $f'_P(Q) = f_P(Q)$. (Actually, even if we
+had chosen $g_R, g_P, h$ with coefficients in $\mathbb{F}_{q^k}$, our
+argument still holds since each value is ultimately exponentiated by
+$q^k-1$.)
+Hence
+\[e(P,Q) = f_P(Q)^{(q^k-1)/r} . \]
+\end{proof}

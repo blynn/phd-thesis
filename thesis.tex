@@ -1,0 +1,59 @@
+%the following command would (if uncommented) allow  only chapter1 and
+%chapter2 to be processed
+\includeonly{chapter3}
+
+\documentclass[12pt]{report}
+% note that the documentclass can take other option such as
+% twoside - for double sided printing
+% openright - if double side  chapters always start on odd pages
+% openany - if double side chapters start on the next page even or odd
+% 12pt can be replaced by 11pt
+
+\usepackage{suthesis-2e,amsfonts,amssymb,amsmath,amsthm}
+
+\usepackage{macros}
+
+\begin{document}
+
+    \title{ On the Implementation of Pairing-Based Cryptosystems }
+    \author{ Ben Lynn }
+    \principaladvisor{ Dan Boneh }
+%    \firstreader{}
+%    \secondreader{}
+% \thirdreader{}
+
+\include{preface}
+
+% any other preface sections
+
+% the last preface section (e.g., acknowledgement.tex)
+% should look like
+% \prefacesection{Acknowledgement}
+% body 
+% \afterpreface
+%\include{acknowledgement}
+
+% now for the body of the thesis, modify the number of these lines as needed
+
+% this includes chapter1.tex which should start with a \chapter{...}
+% command 
+\include{chapter1}
+\include{chapter2}
+\include{chapter3}
+\include{chapter4}
+\include{chapter5}
+
+% and the end material
+
+\appendix
+
+\include{appendix1}
+\include{appendix2}
+
+% bibliography.tex should include either 
+% \bibliographystyle{...}
+% \bibliography{mythesis}
+% or some other way of doing the bibliography
+\include{bibliography}
+
+\end{document}
