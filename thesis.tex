@@ -1,4 +1,4 @@
-\includeonly{chapter2, chapter4}
+%\includeonly{chapter1}
 
 \documentclass[12pt]{report}
 % note that the documentclass can take other option such as
@@ -30,18 +30,13 @@
 % body 
 % \afterpreface
 %\include{acknowledgement}
+\afterpreface
 
-% now for the body of the thesis, modify the number of these lines as needed
-
-% this includes chapter1.tex which should start with a \chapter{...}
-% command 
 \include{chapter1}
 \include{chapter2}
 \include{chapter3}
 \include{chapter4}
 \include{chapter5}
-
-% and the end material
 
 \appendix
 
@@ -52,6 +47,9 @@
 % \bibliographystyle{...}
 % \bibliography{mythesis}
 % or some other way of doing the bibliography
-\include{bibliography}
+%\include{bibliography}
+
+\bibliographystyle{abbrv}
+\bibliography{thesis}
 
 \end{document}

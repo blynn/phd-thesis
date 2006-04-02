@@ -1,59 +1,164 @@
 \chapter{Bilinear Maps}
 
-We shall begin with the simplest definition of the pairing.
+Much of modern cryptography depends (and was founded\cite{diffie76new})
+on a cyclic group $G = \langle g \rangle$ of prime order $r$ where certain
+problems are hard to solve:
+
+\begin{description}
+\item [Discrete Log Problem]
+Given $g, g^x$, compute $x$.
+\item [Computational Diffie-Hellman Problem]
+Given $g, g^x, g^y$, compute $g^{x y}$
+\item [Decisional Diffie-Hellman Problem]
+Given $g, g^x, g^y, g^z$, determine if $x y = z$.
+\end{description}
+
+TODO: formal defn of hard
+
+A vast array of cryptosystems can be built thanks to these groups. 
+But what if we could somehow augment these groups and increase their
+capabilities?
+
+Bilinear maps, or pairings, are functions with special
+properties that exist for some of these groups.
+They take two group elements as input and output an element of another cyclic
+group also of order $r$.
+
+Once armed with bilinear maps, we can construct many new cryptosystems
+that would not otherwise exist. Possibly the most famous example is a
+practical identity-based encryption scheme \cite{bf}.
+Researchers were unable to build such a cryptosystem by
+conventional means for approximately
+twenty years since the problem was posed, though we note that a
+scheme based on quadratic residues has been proposed \cite{cocks01}.
+
+Bilinear pairings made their debut in cryptography in the 1990s \cite{mov,fr,fmr},
+and were used to break cryptosystems. They were first considered for
+constructing cryptosystems years later \cite{sok}.
+
+We shall begin with the original and simplest definition of the pairing.
 
 \section{The Symmetric Pairing}
 
 Let $G, G_T$ be cyclic groups of prime order $r$.
-Let $g$ be a generator of $G$. We shall use multiplicative group
-notation.
-A bilinear pairing (or map) $e$ be an efficiently computable function
+Let $g$ be a generator of $G$.
+A \emph{bilinear pairing} or \emph{bilinear map}
+$e$ is an efficiently computable function
 \[
 e:G \times G \rightarrow G_T
 \]
-such that $e(g,g) \ne 1$ ($e$ is nondegenerate) and
-$e(g^a, g^b) = e(g,g)^{a b}$ for all $a, b \in \mathbb{Z}$ ($e$ is
-bilinear).
+such that
+\begin{description}
+\item [(Nondegeneracy)]
+$e(g,g) \ne 1$
+\item [(Bilinearity)]
+$e(g^a, g^b) = e(g,g)^{a b}$ for all $a, b \in \mathbb{Z}$
+\end{description}
 
-TODO: Assume the Diffie-Hellman problem is hard in $G$.
-TODO: formal defn of "hard".
+We can immediately see the power of such a map: given
+$g, g^x, g^y, g^z$, then by bilinearity and nondegeneracy,
+$z = x y$ if and only if
+$e(g, g^z) = e(g^x, g^y)$. In other words we can solve the Decisional
+Diffie-Hellman problem.
 
-\section{The Asymmetric Pairing}
+However, it is not known how to solve the Computational Diffie-Hellman
+or discrete log problem using a pairing.
 
-In practice, pairing-based cryptosystems can be implemented
-by using suitable supersingular elliptic curves.
+\section{A Signature Scheme}
+
+Thus we can construct a cyclic group where the Computational Diffie-Hellman
+problem is thought to be hard, yet the Decisional variant is easy to solve.
+Such groups have been named Gap Diffie-Hellman groups\cite{bls} and
+imply a signature scheme:
+
+\begin{description}
+\item[Setup]
+Choose a Gap Diffie-Hellman group $G$ of prime order $r$.
+Publish a generator $g \in G$.
+
+\item[Key Generation]
+Choose a random $x$ in $\{1,...,r-1\}$. Output
+the public key $g^x$ and the private key $x$.
+
+\item[Signing]
+Given a message $h \in G$, output $h^x$.
+
+\item[Verify]
+Given a message-signature pair $h, \sigma$ and public key $g^x$,
+check that $\langle{ g, h, g^x, \sigma}\rangle$ is a Diffie-Hellman tuple.
+\end{description}
+
+It can be shown that this signature scheme is secure against existential
+forgery under a chosen-message attack in the random oracle model \cite{bls}.
+
+Hence an abstract view of the pairing is all that is needed to build a
+cryptosystem, and frequently this suffices. However,
+we shall see that it can be useful to understand pairings in more detail.
+For example, we need more facts to show the above signature scheme is
+short, which was initially the reason it was proposed.
+
+\section{New Problems}
+
+Classic problems have natural counterparts in pairing-based
+cryptography. In the examples below, let $g$ be a generator
+for a group $G$ of prime order $r$, and let $e$ be a bilinear map
+on $G$.
+
+\begin{description}
+\item [Bilinear Diffie-Hellman Problem]
+Given $g,g^x,g^y,g^z$ compute $e(g,g)^{xyz}$
+\item [Decisional Bilinear Diffie-Hellman Problem]
+Given $g,g^x,g^y,g^z,e(g,g)^w$, determine if $w = x y z$.
+\item [$q$-Strong Diffie-Hellman Problem]
+Given $g,g^x,...,g^{(x^q)}$, compute $c, g^{1/(x_c)}$
+for any $c\in\{1,...,r-1\}$.
+\end{description}
+
+Various cryptosystems rely on one or more of the above problems to be
+hard.
+
+Similarly, sometimes we can see how a conventional cryptosystem
+can be converted into a pairing-based cryptosystem.
+
+TODO: ring signature anecdote
+
+\section{Pairings Redefined}
+
+In practice, symmetric pairings can be instantiated by
+using suitable supersingular elliptic curves.
 However, in order to allow a wider range of curves to be used,
-sometimes the defintion is modified as follows.
+the definition can be modified as follows, sometimes referred
+to as the asymmetric pairing.
 
 Let $G_1, G_2, G_T$ be cyclic groups of prime order $r$.
 Assume the Diffie-Hellman problem is hard in $G_1$.
 Let $\phi : G_2 \rightarrow G_1$ be an efficiently computable group
 isomorphism. Let $g_2$ be a generator of $G_2$.
 Set $g_1 = \phi(g_2)$ (so $g_1$ generates $G_1$). 
-A bilinear pairing or map $e$ be an efficiently computable function
+A bilinear pairing $e$ is an efficiently computable function
 \[
 e:G_1 \times G_2 \rightarrow G_T
 \]
 such that $e(g_1,g_2) \ne 1$ and
 $e(g_1^a, g_2^b) = e(g_1,g_2)^{a b}$ for all $a, b \in \mathbb{Z}$.
 
-%If the group isomorphism $\phi$ is not required, we may still have a
-%cryptographically useful function $e$, but we will not classify this
-%as pairing-based cryptography. For example, if we take
-%$G_1 = G_T = \mathbb{Z}_r^*$ and $G_2 = \mathbb{Z}_{r-1}^+$ and
-%set $e(g, a)= g^a$ we see that exponentiation in a cyclic group satisfies
-%the other requirements for a pairing.
+Note if a problem is hard $G_1$, it is also hard in $G_2$
+due to existence of an efficiently computable
+$\phi$.
+
+This definition appears in the literature, but it is advantageous
+to modify it further.
 
 \section{The General Bilinear Pairing}
 
-It turns out that in order to perform some optimizations on bilinear maps,
-it is more desirable to use the following definition.
+To allow some optimizations on bilinear maps,
+we use the following definition.
 
 Let $r$ be a prime.
 Let $G_1, G_T$ be cyclic groups of order $r$.
-Let $G_2$ be a group isomorphic to $G_1 \times G_1$.
+Let $G_2$ be a group where each element except the identity has order $r$.
 Again we use multiplicative group notation.
-A bilinear pairing or map $e$ be an efficiently computable function
+A bilinear pairing $e$ is an efficiently computable function
 \[
 e:G_1 \times G_2 \rightarrow G_T
 \]
@@ -61,73 +166,57 @@ such that for all $g_1 \in G_1$ and $g_2 \in G_2$:
 \begin{enumerate}
 \item
 $e(g_1,g_2) = 1$ if and only if $g_1 = 1_{G_1}$ and $g_2 = 1_{G_2}$
-($e$ is nondegenerate)
+(nondegeneracy)
 \item
-$e(g_1^a, g_2^b) = e(g_1,g_2)^{a b}$ for all $a, b \in \mathbb{Z}$ ($e$ is
-bilinear)
+$e(g_1^a, g_2^b) = e(g_1,g_2)^{a b}$ for all $a, b \in \mathbb{Z}$
+(bilinearity)
 \end{enumerate}
 
-\section{A Discrete Log Attack}
+In this setting the hardness assumptions must be altered further.
+Depending on the scheme, we may have to assume certain problems are hard in
+both $G_1$ and $G_2$, or a combination of the two. For example, we may
+need to assume that given $g_1, g_1^x \in G_1$ and $g_2 \in G_2$,
+there is no efficient algorithm to compute $g_2^x$. This particular
+example is sometimes referred to as
+the co-Computational Diffie-Hellman assumption.
 
-Although pairings have proven useful in the construction of many
-cryptosystems, their first use in the literature was destructive, which
-we now describe.
+\section{Exponentiation as a Bilinear Pairing}
 
-Suppose we have such a pairing. Let $g, g^x \in G_1$ for some
-$x \in \mathbb{Z}_r$. Then for all $g_2 \in G_2$, by
-bilinearity and nondegeneracy we have
-\[
-Dlog(g, g^x) = Dlog({e(g,g_2)}, e(g^x, g_2))
-\]
-thus if we can solve discrete log in $G_T$, we can now solve it in $G_1$
-(and similarly for $G_2$). TODO: cite MOV, FR
+Given some integer $r > 1,$
+let us take $G_1 = G_T = \mathbb{Z}_r^*$ and $G_2 = \mathbb{Z}_{r-1}^+$.
+Define $e:G_1\times G_2 \rightarrow G_T$ by $e(g, a)= g^a$.
 
-For example suppose we wish to implement a standard elliptic curve
-cryptosystem based on the discrete log problem such as ECDSA or El Gamal.
-To resist generic discrete log attacks, we choose a curve over the field
-$\mathbb{F}_q$ where $q$ is some 160-bit prime.
-Let $G_1$ denote the group of points of this curve.
+Then it is easily seen that exponentiation in a cyclic group satisfies
+the definition of a bilinear
+pairing. We may view (pairing-less) cyclic group and RSA cryptosystems
+as a pairing where the discrete log problem is easy in $G_2$ and $G_1 = G_T$.
 
-It is well-known that in general we can find a nondegenerate
-bilinear pairing where $G_T$ is some subgroup of
-$\mathbb{F}_q^k$ for some $k$.
-From above, we can solve discrete log in $G_1$ by first reducing
-to discrete log on $\mathbb{F}_q^k$.
-If it turns out that $k = 2$ say, then we can use a subexponential
-method to quickly solve discrete log in a 320-bit finite field and
-break the cryptosystem.
+Classic problems can be restated in terms of
+pairings. For example:
 
-Hence it is important to determine the value of $k$
-when designing an elliptic curve cryptosystem.
+\begin{description}
+\item[Discrete Log Problem]
+Given $g \in G_1, c \in G_T$, find $a \in G_2$ such that $e(g,a) = c$.
+\item[RSA Problem]
+Given $a \in G_2, c \in G_T$, find $g \in G_1$ with
+$e(g,a) = c$
+\item[Strong RSA Problem]
+Given $c \in G_T$, find $g \in G_1, a\in G_2$ with
+$e(g,a) = c$
+\end{description}
 
-\section{Differences Between the Pairings}
+TODO: can build pairing schemes using same assumptions?
 
-TODO: rewrite!
+\section{Choosing a Definition}
 
-Most cryptosystems designed under the original version of the pairing can
+Many cryptosystems designed under the original version of the pairing can
 be trivially modified so that they remain secure under the revised
-definition.
+definition, possibly assuming different problems are difficult.
+Those that cannot be modified have a limited selection of pairings.
 
-However, there are some subtle caveats. For example, suppose that
-cryptosystems based on the discrete log problem on a 1024-bit finite field
-are considered
-secure. Then it is not known how to construct equally secure pairings
-under the symmetric definition where the group elements can be represented
-with less than 512 bits. On the other hand, for asymmetric pairings,
-it is known how to construct groups where elements of $G_1$ can be
-represented with 160 bits and those of $G_2$ with 320 bits.
-
-For example, if a design goal of a cryptosystem is to minimize the
-number of bits needed to represent a group element,
-one cannot start with the asymmetric version to get
-160-bit elements, decide that the symmetric version is in fact needed for
-some particular feature of the cryptosystem and switch over and presume
-elements can still be 160-bits long.
-
-\section{Notes}
-
-Although the pairing as we have defined it is already useful for constructing
-cryptosystems, additional assumptions are often introduced.
-
-It may be useful to allow $r$ to be a composite number,
-such as an RSA modulus.
+We shall see there are other subtle caveats.
+For example, suppose a design goal of a cryptosystem is to minimize the
+number of bits needed to represent a group element. If we use
+a symmetric pairing, then in typical use, elements will be 512 bits long.
+If we forgo symmetry and use two groups $G_1, G_2$ instead,
+then it turns out we can have a 160-bit $G_1$ and a 320-bit $G_2$.
