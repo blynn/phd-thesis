@@ -70,7 +70,7 @@ The $k$ in the above theorem is referred to as the \emph{embedding degree}.
 
 \begin{definition}
 Let $E$ be an elliptic curve defined over $\mathbb{F}_q$.
-Let $P \in E(K)$ be a point of prime order $r$.
+Let $P \in E(K)$ be a point of order $r$.
 Let $G = \langle P \rangle$.
 The \emph{embedding degree} of $G$ is the smallest positive integer $k$
 such that $r \mid q^k - 1$.
@@ -196,5 +196,131 @@ complex multiplication method may lead to more curves with low
 embedding degrees, though further research in this area is required.
 
 \section { Supersingular Curves }
+
+There are six families of supersingular curves, with embedding degree at
+most six \cite{MOV}. Let $q=p^m$. Let $t$ denote the trace of Frobenius.
+Then the six classes can be described as follows.
+
+\begin{enumerate}
+\item
+$k = 2$: $ t = 0$ and $E(\mathbb{F}_q) \cong \mathbb{Z}_{q+1}$.
+\item
+$k = 2$: $ t = 0$ and $E(\mathbb{F}_q) \cong \mathbb{Z}_{(q+1)/2} \oplus \mathbb{Z}_2$ and $q = 3 \pmod{4}$.
+\item
+$k = 3$: $ t^2 = q$ and $m$ is even.
+\item
+$k = 4$: $ t^2 = 2q$ and $p = 2$ and $m$ is odd.
+\item
+$k = 6$: $ t^2 = 3q$ and $p = 3$ and $m$ is odd.
+\item
+$k = 1$: $ t^2 = 4q$ and $m$ is even.
+\end{enumerate}
+
+Some curves in the first two classes are easy to describe, and are
+extremely useful, as it is easy to find curves containing a
+subgroup of any desired order.
+
+The $k=4$ case requires $p=2$.
+Many specialized optimizations exist for
+operations in characteristic two fields,
+but unfortunately at the same time specialized discrete logarithm attacks
+exist \cite{coppersmith}, and we must use bigger fields to compensate for
+this. 
+
+TODO:how bad is it?
+
+The $k=6$ case requires $p=3$. Again, we may apply
+a host of specialized optimizations, but we must also be wary of
+low-characteristic discrete logarithm algorithms.
+
+\section { Type A Curves }
+
+Let $q$ be a prime satisfying $q = 3 \pmod{4}$.
+Let $E$ be the curve $y^2 = x^3 + x$. It can be shown \cite{silverman86}
+that $E(\mathbb{F}_q)$ is supersingular and $k = 2$.
+
+We have $\#E(\mathbb{F}_q) = q+1$, and $\#E(\mathbb{F}_{q^2}) = (q+1)^2$,
+thus for any $P\in E(\mathbb{F}_q)$
+the embedding degree of $G = \langle P \rangle$ is 2.
+
+Note $-1$ is a quadratic nonresidue in $\mathbb{F}_q$ since $q = 3\pmod{4}$.
+Consider the map
+$E(\mathbb{F}_q) \rightarrow E(\mathbb{F}_{q^2})$ given by
+\[ \Psi(x, y) = (-x, i y) \]
+
+Then $\Psi$ maps points of $E(\mathbb{F}_q)$ to points of
+$E(\mathbb{F}_{q^2}) \setminus E(\mathbb{F}_q)$. Thus if $f$ denotes the
+Tate or Weil pairing, then defining $e:G \times G \rightarrow \mathbb{F}_{q^2}$
+by
+
+\[ e(P,Q) = f(P, \Psi(Q)) \]
+
+gives a bilinear nondegenerate map.
+
+Setup for this type of pairing for a cryptosystem can be done as follows.
+
+\begin{enumerate}
+\item
+An order $r$ is chosen, large enough to avoid generic discrete logarithm
+attacks. Other properties may be desired.
+For faster pairings, it is desirable to choose $r$ so that repeated squaring
+algorithms can be optimized: e.g. choose $r$ to have a low Hamming weight,
+or to be a Solinas number (i.e. $r$ has the form $2^a \pm 2^b \pm 1$).
+For some cryptosystems $r$ is
+an RSA modulus.
+\item
+Recall we require finite field discrete logarithm attacks on $\mathbb{F}_{q^2}$
+to be impractical. Thus a random multiple of four $h$ is generated,
+where $h$ is large enough to guarantee $(hr)^2$ is big enough to resist
+finite field attacks. For example, if $r$ is 160 bits long, and we want
+$q^2$ about 1024 bits long, then $h$ must be about 352 bits long.
+\item
+Next it is checked that $q = h r - 1$ is prime.
+If not, we go back to the previous step.
+\item
+For some cryptosystems problems may arise if $r \nmid h$, but this occurs
+with negligible probability for realistic parameters. Nonetheless, when toy
+examples are constructed, this may need to be checked.
+\end{enumerate}
+
+If $h$ is constrained to be a multiple of $3$ as well, then cube roots are
+extremely easy to compute in $\mathbb{F}_{q}$:
+for all $x \in \mathbb{F}_q$ we see $x^{-(q-2)/3}$ is the cube root of $x$
+(cube roots are necessarily unique since each element is a cube).
+This may be desirable in some situations, and hardly affects the setup
+algorithm.
+
+\section { Type B Curves }
+
+Let $q$ be a prime satisfying $q = 3 \pmod{4}$.
+Let $E$ be the curve $y^2 = x^3 + 1$. Then
+$E(\mathbb{F}_q)$ is supersingular and $k = 2$.
+
+Again we have $\#E(\mathbb{F}_q) = q+1$ and $\#E(\mathbb{F}_{q^2}) = (q+1)^2$,
+thus for any $P\in E(\mathbb{F}_q)$
+the embedding degree of $G = \langle P \rangle$ is 2.
+
+Consider the map
+$E(\mathbb{F}_q) \rightarrow E(\mathbb{F}_{q^2})$ given by
+\[ \Psi(x, y) = (\zeta x, y) \]
+where $\zeta$ is a primitive cube root of unity.
+
+Then $\Psi$ maps points of $E(\mathbb{F}_q)$ to points of
+$E(\mathbb{F}_{q^2}) \setminus E(\mathbb{F}_q)$. Thus if $f$ denotes the
+Tate or Weil pairing, then defining $e:G \times G \rightarrow \mathbb{F}_{q^2}$
+by
+
+\[ e(P,Q) = f(P, \Psi(Q)) \]
+
+gives a bilinear nondegenerate map.
+
+As mentioned before, cube roots are easy to find since $q = 2 \pmod{3}$.
+For this particular curve, it means we may easily generate points from
+a $y$-coordinate: given any $y$, simply take $x = (y^2-1)^{-(q-2)/3}$.
+This simplifies routines such as random point generation.
+
+We may also ensure $-1$ is a quadratic nonresidue in $\mathbb{F}_q$ by
+choosing $q = 3\pmod{4}$. This allows us to implement $\mathbb{F}_q^2$
+as $\mathbb{F}_q[i]$, as above.
 
 \section { Complex Multiplication }

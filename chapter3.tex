@@ -1,22 +1,23 @@
 \chapter{Optimizing the Pairing}
 
+\begin{theorem}
 Let $E$ be an elliptic curve over $\mathbb{F}_q$.
 Let $P \in E(\mathbb{F}_q)$ be a point of prime order $r$.
 Let $G = \langle P \rangle$, and let $k$ be the embedding degree of $G$.
 
-\begin{theorem}
 If $k > 1$ then
 \[
 e(P,Q) = f_P(Q)^{(q^k-1)/r}
 \]
+is a bilinear nondegenerate map,
 where $f_P$ is a function with divisor $r(P) - r(O)$.
 \end{theorem}
 
 \begin{proof}
 Choose any point $R \in E(\mathbb{F}_q)$ that is not one of
 $O, -P, Q, -Q, Q - P$,
-and consider the function $f'_P$ that satisfies $(f'_P) = r(P+R) - r(R)$,
-so that the Tate pairing can be computed by
+and consider the function $f'_P$ that satisfies $(f'_P) = r(P+R) - r(R)$.
+The Tate pairing can be computed by
 \[
 f'_P((Q)-(O))^{(q^k-1)/r}
 \]
@@ -24,17 +25,13 @@ We have $f'(O) \in \mathbb{F}_q^*$ since it does not have a zero or pole
 at $O$. Hence
 $f'(O)^{(q^k-1)/r} = 1$ by Fermat's Little Theorem (we know $q-1$ must
 divide $(q^k - 1)/r$ since $r\nmid q-1$) so the pairing can be computed using
-
 \[ e(P,Q) = f'_P(Q)^{(q^k-1)/r} . \]
-
 Let $g_R(X,Y)$ be the equation of a vertical line through $R$,
 let $g_P(X,Y)$ be the equation of a vertical line through $P$,
 and let $h(X,Y)$ be the equation of a line through $P+R$ and $-R$ (and hence
 $-P$).
 Thus we have
-
 \[ (f'_P g_R^r g_P^r / h^r) = r (P) - r(O) = (f_P) \]
-
 Each of $g_R(Q), g_P(Q), h(Q)$ lie in $\mathbb{F}_q^*$ since none
 of the three lines go through $Q$ by choice of $R$.
 Again by Fermat we have $f'_P(Q) = f_P(Q)$. (Actually, even if we
@@ -44,3 +41,35 @@ $q^k-1$.)
 Hence
 \[e(P,Q) = f_P(Q)^{(q^k-1)/r} . \]
 \end{proof}
+
+\section {Twist Curves}
+
+Let $E : y^2 = x^3 + a x + b$ be an elliptic curve over $\mathbb{F}_q$,
+and $P$ be a point of prime order $r$.
+Suppose the embedding degree $k$ of $G = \langle P \rangle$ is even.
+
+Let $d = k / 2$. Let $v$ be a quadratic nonresidue in $\mathbb{F}_{q^d}$,
+so that $\mathbb{F}_{q^k} = \mathbb{F}_{q^d}[\sqrt{v}]$.
+Define $E'$ to be the curve $y^2 = x^3 + v^2 a x + v^3 b$. $E'$ is a twist
+of $E$.
+
+Define the map $\Psi:E'\rightarrow E(\mathbb{F}_q^k)$ by
+\[ \Psi(x,y) = (v^{-1}x, v^{-3/2}y) . \]
+
+Let $f$ be the Tate pairing (the Weil pairing may be substituted).
+Let $G' = E'(\mathbb{F}_{q^d})[r]$. Then we have a bilinear map
+\[ e : G \times G' \rightarrow \mathbb{F}_{q^k} \]
+given by $e(P, Q') = f(P, \Psi(Q'))$.
+
+(Recall if $\#E(\mathbb{F}_{q^d} = q^d + 1 - c$ then
+$\#E'(\mathbb{F}_{q^d}) = q^d + 1 + c$ and
+$\#E(\mathbb{F}_{q^k}) = (q^{d} + 1 + c)(q^{d} + 1 - c)$.
+$E(\mathbb{F}_{q^d})$ does not contain $E[r]$ otherwise the embedding
+degree would be at most $d$, so $r | q^{d} + 1 + c$ and
+there exist order $r$ points in $E'(\mathbb{F}_{q^d})$.)
+
+In practical terms, this means most operations are performed in
+$\mathbb{F}_{q^d}$  or $\mathbb{F}_q$. Computations are only performed in
+$\mathbb{F}_{q^k}$ when a pairing is being evaluated.
+
+\section {Denominator Elimination}

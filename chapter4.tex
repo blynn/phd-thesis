@@ -1,0 +1,24 @@
+\chapter{Miscellaneous Optimizations}
+
+We describe various
+optimizations unrelated to pairings, or elliptic curves in general.
+
+\section{Dedicated Squaring}
+
+For each field, ring or group, dedicated squaring or doubling routines
+can be helpful. The savings accrued during exponentiations can be significant.
+
+\section{Field Extensions}
+
+When possible, a degree two field extension of a field $\mathbb{F}_q$
+should be implemented as $\mathbb{F}_q[i]$ where $i$ is a square root of $-1$.
+This can be done if and only if $q = 3 \pmod{4}$.
+
+We have
+\[ (a + i b)^2 = (a - b)(a + b) + i (2 a b) \]
+and
+\[ (a + i b)(c + i d) = (ac - bd) + i[(a + b)(c + d) - ac - bd] \]
+
+More generally, for low degree extensions (e.g. 3, 6),
+hand-coded generalized Karatsuba multiplication algorithms \cite{someone} will
+improve running times.
