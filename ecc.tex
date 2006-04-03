@@ -1,0 +1,95 @@
+\chapter {Elliptic Curves}
+We review some basic facts about elliptic curves.
+
+Let $\Fq$ be a field for some prime $q > 3$.
+Unless otherwise specified we shall always
+define curves over a field of prime order and of characteristic greater
+than three.
+
+An elliptic curve $E$ is an equation of the form
+\[ E: Y^2 = X^3 + a X + b \]
+where $a, b \in \Fq$.
+
+For every curve, there is a unique point $O$,
+called the \emph{point at infinity}
+that is always a solution. (By considering the equation in
+projective coordinates one can show that $O = (0,1,0)$ is the unique
+infinite solution to the equation. On the real plane,
+the point $O$ can intuitively thought of as the point where all lines
+parallel to the Y-axis meet.) The other solutions to the equation $E$
+are called \emph{finite points}.
+
+For any positive integer $k$ define $E(\Fqk)$ to be the set of all solutions
+of $E$ over $\Fqk$ along with the point $O$.
+
+\section {The Chord-Tangent Composition Law}
+
+We define an operation $+$ on $E(\Fqk)$.
+
+Let $P = (a,b), Q = (c,d) \in E(\Fqk)$ be finite points.
+
+If $P \ne Q$, then it is not hard to show that if $a \ne c$
+then the line through $P$ and $Q$ must intersect $E$ at another point
+$(x,y)$ where $x, y\in \Fqk$. Note that $(x,-y)$ also is a solution of $E$.
+Define $P + Q = (x, -y)$ for $a \ne c$.
+If $a = c$ (in which case we must have $b = -d$),
+then define $P + Q = O$.
+
+Now suppose $Q = P$. In this case, consider the tangent line going through
+$P$. It turns out it must intersect $E$ at another point $(x,y)$ where
+$x,y\in\Fqk$ unless $a = 0$. Define $P + P = (x, -y)$ for $a \ne 0$.
+For $a = 0$ define $P + P = O$.
+
+Lastly define $P + O = P$, $O + O = O$.
+
+This operation turns $E(\Fqk)$ into a group.
+The point $O$ is the identity, and the inverse
+of a point $P = (x,y)$ is the point $-P = (x,-y)$.
+
+The previous chapter used mulitplicative group notation to emphasize
+the connection
+between discrete log cryptosystems and pairing-based cryptosystems.
+Traditionally one uses additive group notation for the elliptic curve group
+(since the group is Abelian), and we will adhere to that convention.
+
+\section {Torsion Points}
+
+Let $P\in E(\Fq)$ have order $r$ (so $r P = O$),
+where $r$ is coprime to $q$.
+
+Discrete log cryptosystems can easily be ported from finite fields
+to such a group $\langle P \rangle$.
+Originally, this was the only goal of elliptic curve cryptography,
+and researchers focused on finding curves with groups with
+suitable orders that were resistant to discrete log attacks and also
+efficient to compute on.
+On the other hand, pairing-based cryptography exploits more facts
+about points of a given order.
+
+It can be proved that for some integer $k \ge 1$,
+$E(\Fqk)$ contains $r^2$ points $P$ satisfying $r P = O$,
+and there are no other points with this property even if larger field
+extensions are considered.
+
+Denote the set of these points by $E[r]$. They are sometimes called the
+$r$-torsion points of $E$. It can be shown that
+
+\[ E[r] \cong \mathbb{Z}_r^+ \oplus \mathbb{Z}_r^+ \]
+
+We shall later describe a function known as the Weil pairing
+that takes pairs of elements from $E[r]$ and outputs an $r$th root of unity
+that can be used to construct bilinear maps.
+
+\section {Maps}
+
+\section {Representing Points}
+
+Projective coords. Mixin.
+
+\section {Point Addition}
+
+\section {Point Multiplication}
+
+Preprocessing. Sliding Windows.
+
+\section {Finding Random Points}

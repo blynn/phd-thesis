@@ -1,60 +1,236 @@
-\chapter {Miller's Algorithm}
+\chapter {The Tate Pairing}
 
-For this section we break with tradition and use multiplicative
-notation for divisors. Let $D$ be some divisor
-\[ D = a_0\langle P_0\rangle + ... + a_n \langle P_n\rangle . \]
-We shall write $D$ as
-\[ D = (P_0)^{a_0} ... (P_n)^{a_n} . \]
-Furthermore if $D$ is a divisor of some rational function, we will
-omit as many $(O)$ terms as we choose, as its true multiplicity
-can be computed from the multiplicities of the other zeroes and poles.
+For this chapter we break with tradition and use multiplicative
+notation for divisors. In addition, we will omit an arbitrary
+number of poles or zeroes at $O$. This is not problematic because we
+will always be discussing principal divisors, thus the true multiplicity
+of $O$ can be computed from the multiplicities at the finite points.
 
-On an elliptic curve, in our unconventional notation,
+\section { Divisors }
+
+Let $D$ be divisor with zeroes and poles $P_1,...,P_n$ of mulitplicities
+$a_1,...,a_n$. Rather than write
+\[ D = a_1\langle P_1\rangle + ... + a_n \langle P_n\rangle \]
+we shall write $D$ as
+\[ D = (P_1)^{a_1} ... (P_n)^{a_n} . \]
+Furthermore if $D$ is a principal divisor, we will
+omit as many $(O)$ terms as we like, as its real order
+can be calculated simply by negating
+of the sum of the orders of the other zeroes and poles.
+(If we need to switch to conventional notation we will use angled brackets
+rather than parentheses.)
+
+On an elliptic curve, in our unorthodox notation:
+\begin{description}
+\item[Lines:]
 a line through the points $P, Q$ has divisor
 \[ (P)(Q)(-P-Q) . \]
-When $Q = P$ then this is a tangent line at $P$, and the divisor is
-\[ (P)^2 (-2P) \]
-and when $Q = -P$, we have a vertical line through the point $P$
+\item[Tangents:]
+when $Q = P$ we have a tangent line at $P$ with divisor
+\[ (P)^2 (-2P) . \]
+\item[Verticals:]
+when $Q = -P$, we have a vertical line through the point $P$
 giving the divisor
-\[ (P)(-P) \]
-(recall we can omit any $(O)$ terms).
+\[ (P)(-P) . \]
+\end{description}
 
 There are advantages to using this notation. Using additive group
 notation for the elliptic curve and mutlplicative notation for the divisor
 group emphasizes the difference between them and reduces the likelihood of
 confusing the two. When rational functions are multiplied together,
-their divisors can be multiplied together, which is more natural than adding
-them. Leaving out as many $(O)$ terms as we choose allows us to focus less on
+their divisors can be multiplied together, which is arguably
+more natural than adding them.
+Leaving out as many $(O)$ terms as we choose allows us to focus less on
 bookkeeping and more on the task at hand.
-The correct multiplicity of $(O)$ can always be computed later.
+The correct multiplicity of $(O)$ can always be determined later.
 
 Given a rational function $f$,
 $(f)$ denotes the divisor of $f$, thus in our notation
 for any rational functions $f, g$ we have $(f)(g) = (f g)$.
 
-We wish to find a rational function $f$ with divisor
-$(P)^n$ (in standard notation this is $n\langle P\rangle  - n\langle O\rangle$).
+\section {The Weil Pairing}
 
-For $k = 1,...,n$
-let $g_k(X,Y)$ be an equation for a line through $P$ and $kP$,
-and $h_k(X,Y)$ be an equation for a vertical line through $P$ (e.g.
-$X - a$, where $P = (a, b)$). Notice we have
+Earlier papers on pairing-based cryptosystems advocated the Weil pairing.
+We shall see that the Tate pairing is similar but has more advantages.
+Nonetheless we first describe the Weil pairing as used in cryptography
+for historical reasons, and also because it is simpler thus
+serves well as an introduction.
+
+Let $E$ be an elliptic curve containing $n$ points over a field $\mathbb{F}_q$.
+Let $G$ be a cyclic subgroup of $E(\mathbb{F}_q)$ of order $r$ with $r, q$
+coprime. Let $k$ be the smallest positive integer such that $E(\Fqk)$
+contains all of $E[r]$.
+
+We define the Weil pairing
+$f:E[r] \times E[r] \rightarrow \Fqk$ as follows.
+
+For a pair of points $P, Q \in E[r]$,
+let $f_P$ be a rational function with divisor $(f_P) = (P)^r$,
+(In standard notation this is $r\langle P\rangle  - r\langle O\rangle$.)
+and similarly let $f_Q$ be a rational function with divisor $(f_Q) = (Q)^r$.
+
+Choose any $R, S \in E(\Fqk)$ such that $R \ne -P, O$ and $S \ne -Q, O$.
+Define
+\[ f(P,Q) = \frac{f_P(P+R)/f_P(R)}{f_Q(Q+S)/f_Q(S)} \]
+
+Using Weil reciprocity it can be shown that this value is independent
+of the choices for $R$ and $S$.
+
+It is well-known that
+\begin{enumerate}
+\item
+$f(a P, b Q) = f(P,Q)^{a b}$ for all $P, Q \in E[r]$ and all integers $a, b$.
+\item
+$f(P,P) = 1$ for all $P \in E[r]$.
+\item
+$f(P,Q) = 1$ for all $P \in E[r]$ if and only if $Q = O$.
+\item
+$f(P,Q) = 1$ for all $Q \in E[r]$ if and only if $P = O$.
+\item
+$f(P,Q) = f(Q,P)^{-1}$ for all $P,Q \in E[r]$.
+\item
+$f(\Phi(P),\Phi(Q)) = f(P,Q)^{q}$ for all $P,Q \in E[r]$.
+where $\Phi$ denotes the Frobenius map.
+\end{enumerate}
+
+(The last property is usually stated more generally:
+$f(\alpha(P),\alpha(Q)) = f(P,Q)^{\deg \alpha}$ for any nonzero
+endomorphism $\alpha$.)
+
+Let $P$ be a generator of $G$. Suppose
+we have a linear map
+\[ \phi : E[r] \rightarrow E[r] \]
+where $Q = \phi(P)$ linearly independent to $P$ and also generates
+a group of order $r$.
+Then defining $e:E[r]\times E[r]\rightarrow \Fqk$ by
+\[ e(g,h) = f(g,\phi(h)) \]
+for all $g, h \in G$
+gives a symmetric bilinear nondegenerate map.
+
+TODO: example
+
+\section {The Tate Pairing }
+
+Let $E$ be an elliptic curve containing $n$ points over a field $\mathbb{F}_q$.
+Let $G$ be a cyclic subgroup of $E(\mathbb{F}_q)$ of order $r$ with $r, q$
+coprime. Let $k$ be the smallest positive integer such that $r \mid q^k - 1$.
+For brevity write $K = \Fqk$.
+
+The Tate (or Tate-Lichtenbaum) pairing
+\[
+e : E[r] \cap E(K) \times
+E(K) / r E(K) \rightarrow
+K^* / K^{*r}
+\]
+is defined as follows.
+
+Let $f_P$ be a rational function with divisor $(f_P) = (P)^r$.
+Choose an $R\in E(K)$ such that $R \ne P, P-Q, O, -Q$. The define
+\[
+f(P, Q) = f_P (Q + R) / f_P (R)
+\]
+
+It can be shown that the above value is independent of the choice of $R$,
+and:
+\begin{enumerate}
+\item
+$f(a P, b Q) = e(P, Q)^{a b}$ for all $P, Q, a, b$.
+\item
+$f(P,Q) = 1$ for all $P$ if and only if $Q = O$.
+\item
+$f(P,Q) = 1$ for all $Q$ if and only if $P = O$.
+\item
+$f(\Phi(P),\Phi(Q)) = f(P,Q)^{q}$ for all $P,Q \in E[r]$,
+where $\Phi$ denotes the Frobenius map.
+\end{enumerate}
+
+TODO: example
+
+\section {Miller's Algorithm}
+
+We describe how to find a rational function $f$ with divisor
+$(P)^r$ \cite{miller} where $P$ has order $r$.
+
+For an integer $k$,
+let $l_{kP}(X,Y)$ be an equation for a line through $P$ and $kP$,
+and let
+$v_{kP}(X,Y)$ be an equation for a vertical line through $kP$ (e.g.
+$X - a$, where $kP = (a, b)$).
+If there is no confusion we may drop the $P$ in $l_{kP}, v_{kP}$ and write
+$l_k, v_k$ instead.
+
+Notice we have
 \[
 \left (
-\frac{g_k}{h_{k+1}}
+\frac{l_k}{v_{k+1}}
 \right )
 = \frac{(P)(kP)(-(k+1)P)}{((k+1)P)(-(k+1)P)}
 = \frac{(P)(kP)}{((k+1)P)}
 \]
 Define
-\[ f = \prod_{k=1}^{n-1} \frac{g_k}{h_{k+1}} \]
+\[ f_n = \prod_{k=1}^{n-1} \frac{l_k}{v_{k+1}} \]
 Then
-\[ (f) =
+\[ (f_n) =
 \frac{(P)(P)}{(2P)}
 \cdot
 \frac{(P)(2P)}{(3P)}
 \cdots
 \frac{(P)((n-1)P)}{(nP)}
 \]
-After cancellation we find $(f) = (P)^n / (nP)$. If $nP = O$ then this
-is simply $(f) = (P)^n$.
+After cancellation we find $(f_n) = (P)^n / (nP)$. When $n = r$ this
+is simply $(f_r) = (P)^r$.
+
+We describe a more efficient method of computing $f_r$.
+Observe $(f_k \cdot f_k) = {(P)^{2k}}/{(kP)^2}$
+almost looks like $(f_{2k}) = {(P)^{2k}}/{(2kP)}$.
+This suggests the following.
+
+Let $t_{kP}(X,Y)$ (which we also write as $t_k$)
+to be an equation for the tangent line at $kP$,
+we have
+\[
+(f_k \cdot f_k \cdot t_k / v_{2k} ) = \frac{(P)^{2k}}{(kP)^2} \cdot
+\frac{(kP)^2 (-2kP)}{(2kP)(-2kP)} = \frac{(P)^{2k}}{(2kP)} = (f_{2k}) .
+\]
+In short, we have
+\[
+f_{2k} = f_k^2 t_k / v_{2k}
+\]
+and from before
+\[
+f_{k+1} = f_k l_{k} / v_{k+1}
+\]
+thus to compute $f_r$ we can use an algorithm analogous to exponentiation via
+repeated squaring.
+
+For cryptographically useful curves the rational function $f_r$
+is too long to compute and store. Instead, the function is only ever
+evaluated when needed, and we evaluate as we perform the repeated
+squaring.
+
+The following algorithm, given points $P, Q$, computes
+$f_r(Q)$.
+
+\begin{enumerate}
+\item
+Set $x \leftarrow 1, R \leftarrow P$.
+Let the binary representation of $r$ be $b_t ... b_0$.
+\item
+For $i \leftarrow t-1, ..., 0$ do
+    \begin{enumerate}
+    \item
+    Set $x \leftarrow x^2 \cdot t_R(Q) / v_{2R}(Q)$
+    \item
+    Set $R \leftarrow 2R$
+    \item
+    If $b_i = 1$ then
+	\begin{enumerate}
+	\item
+	Set $x \leftarrow x \cdot l_{R}(Q) / v_{R+P}(Q)$
+	\item
+	Set $R \leftarrow R + P$
+	\end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+After the algorithm terminates we have $x = f_r(Q)$ (and $R = rP = O$).
