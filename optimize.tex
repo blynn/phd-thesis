@@ -10,34 +10,35 @@ If $k > 1$ then
 e(P,Q) = f_P(Q)^{(q^k-1)/r}
 \]
 is a bilinear nondegenerate map,
-where $f_P$ is a function with divisor $r(P) - r(O)$.
+where $f_P$ is a function with divisor $r\langle P\rangle - r\langle O\rangle$.
 \end{theorem}
 
 \begin{proof}
 Choose any point $R \in E(\mathbb{F}_q)$ that is not one of
 $O, -P, Q, -Q, Q - P$,
-and consider the function $f'_P$ that satisfies $(f'_P) = r(P+R) - r(R)$.
+and consider the function $f'_P$ that satisfies $(f'_P) = r\langle P+R\rangle
+- r\langle R \rangle$.
 The Tate pairing can be computed by
 \[
-f'_P((Q)-(O))^{(q^k-1)/r}
+(f'_P(Q)/f'_P(O))^{(q^k-1)/r}
 \]
 We have $f'(O) \in \mathbb{F}_q^*$ since it does not have a zero or pole
 at $O$. Hence
 $f'(O)^{(q^k-1)/r} = 1$ by Fermat's Little Theorem (we know $q-1$ must
-divide $(q^k - 1)/r$ since $r\nmid q-1$) so the pairing can be computed using
+divide $(q^k - 1)/r$ since $r\nmid q-1$) thus
 \[ e(P,Q) = f'_P(Q)^{(q^k-1)/r} . \]
-Let $g_R(X,Y)$ be the equation of a vertical line through $R$,
-let $g_P(X,Y)$ be the equation of a vertical line through $P$,
-and let $h(X,Y)$ be the equation of a line through $P+R$ and $-R$ (and hence
+Let $v_R(X,Y)$ be the equation of a vertical line through $R$,
+let $v_P(X,Y)$ be the equation of a vertical line through $P$,
+and let $l(X,Y)$ be the equation of a line through $P+R$ and $-R$ (and hence
 $-P$).
-Thus we have
-\[ (f'_P g_R^r g_P^r / h^r) = r (P) - r(O) = (f_P) \]
-Each of $g_R(Q), g_P(Q), h(Q)$ lie in $\mathbb{F}_q^*$ since none
-of the three lines go through $Q$ by choice of $R$.
-Again by Fermat we have $f'_P(Q) = f_P(Q)$. (Actually, even if we
-had chosen $g_R, g_P, h$ with coefficients in $\mathbb{F}_{q^k}$, our
-argument still holds since each value is ultimately exponentiated by
-$q^k-1$.)
+Then we have
+\[ (f'_P v_R^r v_P^r / l^r) = r \langle P \rangle - r \langle O \rangle
+= (f_P) \]
+None of $v_R, v_P, l$ have zeroes or poles at $Q$ by choice of $R$.
+Sicne each of $v_R(Q), v_P(Q), l(Q)$ is ultimately exponentiated by $q^k-1$
+we have $f'_P(Q) = f_P(Q)$.
+(Alternatively we could appeal to Fermat's Little Theorem
+again, since the lines can be chosen to have coefficients in $\F_q$.)
 Hence
 \[e(P,Q) = f_P(Q)^{(q^k-1)/r} . \]
 \end{proof}
@@ -73,3 +74,4 @@ $\mathbb{F}_{q^d}$  or $\mathbb{F}_q$. Computations are only performed in
 $\mathbb{F}_{q^k}$ when a pairing is being evaluated.
 
 \section {Denominator Elimination}
+\section {The Tate Exponentiation}

@@ -80,11 +80,11 @@ We shall later describe a function known as the Weil pairing
 that takes pairs of elements from $E[r]$ and outputs an $r$th root of unity
 that can be used to construct bilinear maps.
 
-\section {Maps}
-
 \section {Representing Points}
 
 Projective coords. Mixin.
+
+optim for Space vs. time
 
 \section {Point Addition}
 
@@ -93,3 +93,18 @@ Projective coords. Mixin.
 Preprocessing. Sliding Windows.
 
 \section {Finding Random Points}
+
+\section {Rational Functions}
+
+Consider the field $\Fqk(X,Y)_{E(X,Y)}$.
+
+\section {Curve Endomorphisms}
+
+Given a point $P$ and integer $m$ consider the \emph{multiplication by $m$ map}
+\[ P \mapsto m P . \]
+If $P$ is viewed as a pair of variables $(X,Y)$, this map
+can be written as $(f(X,Y), g(X,Y))$ for some rational functions $f,g$.
+
+This is an example of a \emph{curve endomorphism}, because points of
+$E(\Fqk)$ are mapped to points of $E(\Fqk)$. Another important example
+is the \emph{Frobenius map}, given by $(X, Y) \mapsto (X^q, Y^q)$.

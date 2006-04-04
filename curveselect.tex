@@ -69,11 +69,15 @@ $E[r] \subset E(\mathbb{F}_{q^k})$.
 The $k$ in the above theorem is referred to as the \emph{embedding degree}.
 
 \begin{definition}
-Let $E$ be an elliptic curve defined over $\mathbb{F}_q$.
+Let $E$ be an elliptic curve defined over $K = \mathbb{F}_q$.
 Let $P \in E(K)$ be a point of order $r$.
 Let $G = \langle P \rangle$.
 The \emph{embedding degree} of $G$ is the smallest positive integer $k$
 such that $r \mid q^k - 1$.
+
+If $k$ is the smallest positive integer such that
+the order $r$ of any point $P \in E(K)$ satisfies $r | q^k - 1$
+then we say the embedding degree of the curve is $k$.
 \end{definition}
 
 Thus we have shown that if the embedding degree $k$ is greater than 1,
@@ -173,6 +177,37 @@ For the near future, embedding degree 6 should be reasonable if used along
 with an $r$ that is at lesat $170$ bits long,
 and embedding degree 12 curves may be more desirable as time passes.
 
+\section { Short Signatures }
+
+At this point we can see why the signature scheme introduced
+in the first chapter
+yields short signatures. Recall a signature is a single group element.
+We now know that this group can be instantiated as a subgroup of points
+of a certain order on an elliptic curve $E$, thus a signature is simply
+a point on $E$ over some field $\F_q$ where $q$ is about 160 bits.
+
+A point has two coordinates, but we can discard the $y$-coordinate entirely,
+and represent signatures by their $x$-coordinate only if we modify
+verification as follows:
+\begin{enumerate}
+\item
+Given an $x$-coordinate of a signature, find any solution $y$
+in the curve equation $E$.
+\item
+If the signature $(x,y)$ does not verify,
+check if the signature $(x, -y)$ verifies.
+\item
+If the signature still does not verify then reject it.
+\end{enumerate}
+
+Thus signatures are roughly 160 bits in length.
+
+Later we will see we can do better than this, and in effect check both
+cases at once.
+
+Note instead of discarding the $y$-coordinate, we can
+replace it with a single bit signifying which solution of $y$ to take.
+
 \section { Approaches to Finding Curves }
 
 A randomly-chosen elliptic curve will have a large embedding
@@ -194,6 +229,11 @@ We note that supersingular hyperelliptic curves have also been considered,
 and it is thought that using the hyperelliptic equivalent of the
 complex multiplication method may lead to more curves with low
 embedding degrees, though further research in this area is required.
+
+Below we survey some types of curves used in practice for pairing-based
+cryptography. To make them easier to refer to, we label them with letters.
+The labelling is arbitrary, though we try to order the types
+in rough chronological order.
 
 \section { Supersingular Curves }
 
@@ -244,8 +284,7 @@ thus for any $P\in E(\mathbb{F}_q)$
 the embedding degree of $G = \langle P \rangle$ is 2.
 
 Note $-1$ is a quadratic nonresidue in $\mathbb{F}_q$ since $q = 3\pmod{4}$.
-Consider the map
-$E(\mathbb{F}_q) \rightarrow E(\mathbb{F}_{q^2})$ given by
+Consider the map given by
 \[ \Psi(x, y) = (-x, i y) \]
 
 Then $\Psi$ maps points of $E(\mathbb{F}_q)$ to points of
@@ -300,8 +339,7 @@ Again we have $\#E(\mathbb{F}_q) = q+1$ and $\#E(\mathbb{F}_{q^2}) = (q+1)^2$,
 thus for any $P\in E(\mathbb{F}_q)$
 the embedding degree of $G = \langle P \rangle$ is 2.
 
-Consider the map
-$E(\mathbb{F}_q) \rightarrow E(\mathbb{F}_{q^2})$ given by
+Consider the map given by
 \[ \Psi(x, y) = (\zeta x, y) \]
 where $\zeta$ is a primitive cube root of unity.
 
@@ -317,10 +355,248 @@ gives a bilinear nondegenerate map.
 As mentioned before, cube roots are easy to find since $q = 2 \pmod{3}$.
 For this particular curve, it means we may easily generate points from
 a $y$-coordinate: given any $y$, simply take $x = (y^2-1)^{-(q-2)/3}$.
-This simplifies routines such as random point generation.
+This simplifies routines such as random point generation. Additionally,
+points can be represented by their $y$-coordinate alone since there is
+a unique $x$ for each value of $y$.
 
-We may also ensure $-1$ is a quadratic nonresidue in $\mathbb{F}_q$ by
-choosing $q = 3\pmod{4}$. This allows us to implement $\mathbb{F}_q^2$
-as $\mathbb{F}_q[i]$, as above.
+We may also ensure $-1$ is a quadratic nonresidue in $\Fq$ by
+choosing $q = 3\pmod{4}$. This allows us to implement $\mathbb{F}_{q^2}$
+as $\Fq[i]$, as above.
+
+\section { Type C Curves }
+
+Define the curves $E^{+} : y^2 = x^3 + 2 x + 1$ over $\F_{3^l}$
+and $E^{-} : y^2 = x^3 + 2 x - 1$, also over $\F_{3^l}$.
+
+Unlike all the other curves we consider,
+we are working in a low characteristic field, and furthermore this
+field does not have prime order.
+
+It turns out
+\[
+\#E^+(\F_{3^l}) = \left \{ \begin{array}{rcl}
+3^l + 1 + 3^{(l+1)/2} \mbox { when } l = \pm 1 \bmod 12 \\
+3^l + 1 - 3^{(l+1)/2} \mbox { when } l = \pm 5 \bmod 12
+\end{array} \right.
+\]
+and $\#E^-(\F_{3^l}) + \#E^+(\F_{3^l}) = 2(3^l + 1)$, that is
+\[
+\#E^-(\F_{3^l}) = \left \{ \begin{array}{rcl}
+3^l + 1 - 3^{(l+1)/2} \mbox { when } l = \pm 1 \bmod 12 \\
+3^l + 1 + 3^{(l+1)/2} \mbox { when } l = \pm 5 \bmod 12
+\end{array} \right.
+\]
+and it is easily checked that both types of curve have embedding
+degree 6 (that is, the order divide $3^{6l} -1$ in all cases).
+
+For an $l = \pm 1, \pm 5$ and a
+curve $E : y^2 = x^3 + 2 x \pm 1$ over $\mathbb{F}_{3^l}$
+let $t$ be a root of $t^3 + 2t \pm 2 = 0$, and let $i$ be a
+square root of $-1$. These both exist in $\mathbb{F}_{3^{6l}}$.
+Define the map $\Psi$ by
+\[ \Psi(x,y) = (-x + t, i y) \]
+where $x, y$ are elements of $\F_{3^{6l}}$. Then $\Psi$ maps points
+of $E(\F_{3^l})$ to points of $E(\F_{3^{6l}})$.
+
+We arrive at a curve selection algorithm:
+
+\begin{enumerate}
+\item
+Choose $l = \pm 1, \pm 5 \bmod 12$. To avoid Weil descent attacks,
+$l$ should not have any small prime factors (say $3,5,7$).
+\item
+Compute $3^l + l \pm 3^{(l+1)/2}$ and check if either has a large prime
+factor $r$.
+\item
+If so, set $E$ to the corresponding curve equation.
+\end{enumerate}
+
+It turns out there are not many suitable curves.
+
+TODO: give table, mention coppersmith, cite weil descent paper
 
 \section { Complex Multiplication }
+
+Suppose we have integers $D, V, q, t$ satisfying the \emph{CM equation}
+\[ D V^2 = 4 q - t^2 \]
+such that $D = 0, 3 \bmod 4$ is positive and $q$ is prime.
+
+View the Hilbert polynomial $H_D(x)$ as a polynomial in $\F_q[x]$,
+and let $j \in \F_q$ be any root. For $j \ne 0, 1728$, set
+$k = j / (1728 - j)$. Then the curve
+\[ E: y^2 = x^3 + 3 k c^2 x + 2 k c^3 \]
+has $j$-invariant $j$ for any nonzero $c \in \F_q$.
+
+Set $c = 1$. Then $E$ has order $q + t + 1$ or $q - t + 1$.
+Generate a random point $P$ of $E$ and check if
+$(q-t+1)P = O$. If not, then the order must be $q + t + 1$,
+and if we set $c$ to be some quadratic nonresidue in $\F_q$ the
+curve will have order $q - t + 1$.
+
+For $j = 0$ the curve has the form $y^2 = x^3 + k$ for some $k$.
+For $j = 1728$ the curve has the form $y^2 = x^3 + k x$ for some $k$.
+In these cases one can try different values of $k$ until a curve
+with the correct order is found.
+
+Thus given a solution the above equation, we may easily write down
+a curve of order $q+t-1$ or $q-t-1$.
+
+\section { Type D Curves }
+
+Let $t = 2$, $D = 7$. Let $r$ be a positive integer
+and suppose $q = 28 r^2 h^2 + 1$ is prime for some $h$.
+Then the CM equation
+\[
+7 V^2 = 4 (28 (r h)^2 + 1) - 4
+\]
+is satisfied when we take $V = 4 r h$.
+
+As $H_7(x) = x + 3375$, if we take $k = -3375 / (1728 - 3375)$ in $\F_q$
+then the curve
+\[
+y^2 = x^3 + 3k x + 2k
+\]
+has order $q - 1$ or $q + 3$. Taking the twist if necessary,
+find the curve with order $q-1$.
+
+Note $r \mid q-1$ hence the Tate pairing on this curve can be computed
+in $\F_q$. For most applications we choose $r$ to be prime but composite
+orders can be chosen instead.
+
+\section { Type E Curves }
+
+Miyaji et al. describe a method for constructing ordinary elliptic
+curves with embedding degree 3,4 or 6 \cite{mnt}. Moreover, they show
+that in a sense, there are no other parametrizations that lead to curves
+with these embedding degrees.
+
+We first discuss the most useful case: when the embedding degree is six.
+Consider the polynomials $q = x^2 + 1, t = \pm x + 1$.
+It turns out that $q(x) + 1 - t(x) | q(x)^6 - 1$.
+
+The CM equation becomes $D V^2 = 3 x^2 \pm 2 x + 3$. If we make
+the substitution $U = 3x \pm 1$ then we have the generalized Pell equation
+\[
+U^2 - 3DV^2 = -8
+\]
+
+This suggests the following algorithm.
+
+\begin{enumerate}
+\item
+Choose $D$ and solve the Diophantine equation
+\[ D V^2 = 3 x^2 \pm 2 x + 3 \]
+for $V, x$ by solving a Pell-type equation.
+\item
+Check that $q = x^2 + 1$ is prime
+\item
+Check that $q - t + 1 = q - x$ has a large prime factor $r$.
+(Ideally it should be prime.)
+\item
+Check that $r$ does not divide $q^j = 1$ for any positive integer $j < k$.
+(This can be omitted in practice as it is extremely unlikely this will
+occur.)
+\item
+Use the CM method to construct a curve $E$ with order $q \pm x$.
+\end{enumerate}
+
+The resulting curve $E$ will have embedding degree 6 since
+$q-x | q^6 -1$.
+
+We explain this method via the cyclotomic polynomials $\Phi_k(x)$.
+If $t = x + 1$,
+then $q = x + \Phi_6(x)$. (Recall $\Phi_6(x) = x^2 - x + 1$.)
+then the order $n$ of the resulting
+curve $E$ is $n = \Phi_6(x)$, then we may write
+\[ q^6 - 1 = x^6 - 1 \bmod n \]
+
+Recall $\Phi_6(x) | x^6 - 1$, hence $n$ must also divide $q^6 - 1$
+giving an embedding degree of 6.
+
+If $t = x - 1$, we may write $q = -x + \Phi_3(x)$.
+(Recall $\Phi_3(x) = x^2 + x + 1$.)
+The order $n$ of $E$ is $n = \Phi_3(x)$, hence
+\[ q^6 - 1 = (-x)^6 - 1 = x^6 - 1 \bmod n \]
+Since $\Phi_3(x) | x^6 - 1$ the embedding degree of $E$ is 6.
+Of course $\Phi_3(x) | x^3 - 1$ but since this is not in general
+congruent to $(-x)^3 - 1$ the embedding degree is not 3.
+
+For an embedding degree of 4, we may also use cyclotomic polynomials.
+Recall $\Phi_4(x) = x^2 + 1$. Then set $q = \pm x + \Phi_4(x)$
+so that $t = \pm x + 1$. Since $n = \Phi_4(x)$ we have
+\[ q^4 - x = (\pm x)^4 - 1 \bmod n \]
+thus $n \mid q^4 - 1$.
+(When the minus sign is chosen and $x$ replaced by $x+1$ 
+we match the notation of Miyaji et al.\cite{mnt}.)
+
+For $k=3$ we can use $q = 3 x^2 - 1$, $t = -1 \pm 3x$ where $x$ is
+even but it is not clear how this is related to cyclotomic polynomials.
+
+\section { Type F Curves }
+
+By considering cyclotomic polynomials,
+Barreto and Naehrig discovered a parametrization yielding embedding
+degree 12 curves.
+
+Let $q(x) = 36x^4 + 36x^3 + 24x^2 + 6x + 1$. Let $t(x) = 6x^2 + 1$.
+Then if $D = 3$, the CM equation always has the solution
+$V = 6x^2 + 4x + 1$. Furthermore,
+it turns out $q(x) + 1 - t(x) | q(x)^{12} - 1$.
+This suggests the following algorithm to generate curves:
+
+\begin{enumerate}
+\item
+Pick an integer $x$ of a desired magnitude. It may be negative.
+\item
+Check if $q(x)$ is prime.
+\item
+Check if $n = q(x) - t(x) + 1$ has a large prime factor $r$.
+(Ideally it should be prime.)
+\item
+Try different values of $k$ until a random point of
+$y^2 = x^3 + k$ has order $n$
+\end{enumerate}
+
+Barreto and Naehrig recommend the last step be done as follows:
+starting from $k = 1$, keep incrementing $k$ until $k+1$ is a quadratic
+residue and $n(1,g) = O$, where $g$ is a square root of $k + 1$.
+
+\section { Type G Curves }
+
+The ideas of Miyaji et al. have been developed extensively\cite{alotofstuff}.
+For example, methods exist to construct curves of any embedding degree
+provided that one can tolerate a subgroup order $r$ that is
+in general significantly smaller than the field order $q$.
+
+Freeman unified many of the approaches in a single
+framework\cite{freeman}, and also showed how to construct curves with
+embedding degree 10, with $r$ and $q$ around the same size.
+Freeman also notes that it seems unlikely that curves
+with embedding degrees other than the ones described in this chapter
+can be constructed using these techniques.
+
+We summarize an algorithm due to Freeman and Scott:
+
+Set $q(x) = 25x^4 + 25x^3 + 25x^2 + 10x + 3$ and
+$t(x) = 10x^2 + 5x + 3$.
+
+\begin{enumerate}
+\item
+Choose $D$ such that $D$ is squarefree and $D = 43, 67 \bmod 120$.
+\item
+Find solutions $(u,v)$ to the equation $u^2 - 15 Dv^2 = -20$.
+\item
+Check $u = \pm 5 \bmod 15$,
+and set $x = (-5 \pm u)/15$.
+\item
+Check $q(x)$ is prime.
+\item
+Check $n = q(x) - t(x) + 1$ has a large prime factor $r$.
+\item
+Construct the corresponding curve $E$ using the CM method.
+\end{enumerate}
+%Multiply $u+v\sqrt{15 D}$ by a norm-one element of $\mathbb{Q}(\sqrt{15D})$
+%and get next candidate
+
+It can be shown that $n | q^{10} - 1$ thus the resulting curve has
+embedding degree 10.
