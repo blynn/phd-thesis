@@ -102,7 +102,7 @@ In contrast, $3 \mid 19-1$ hence the Tate pairing can be
 computed in $\mathbb{F}_{19}$. In fact, we find $e(P, R + 3G) = 11$, where
 $e$ denotes the Tate pairing.
 
-\section { Security Considerations }
+\section {Security Considerations}
 
 Thus our goal is to find curves $E(\mathbb{F}_q)$ containing a subgroup
 $G$ of prime order $r$ with embedding degree $k$ small enough so that
@@ -177,7 +177,7 @@ For the near future, embedding degree 6 should be reasonable if used along
 with an $r$ that is at lesat $170$ bits long,
 and embedding degree 12 curves may be more desirable as time passes.
 
-\section { Short Signatures }
+\section {Short Signatures}
 
 At this point we can see why the signature scheme introduced
 in the first chapter
@@ -208,11 +208,11 @@ cases at once.
 Note instead of discarding the $y$-coordinate, we can
 replace it with a single bit signifying which solution of $y$ to take.
 
-\section { Approaches to Finding Curves }
+\section {Approaches to Finding Curves}
 
 A randomly-chosen elliptic curve will have a large embedding
-degree, giving resistance to the aforementioned discrete logarithm
-attack, but also making it useless for pairing-based cryptography.
+degree, which bestows it with resistance to the aforementioned discrete log
+attack, but also makes it useless for pairing-based cryptography.
 We must take one of two approaches to find curves suitable for pairings:
 
 \begin{enumerate}
@@ -232,10 +232,10 @@ embedding degrees, though further research in this area is required.
 
 Below we survey some types of curves used in practice for pairing-based
 cryptography. To make them easier to refer to, we label them with letters.
-The labelling is arbitrary, though we try to order the types
-in rough chronological order.
+The labelling is arbitrary, though we try to arrange them in the order
+they appeared in cryptography publications.
 
-\section { Supersingular Curves }
+\section {Supersingular Curves}
 
 There are six families of supersingular curves, with embedding degree at
 most six \cite{mov}. Let $q=p^m$. Let $t$ denote the trace of Frobenius.
@@ -273,7 +273,7 @@ The $k=6$ case requires $p=3$. Again, we may apply
 a host of specialized optimizations, but we must also be wary of
 low-characteristic discrete logarithm algorithms.
 
-\section { Type A Curves }
+\section {Type A Curves}
 
 Let $q$ be a prime satisfying $q = 3 \pmod{4}$.
 Let $E$ be the curve $y^2 = x^3 + x$. It can be shown \cite{silverman86}
@@ -301,12 +301,9 @@ Setup for this type of pairing for a cryptosystem can be done as follows.
 \begin{enumerate}
 \item
 An order $r$ is chosen, large enough to avoid generic discrete logarithm
-attacks. Other properties may be desired.
-For faster pairings, it is desirable to choose $r$ so that repeated squaring
-algorithms can be optimized: e.g. choose $r$ to have a low Hamming weight,
-or to be a Solinas number (i.e. $r$ has the form $2^a \pm 2^b \pm 1$).
-For some cryptosystems $r$ is
-an RSA modulus.
+attacks. Other properties may be desired. For some cryptosystems $r$ is
+an RSA modulus. As we will see, careful choices of $r$ will speed up Miller's
+algorithm substantially.
 \item
 Recall we require finite field discrete logarithm attacks on $\mathbb{F}_{q^2}$
 to be impractical. Thus a random multiple of four $h$ is generated,
@@ -329,7 +326,7 @@ for all $x \in \mathbb{F}_q$ we see $x^{-(q-2)/3}$ is the cube root of $x$
 This may be desirable in some situations, and hardly affects the setup
 algorithm.
 
-\section { Type B Curves }
+\section {Type B Curves}
 
 Let $q$ be a prime satisfying $q = 3 \pmod{4}$.
 Let $E$ be the curve $y^2 = x^3 + 1$. Then
@@ -363,7 +360,7 @@ We may also ensure $-1$ is a quadratic nonresidue in $\Fq$ by
 choosing $q = 3\pmod{4}$. This allows us to implement $\mathbb{F}_{q^2}$
 as $\Fq[i]$, as above.
 
-\section { Type C Curves }
+\section {Type C Curves}
 
 Define the curves $E^{+} : y^2 = x^3 + 2 x + 1$ over $\F_{3^l}$
 and $E^{-} : y^2 = x^3 + 2 x - 1$, also over $\F_{3^l}$.
@@ -415,7 +412,7 @@ It turns out there are not many suitable curves.
 
 TODO: give table, mention coppersmith, cite weil descent paper
 
-\section { Complex Multiplication }
+\section {Complex Multiplication}
 
 Suppose we have integers $D, V, q, t$ satisfying the \emph{CM equation}
 \[ D V^2 = 4 q - t^2 \]
@@ -441,7 +438,7 @@ with the correct order is found.
 Thus given a solution the above equation, we may easily write down
 a curve of order $q+t-1$ or $q-t-1$.
 
-\section { Type D Curves }
+\section {Type D Curves}
 
 Let $t = 2$, $D = 7$. Let $r$ be a positive integer
 and suppose $q = 28 r^2 h^2 + 1$ is prime for some $h$.
@@ -463,7 +460,7 @@ Note $r \mid q-1$ hence the Tate pairing on this curve can be computed
 in $\F_q$. For most applications we choose $r$ to be prime but composite
 orders can be chosen instead.
 
-\section { Type E Curves }
+\section {Type E Curves}
 
 Miyaji et al. describe a method for constructing ordinary elliptic
 curves with embedding degree 3,4 or 6 \cite{mnt}. Moreover, they show
@@ -529,10 +526,10 @@ thus $n \mid q^4 - 1$.
 (When the minus sign is chosen and $x$ replaced by $x+1$ 
 we match the notation of Miyaji et al.\cite{mnt}.)
 
-For $k=3$ we can use $q = 3 x^2 - 1$, $t = -1 \pm 3x$ where $x$ is
-even but it is not clear how this is related to cyclotomic polynomials.
+For $k=3$ Miyaji et al. give $q = 3 x^2 - 1$, $t = -1 \pm 3x$ where $x$ is
+even.
 
-\section { Type F Curves }
+\section {Type F Curves}
 
 By considering cyclotomic polynomials,
 Barreto and Naehrig discovered a parametrization yielding embedding
@@ -561,7 +558,7 @@ Barreto and Naehrig recommend the last step be done as follows:
 starting from $k = 1$, keep incrementing $k$ until $k+1$ is a quadratic
 residue and $n(1,g) = O$, where $g$ is a square root of $k + 1$.
 
-\section { Type G Curves }
+\section {Type G Curves}
 
 The ideas of Miyaji et al. have been developed extensively\cite{alotofstuff}.
 For example, methods exist to construct curves of any embedding degree
@@ -600,3 +597,5 @@ Construct the corresponding curve $E$ using the CM method.
 
 It can be shown that $n | q^{10} - 1$ thus the resulting curve has
 embedding degree 10.
+
+TODO: comparison table: symmetric? group sizes? embedding degree? ordinary?

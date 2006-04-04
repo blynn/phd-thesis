@@ -116,13 +116,19 @@ Given $g,g^x,...,g^{(x^q)}$, compute $c, g^{1/(x_c)}$
 for any $c\in\{1,...,r-1\}$.
 \end{description}
 
+TODO: Reductions between them
+
 Various cryptosystems rely on one or more of the above problems to be
 hard.
 
-Similarly, sometimes we can see how a conventional cryptosystem
-can be converted into a pairing-based cryptosystem.
-
-TODO: ring signature anecdote
+Similarly, sometimes it is easy to convert a conventional cryptosystem
+into a pairing-based cryptosystem. For example,
+the above pairing-based signature scheme and a ring signature scheme
+due to Rivest et al. \cite{rst} were presented in adjacent sessions
+at a conference. Someone who attended both talks would not have much
+difficulty in synthesizing the two ideas together. Indeed,
+a pairing-based ring signature scheme was presented about one
+year later\cite{bls2}.
 
 \section{Pairings Redefined}
 

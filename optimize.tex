@@ -1,5 +1,19 @@
 \chapter{Optimizing the Pairing}
 
+TODO: Miller:
+For faster pairings, it is desirable to choose $r$ so that repeated squaring
+algorithms can be optimized: e.g. choose $r$ to have a low Hamming weight,
+or to be a Solinas number (i.e. $r$ has the form $2^a \pm 2^b \pm 1$).
+
+TODO: My trick:
+The curve $E$ should be transformed (using twist-like trick)
+to the form $y^2 = x^3 - 3 a^2 x + b$ for some small $a$.
+For some curves $a = 0$, and this speeds things up (proj double)
+Otherwise ideally $a = 1$, diff. of two squares.
+For $a$ equal to small const,
+$aZ^2 =  Z^2 + ... + Z^2$ which is pretty cheap and
+do $(X-aZ^2)(X+aZ^2)$.
+
 \begin{theorem}
 Let $E$ be an elliptic curve over $\mathbb{F}_q$.
 Let $P \in E(\mathbb{F}_q)$ be a point of prime order $r$.
@@ -27,15 +41,15 @@ at $O$. Hence
 $f'(O)^{(q^k-1)/r} = 1$ by Fermat's Little Theorem (we know $q-1$ must
 divide $(q^k - 1)/r$ since $r\nmid q-1$) thus
 \[ e(P,Q) = f'_P(Q)^{(q^k-1)/r} . \]
-Let $v_R(X,Y)$ be the equation of a vertical line through $R$,
-let $v_P(X,Y)$ be the equation of a vertical line through $P$,
-and let $l(X,Y)$ be the equation of a line through $P+R$ and $-R$ (and hence
+Let $V_R(X,Y)$ be the equation of a vertical line through $R$,
+let $V_P(X,Y)$ be the equation of a vertical line through $P$,
+and let $L(X,Y)$ be the equation of a line through $P+R$ and $-R$ (and hence
 $-P$).
 Then we have
-\[ (f'_P v_R^r v_P^r / l^r) = r \langle P \rangle - r \langle O \rangle
+\[ (f'_P V_R^r V_P^r / L^r) = r \langle P \rangle - r \langle O \rangle
 = (f_P) \]
-None of $v_R, v_P, l$ have zeroes or poles at $Q$ by choice of $R$.
-Sicne each of $v_R(Q), v_P(Q), l(Q)$ is ultimately exponentiated by $q^k-1$
+None of $V_R, V_P, L$ have zeroes or poles at $Q$ by choice of $R$.
+Sicne each of $V_R(Q), V_P(Q), L(Q)$ is ultimately exponentiated by $q^k-1$
 we have $f'_P(Q) = f_P(Q)$.
 (Alternatively we could appeal to Fermat's Little Theorem
 again, since the lines can be chosen to have coefficients in $\F_q$.)
@@ -57,21 +71,155 @@ of $E$.
 Define the map $\Psi:E'\rightarrow E(\mathbb{F}_q^k)$ by
 \[ \Psi(x,y) = (v^{-1}x, v^{-3/2}y) . \]
 
-Let $f$ be the Tate pairing (the Weil pairing may be substituted).
-Let $G' = E'(\mathbb{F}_{q^d})[r]$. Then we have a bilinear map
-\[ e : G \times G' \rightarrow \mathbb{F}_{q^k} \]
-given by $e(P, Q') = f(P, \Psi(Q'))$.
+Let $P$ be any point of order $r$ in $E(\Fq)$ and
+$Q'$ be any point whose order is a multiple of $r$ in $E'(\F_{q^d})$.
+In practice a randomly chosen point of $E'(\F_{q^d})$ is likely to work.
+
+Let $G = \langle P \rangle, H = \langle \Psi(Q)\rangle$. The
+latter is a subgroup in $E'(\Fqk)$.
+
+Let $e$ be the Tate pairing.
+Then $e$ is a bilinear map.
+We may subsitute the Weil pairing if additionally
+$Q$ is a point of order $r$ not in $G$.
 
 (Recall if $\#E(\mathbb{F}_{q^d} = q^d + 1 - c$ then
 $\#E'(\mathbb{F}_{q^d}) = q^d + 1 + c$ and
 $\#E(\mathbb{F}_{q^k}) = (q^{d} + 1 + c)(q^{d} + 1 - c)$.
 $E(\mathbb{F}_{q^d})$ does not contain $E[r]$ otherwise the embedding
-degree would be at most $d$, so $r | q^{d} + 1 + c$ and
+degree would be at most $d$, so $r \mid q^{d} + 1 + c$ and
 there exist order $r$ points in $E'(\mathbb{F}_{q^d})$.)
 
 In practical terms, this means most operations are performed in
-$\mathbb{F}_{q^d}$  or $\mathbb{F}_q$. Computations are only performed in
-$\mathbb{F}_{q^k}$ when a pairing is being evaluated.
+$\mathbb{F}_{q^d}$  or $\mathbb{F}_q$. The $\Psi$ map and
+other computations ain $\Fqk$ are only performed
+when a pairing is being evaluated.
+
+We may view this trick as a
+generalization of the $\Psi$ map used in Type A curves.
+(We have $k =2 , d = 1$.
+The curve $E : y^2 = x^3 + x$ is equivalent to $E' : y^2 = x^3 + v^2 x$
+because either $v$ or $-v$ is a quadratic residue.)
+
+A dilemma arise with Type B curves however. The twist
+of a curve $E : y^2 = x^3 + 1 $ is $E: y^2 = x^3 + v^3 $ for some
+quadratic nonresidue $v$. We could work on these two curves but now
+the pairing is no longer symmetric. On the other hand, if we insist on
+a symmetric pairing, then although most computations can still be done
+in $\Fq$, we cannot employ the optimization of the next section. For
+many applications symmetry is not important, and efficiency is more important.
+
+TODO: also don't have asymmetric pairing. need general bilinear map defn.
+or do we?
 
 \section {Denominator Elimination}
+
+We use the same notation and assumptions as the previous section.
+In other words, again let $E : y^2 = x^3 + a x + b$ be an elliptic curve
+over $\mathbb{F}_q$,
+and $P$ be a point of prime order $r$.
+Suppose the embedding degree $k$ of $G = \langle P \rangle$ is even
+and write $k = 2d$.
+
+Suppose we want to find $f_P(Q)$.
+In Miller's algorithm, to calculate the denominator of
+$f_P(Q)$, we evaluate the equation of various vertical lines
+at a point. In other words, we compute $x - a$ where $a$ is the
+$x$-coordinate of the line and $x$ is the $x$-coordinate of $Q$.
+
+In the computation of the Tate pairing, we also exponentiate by
+$(q^k - 1)/r$ to standardize the coset representative. Observe
+$q^d - 1$ divides $(q^k-1)/r$ because if $r$ divides $q^d - 1$ then
+the embedding degree is at most $d$, not $k$.
+
+Thus if both $x$ and $a$ lie in $\F_{q^d}$ then we have
+$(x-a)^{q^d - 1} = 1$ so they can be omitted during Miller's algorithm.
+This occurs when twist curves are used, hence we may simplify
+the computation of $f_P(Q)$ as follows.
+
+\begin{enumerate}
+\item
+Set $f \leftarrow 1$, and $Z \leftarrow P$.
+Let the binary representation of $r$ be $b_t ... b_0$.
+\item
+For $i \leftarrow t-1$ to $0$
+    \begin{enumerate}
+    \item
+    Set $f \leftarrow f^2 T_Z(Q)$ and $Z \leftarrow 2Z$
+    \item
+    If $b_i = 1$ then
+	\begin{enumerate}
+	\item
+	Set $f \leftarrow f L_Z(Q)$ and $Z \leftarrow Z + P$.
+	\end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+If $r$ is odd, the if condition is true during the last iteration and
+the last multiplication is
+\[ f \leftarrow f L_{(r-1)P}(Q) .\]
+Since $(r-1)P = -P$, this is equivalent to $f \leftarrow f V_P(Q)$
+and hence can be skipped since no vertical line computations are needed.
+In this case we have $f_r = f_{r-1}$ and the logic can be simplified.
+
 \section {The Tate Exponentiation}
+
+The last step of a Tate pairing computation is
+to exponentiate some quantity $a$ by
+\[ \frac{q^k-1}{r} = r^{-1} \prod_{d\mid k} \Phi_d(q) \]
+Since $k$ is the embedding degree, we have $r \mid \Phi_k(q)$ (and no
+cyclotomic polynomial of smaller degree).
+
+Then $a^{(q^k-1)/r}$ may be computed as follows:
+\begin{enumerate}
+\item
+Compute $b = a^d $ where
+\[ d = \prod_{d\mid k, d<k} \Phi_d(q) , \]
+exploiting the identity $x^q = x$ for all $x \in \Fq$.
+\item
+Since
+\[ c = \frac{\Phi_k(q)}{r} \]
+is an integer, compute the output $b^c$
+using a standard exponentiation algorithm.
+\end{enumerate}
+
+We describe the steps in detail
+for $k = 2$. Suppose $\F_{q^2}$ has been implemented
+as $\Fq[\alpha]$. Typically $\alpha = i = \sqrt{-1}$.
+Then $q^2 - 1 = \Phi_2(q)(q-1)$ and
+$r \mid \Phi_2(q) = q + 1$. Write $a = u + \alpha v$ where $u,v \in \Fq$.
+We have
+\[ b = a^{q-1} = (u + \alpha v)^q a^{-1} = \frac{u + \alpha^q v}{a} .\]
+The constant $\alpha^q$ can be precomputed. Usually $\alpha$ is a square root
+of some quadratic nonresidue in $\Fq$, so $\alpha^q = -\alpha$ and
+this step is essentially a single division.
+
+Then compute $b^{(q+1)/r}$ using a standard exponentiation algorithm
+to obtain $a^{(q^2-1)/r}$. We have effectively halved the size of the exponent.
+
+Let us also work through the $k = 6$ case. Suppose we have $\F_{q^6}$
+implemented as $\Fq[\alpha]$. Then
+\[ q^6 - 1 = \Phi_6(q) (q^4 + q^3 - q - 1)\]
+(where $\Phi_6(q) = q^2 - q + 1$).
+If $a = u_0 + u_1 \alpha + ... + u^5 \alpha^5$ we have
+\[ b =
+a^{q^4 + q^3 - q - 1}
+= \frac{
+(u_0 + u_1 \alpha^{q^4} + ... + u_5 \alpha^{5q^4})
+(u_0 + u_1 \alpha^{q^3} + ... + u_5 \alpha^{5q^3})}
+{
+(u_0 + u_1 \alpha^q + ... + u_5 \alpha^{5q})a
+}
+\]
+where each power of $\alpha^q$ can be precomputed. Then exponentiate $b$
+by $(q^2 - q + 1)/r$ using a standard algorithm.
+In this case we have shrunk the exponent to roughly one third its original
+size.
+
+TODO: collating divisons
+
+TODO: char 3 optimizations
+
+TODO: precomputation
+
+TODO: pairing compression

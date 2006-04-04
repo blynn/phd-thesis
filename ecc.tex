@@ -9,18 +9,56 @@ than three.
 An elliptic curve $E$ is an equation of the form
 \[ E: Y^2 = X^3 + a X + b \]
 where $a, b \in \Fq$.
+Let $\Delta = 4 a^3 + 27b^2$ (the discriminant of the cubic in $x$). Then
+$E$ is \emph{singular} if $\Delta = 0$ (so the cubic has distinct solutions),
+and \emph{nonsingular} otherwise.
 
-For every curve, there is a unique point $O$,
+Unless otherwise stated we always consider nonsingular elliptic curves.
+Note: later we will examine \emph{supersingular} curves which are a
+particular kind of nonsingular curves (and are \emph{not} singular).
+
+For every curve, there is a special point $O$, sometimes denoted $\infty$,
 called the \emph{point at infinity}
 that is always a solution. (By considering the equation in
-projective coordinates one can show that $O = (0,1,0)$ is the unique
-infinite solution to the equation. On the real plane,
-the point $O$ can intuitively thought of as the point where all lines
+projective coordinates one can show that $O = (0,1,0)$ is always a unique
+infinite solution to the equation. Intuitively,
+the point $O$ can be thought of as the point where all lines
 parallel to the Y-axis meet.) The other solutions to the equation $E$
 are called \emph{finite points}.
 
-For any positive integer $k$ define $E(\Fqk)$ to be the set of all solutions
-of $E$ over $\Fqk$ along with the point $O$.
+For any positive integer $k$ define $E(\Fqk)$ (or $E/\Fqk$)
+to be the set of all solutions
+of $E$ over $\Fqk$ along with the point $O$. We write $\#E(\Fqk)$ 
+or $|E(\Fqk)|$ for
+the number of elements of $E(\Fqk)$.
+
+We quote two well-known theorems from the theory of elliptic curves.
+
+\begin{theorem}
+[Hasse] Let $t = q^k + 1 - \#E(\Fqk)$.
+Then $|t| \le 2\sqrt{q^k}$.
+\end{theorem}
+
+Thus the number of points on an elliptic curve is on the same order as the
+size of the field it is defined in.
+
+The following theorem is in fact true for any prime power $q$.
+
+\begin{theorem}
+[Weil] Let $t = q + 1 - \#E(\Fq)$.
+Factor the polynomial $x^2 - t x + q$ as $(x-\alpha)(x-\beta)$ over
+$\mathbb{C}[x]$.
+Then
+\[ \#E(\Fqk) = q^k + 1 - (\alpha^k + \beta^k) .\]
+\end{theorem}
+
+This last theorem is more practical in the following form. Let $t_0 = 2$,
+Let $t_1 = q + 1 - \#E(\Fq)$.
+Define $t_n$ recursively by
+\[ t_n = t_1 t_{n-1} - q t_{n-2} .\]
+Then $\#E(\Fqk) = q^k + 1 - t_k$.
+
+TODO: twist
 
 \section {The Chord-Tangent Composition Law}
 
@@ -54,17 +92,17 @@ Traditionally one uses additive group notation for the elliptic curve group
 
 \section {Torsion Points}
 
-Let $P\in E(\Fq)$ have order $r$ (so $r P = O$),
+Suppose $P\in E(\Fq)$ has order $r$ (so $r P = O$),
 where $r$ is coprime to $q$.
 
 Discrete log cryptosystems can easily be ported from finite fields
-to such a group $\langle P \rangle$.
+to a group $\langle P \rangle$.
 Originally, this was the only goal of elliptic curve cryptography,
 and researchers focused on finding curves with groups with
 suitable orders that were resistant to discrete log attacks and also
 efficient to compute on.
-On the other hand, pairing-based cryptography exploits more facts
-about points of a given order.
+In contrast, pairing-based cryptography exploits more facts
+about points of a particular order $r$.
 
 It can be proved that for some integer $k \ge 1$,
 $E(\Fqk)$ contains $r^2$ points $P$ satisfying $r P = O$,
@@ -76,9 +114,19 @@ $r$-torsion points of $E$. It can be shown that
 
 \[ E[r] \cong \mathbb{Z}_r^+ \oplus \mathbb{Z}_r^+ \]
 
-We shall later describe a function known as the Weil pairing
+When $r=2$ this is easy to see: a point has order 2 if and only if it has
+a zero $y$-coordinate. As $E$ is nonsingular
+$x^3 + ax + b = 0$ has three distinct solutions, thus there are always
+four points of order 2: the point $O$ and three points of the form
+$(\alpha, 0)$ where $\alpha$ is a root of the cubic.
+
+Also, the line through any two of the finite points is simply the line $Y = 0$,
+which certainly intersects $E$ the other finite point.
+The proof is much less trivial for general $r$.
+
+We shall later construct a function
 that takes pairs of elements from $E[r]$ and outputs an $r$th root of unity
-that can be used to construct bilinear maps.
+that is bilinear and nondegnerate.
 
 \section {Representing Points}
 
@@ -101,10 +149,20 @@ Consider the field $\Fqk(X,Y)_{E(X,Y)}$.
 \section {Curve Endomorphisms}
 
 Given a point $P$ and integer $m$ consider the \emph{multiplication by $m$ map}
-\[ P \mapsto m P . \]
+$[m]$ given by \[ P \mapsto m P . \]
 If $P$ is viewed as a pair of variables $(X,Y)$, this map
 can be written as $(f(X,Y), g(X,Y))$ for some rational functions $f,g$.
 
 This is an example of a \emph{curve endomorphism}, because points of
 $E(\Fqk)$ are mapped to points of $E(\Fqk)$. Another important example
-is the \emph{Frobenius map}, given by $(X, Y) \mapsto (X^q, Y^q)$.
+is the \emph{Frobenius map} $\Phi$, given by $(X, Y) \mapsto (X^q, Y^q)$.
+
+\begin{theorem}
+[Hasse]
+\[ \Phi \circ \Phi - [t] \circ \Phi + [q] = [0] \]
+\end{theorem}
+
+Since $E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r$ any curve endomorphism
+can be viewed as a $2\times2$ matrix when restricted to $E[r]$.
+
+TODO: eigenvalues of Phi
