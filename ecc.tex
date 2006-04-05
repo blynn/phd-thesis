@@ -14,8 +14,9 @@ $E$ is \emph{singular} if $\Delta = 0$ (so the cubic has distinct solutions),
 and \emph{nonsingular} otherwise.
 
 Unless otherwise stated we always consider nonsingular elliptic curves.
-Note: later we will examine \emph{supersingular} curves which are a
-particular kind of nonsingular curves (and are \emph{not} singular).
+Note: later we will examine the confusingly named \emph{supersingular} curves,
+which are a particular kind of nonsingular curves (and are \emph{not} singular).
+The antonym of supersingular is \emph{ordinary} or \emph{nonsupersingular}.
 
 For every curve, there is a special point $O$, sometimes denoted $\infty$,
 called the \emph{point at infinity}
@@ -26,7 +27,7 @@ the point $O$ can be thought of as the point where all lines
 parallel to the Y-axis meet.) The other solutions to the equation $E$
 are called \emph{finite points}.
 
-For any positive integer $k$ define $E(\Fqk)$ (or $E/\Fqk$)
+For any field $\Fqk$ define $E(\Fqk)$ (or $E/\Fqk$)
 to be the set of all solutions
 of $E$ over $\Fqk$ along with the point $O$. We write $\#E(\Fqk)$ 
 or $|E(\Fqk)|$ for
@@ -39,13 +40,12 @@ We quote two well-known theorems from the theory of elliptic curves.
 Then $|t| \le 2\sqrt{q^k}$.
 \end{theorem}
 
-Thus the number of points on an elliptic curve is on the same order as the
-size of the field it is defined in.
-
-The following theorem is in fact true for any prime power $q$.
+Thus the number of points on an elliptic curve in a given field
+is on the same order as the size of the field.
 
 \begin{theorem}
-[Weil] Let $t = q + 1 - \#E(\Fq)$.
+[Weil] Let $t = q + 1 - \#E(\Fq)$
+where $q$ is a prime power.
 Factor the polynomial $x^2 - t x + q$ as $(x-\alpha)(x-\beta)$ over
 $\mathbb{C}[x]$.
 Then
@@ -60,15 +60,65 @@ Then $\#E(\Fqk) = q^k + 1 - t_k$.
 
 \section {Twisting Curves}
 
-Let $E$ be an elliptic curve $Y^2 = X^3 + a X + b$ in $\Fq$,
-let $v$ be a quadratic nonresidue in $\Fq$. Consider the
-curve $E'$ given by $Y^2 = X^3 + a v^2 X + v^3 b$.
+Let $E$ be an elliptic curve $Y^2 = X^3 + a X + b$ in $\Fq$ where
+$q$ is a prime power.
+Let $v$ be a quadratic nonresidue in $\Fq$. Consider the
+\emph{twist} of $E$: the curve $E'$ defined by $Y^2 = X^3 + a v^2 X + v^3 b$.
 
-Let $t = q + 1 - \#E(\Fq)$.
-Then $\#E'(\Fq) = q + 1 + t$.
+Let $g(X) = X^3 + a X + b$, and $h(X) = X^3 + a v^2 X + v^3 b$.
+Note $h(X) = v^3 g(Xv^{-1})$.
 
+We consider three cases.
 
-\section {The Chord-Tangent Composition Law}
+\begin{enumerate}
+\item
+If $g(xv^{-1}) = 0$ then $v^3g(xv^{-1}) = h(x) = 0$ thus
+$Y = 0$ is the unique solution to both the
+equations $Y^2 = g(xv^{-1})$ and $Y^2 = h(x)$.
+\item
+If $g(xv^{-1})$ is a quadratic residue then $Y^2 = g(xv^{-1})$
+has exactly two solutions,
+and $Y^2 = v^3 g(xv^{-1}) = h(x)$ has no solutions (since $v^3$
+is a quadratic nonresidue).
+\item
+If $g(xv^{-1})$ is a quadratic nonresidue then the situation is reversed:
+$Y^2 = g(xv^{-1})$ has no solutions and
+and $Y^2 = h(x)$ has exactly two solutions.
+\end{enumerate}
+
+Thus as $x$ runs through all the elements of $\Fq$, so does $xv^{-1}$,
+and we see that total number of solutions to either equation $E$ and $E'$
+over $\Fq$ is $2q$.
+Since $O$ is always a solution of any elliptic curve we have
+$\#E(\Fq) + \#E(\Fq) = 2q + 2$.
+
+Let $t = q + 1 - \#E(\Fq)$. Then $\#E'(\Fq) = q + 1 + t$.
+
+On the other hand if $v$ is a quadratic residue then $v = c^2$ for some
+$c \in \Fq$. Then we have a map $\Psi : E'(\Fq) \rightarrow E(\Fq)$
+given by
+
+\[ \Psi(x,y) = (c^2 x,c^3 y) \]
+
+hence in some sense $E$ and $E'$ are the same curve. (For a quadratic
+nonresidue $v$, $c$ exists in $\F_{q^2}$ and we have a map between
+$E'(\F_{q^2})$ and $E(\F_{q^2})$.)
+
+In practice, we use this fact to change the equation of a given elliptic
+curve $E$ into a form that allows certain optimizations.
+It turns out that ideally we would like $a = 0$ to reduce the amount of
+operations needed to compute on an elliptic curve, but for a general curve
+this can never the case. We shall see it is good to have $a = -3$.
+
+Then from above, a curve $Y^2 = X^3 + aX + b$ can be transformed into
+one of the form $Y^2 = X^3 - 3X + b$ if we can find $c\in \Fq$
+satisfying $a c^4 = -3$.
+
+This is not always possible, so a compromise is to have
+$a = 1$ or $a = -3 d^2$ for some small integer $d$
+(or $d$ of low Hamming weight), which can be achieved in a similar manner.
+
+\section {The Chord-Tangent Law of Composition}
 
 We define an operation $+$ on $E(\Fqk)$.
 
@@ -83,8 +133,8 @@ then define $P + Q = O$.
 
 Now suppose $Q = P$. In this case, consider the tangent line going through
 $P$. It turns out it must intersect $E$ at another point $(x,y)$ where
-$x,y\in\Fqk$ unless $a = 0$. Define $P + P = (x, -y)$ for $a \ne 0$.
-For $a = 0$ define $P + P = O$.
+$x,y\in\Fqk$ unless $b = 0$. Define $P + P = (x, -y)$ for $b \ne 0$.
+For $b = 0$ define $P + P = O$.
 
 Lastly define $P + O = P$, $O + O = O$.
 
@@ -98,17 +148,47 @@ between discrete log cryptosystems and pairing-based cryptosystems.
 Traditionally one uses additive group notation for the elliptic curve group
 (since the group is Abelian), and we will adhere to that convention.
 
+\section {Singular Elliptic Curves}
+
+We do not discuss cryptography using
+singular elliptic curves, because it turns out this
+is equvialent to conventional cryptography.
+It can be shown that the set $E_{ns}$ nonsingular points (which is all but
+one) of a singular ellitpic curve over a field $K$
+also form a group under the chord-tangent law,
+and either $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite{prop2.5silverman},
+and furthermore these isomorphisms are efficiently computable in either
+direction.
+(The latter case is not useful as discrete log is easy in $K^+$.)
+
+TODO: example?
+
+Thus cryptography in finite fields can be viewed as a special
+case of elliptic curve cryptography, and strictly speaking,
+those that complain that elliptic curve cryptography in general
+is too experimental and untested must qualify
+their remarks by making exceptions for singular curves!
+
+We note that if an efficiently bilinear nondegenerate pairing could be found
+for singular curves then the Decisional Diffie-Hellman problem could be broken
+in finite fields.
+
 \section {Torsion Points}
 
 Suppose $P\in E(\Fq)$ has order $r$ (so $r P = O$),
 where $r$ is coprime to $q$.
 
-Discrete log cryptosystems can easily be ported from finite fields
+Then we must have $r \mid \#E(\Fq)$.
+If $r^2 \nmid \#E(\Fq)$ then any random point $P' \in E(\Fq)$
+of order $P$ must lie in the group $G = \langle P \rangle$.
+Thus discrete log cryptosystems can easily be ported from finite fields
 to a group $\langle P \rangle$.
-Originally, this was the only goal of elliptic curve cryptography,
-and researchers focused on finding curves with groups with
+
+Originally, this was the only goal of elliptic curve cryptography:
+researchers focused on finding curves with groups with
 suitable orders that were resistant to discrete log attacks and also
-efficient to compute on.
+efficient to compute on so that conventional cryptography could be
+performed in elliptic curves.
 In contrast, pairing-based cryptography exploits more facts
 about points of a particular order $r$.
 
@@ -120,7 +200,9 @@ extensions are considered.
 Denote the set of these points by $E[r]$. They are sometimes called the
 $r$-torsion points of $E$. It can be shown that
 
-\[ E[r] \cong \mathbb{Z}_r^+ \oplus \mathbb{Z}_r^+ \]
+\[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r \]
+
+(that $E[r]$ is the product of two cyclic groups of order $r$).
 
 When $r=2$ this is easy to see: a point has order 2 if and only if it has
 a zero $y$-coordinate. As $E$ is nonsingular
@@ -129,13 +211,70 @@ some field $\Fqk$ where $E$ has
 four points of order 2: the point $O$ and three points of the form
 $(\alpha, 0)$ where $\alpha$ is a root of the cubic.
 
-Also, the line through any two of the finite points is simply the line $Y = 0$,
-which certainly intersects $E$ the other finite point.
+Moreover,
+the line through any two of the finite points is simply the line $Y = 0$,
+which certainly intersects $E$ at the other finite point.
 The proof is much less trivial for general $r$.
 
 We shall later construct a function
 that takes pairs of elements from $E[r]$ and outputs an $r$th root of unity
 that is bilinear and nondegnerate.
+
+\section {Explicit Formulas}
+
+Let $E: y^2 = x^3 + ax + b$ be an elliptic curve over $\Fq$. Let
+$P_1, P_2 \in E(\Fq)$ and suppose
+we wish to find $P_3 = P_1 + P_2$.
+Note the case where at least one of $P_1, P_2$ is $O$ is trivial,
+so assume both $P_1$ and $P_2$ are finite.
+Then write $P_1 = (x_1, y_1), P_2 = (x_2, y_2)$.
+
+If $x_1 = x_2$ and $y_1 = -y_2$
+then the line $V$ through $P_1$ and $P_2$ is vertical and
+can be given by
+\[ V : X - x_1 = 0  . \]
+In this case $P_3 = O$ (and $P_1 = -P_2$).
+
+Otherwise $P_3$ also must be finite, hence write $P_3 = (x_3, y_3)$.
+We have two cases. If $P_1 = P_2$ then the tangent line $T$ at
+$P_1$
+has slope
+\[\lambda =
+\left[ \frac{\partial E / \partial X}{\partial E/ \partial Y} \right]_{(x_1,y_1)}
+= \frac{3x_1^2 + a}{2y_1} . \]
+and if $P_1 \ne P_2$ then the line $L$ through $P_1$ and $P_2$ has slope
+\[ \lambda = (y_2 - y_1)/(x_2 - x_1) . \]
+
+If we set $\mu = y_1 - \lambda x_1$ then
+the equation of $L$ or $T$ is given by:
+
+\[ L, T :  Y - (\lambda X + \mu) = 0 \]
+
+We can find the $x$-coordinate of the other point of intersection $(x_3, -y_3)$
+by substituting $Y = \lambda X + \mu$ into $E$. We find
+\[ E(X, \lambda X+\mu) = X^3 - \lambda^2 X^2 + a_1 X + a_0 = 0 \]
+for some $a_1, a_0 \in \Fq$, thus the sum of the roots
+$x_1 + x_2 + x_3 = \lambda^2$.
+
+This allows us to compute $x_3, y_3$. Explicitly we have for $P_1 \ne P_2$:
+
+\[
+\begin{array}{rcl}
+\lambda &\leftarrow& (y_2 - y_1)/(x_2 - x_1) \\
+x_3 &\leftarrow& \lambda^2 - x_1 - x_2 \\
+y_3 &\leftarrow& (x_1 - x_3) \lambda - y_1
+\end{array}
+\]
+and for $P_1 = P_2$:
+\[
+\begin{array}{rcl}
+\lambda &\leftarrow& (3x_1^2 + a)/(2y_1) \\
+x_3 &\leftarrow& \lambda^2 - 2x_1 \\
+y_3 &\leftarrow& (x_1 - x_3) \lambda - y_1
+\end{array}
+\]
+In practice the most expensive step is the division in the computation of
+$\lambda$.
 
 \section {Representing Points}
 
@@ -143,35 +282,8 @@ Projective coords. Mixin.
 
 optim for Space vs. time
 
-\section {Point Addition}
-
 \section {Point Multiplication}
 
 Preprocessing. Sliding Windows.
 
 \section {Finding Random Points}
-
-\section {Rational Functions}
-
-Consider the field $\Fqk(X,Y)_{E(X,Y)}$.
-
-\section {Curve Endomorphisms}
-
-Given a point $P$ and integer $m$ consider the \emph{multiplication by $m$ map}
-$[m]$ given by \[ P \mapsto m P . \]
-If $P$ is viewed as a pair of variables $(X,Y)$, this map
-can be written as $(f(X,Y), g(X,Y))$ for some rational functions $f,g$.
-
-This is an example of a \emph{curve endomorphism}, because points of
-$E(\Fqk)$ are mapped to points of $E(\Fqk)$. Another important example
-is the \emph{Frobenius map} $\Phi$, given by $(X, Y) \mapsto (X^q, Y^q)$.
-
-\begin{theorem}
-[Hasse]
-\[ \Phi \circ \Phi - [t] \circ \Phi + [q] = [0] \]
-\end{theorem}
-
-Since $E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r$ any curve endomorphism
-can be viewed as a $2\times2$ matrix when restricted to $E[r]$.
-
-TODO: eigenvalues of Phi

@@ -1,5 +1,7 @@
 \chapter{Curve Selection}
 
+TODO: do we need to define embedding degrees for subgroups?
+
 Let $E$ be an elliptic curve defined over a finite field $K$.
 Let $P \in E(K)$ be a point of prime order $r$. Let $G = \langle P \rangle$.
 
@@ -55,7 +57,7 @@ Now we have $\Phi(T) = T$, and also $T$ is not contained
 in $E(\mathbb{F}_q)$ by assumption.
 
 Hence $T$ is an eigenspace of $\Phi$, but not the $1$-eigenspace. Since the
-eigenvalues of $\Phi$ are $1$ and $q$, we see that $T$ must be the
+eigenvalues of $\Phi$ must be $1$ and $q$, we see that $T$ must be the
 $q$-eigenspace of $\Phi$ and hence
 \[
 \Phi^k(Q) = q^k Q = Q
@@ -76,7 +78,7 @@ The \emph{embedding degree} of $G$ is the smallest positive integer $k$
 such that $r \mid q^k - 1$.
 
 If $k$ is the smallest positive integer such that
-the order $r$ of any point $P \in E(K)$ satisfies $r | q^k - 1$
+$\#E(\Fq) | q^k - 1$
 then we say the embedding degree of the curve is $k$.
 \end{definition}
 
@@ -86,8 +88,14 @@ performing field arithmetic in $\mathbb{F}_{q^k}$.
 
 However, if the embedding degree $k$ is 1, the Tate pairing may
 be computable in $\mathbb{F}_q$, but the Weil pairing may not be.
-In practice this is not significant because we shall see we prefer
+Usually this is not significant because we shall see we prefer
 $k > 1$. However, the Tate pairing turns out to have other benefits.
+
+In practice, we construct a curve $E(\Fq)$ and find the smallest
+possible $k$ such that $\#E(\Fq) | q^k - 1$, that is the embedding degree
+of the curve is $k$. Then we take $r$ to be a large prime factor of
+$\#E(\Fq)$ so that $k$ is also the embedding degree of $E(\Fq)[r]$
+with high probability.
 
 For example, consider the curve $E: Y^2 = X^3 + X + 6$ which has
 18 points over $\mathbb{F}_{19}$.

@@ -1,5 +1,47 @@
 \chapter {The Tate Pairing}
 
+\section {Rational Functions}
+
+Consider the field $\Fqk(X,Y)_{E(X,Y)}$.
+
+\section {Curve Endomorphisms}
+
+Given a point $P$ and integer $m$ consider the \emph{multiplication by $m$ map}
+$[m]$ given by \[ P \mapsto m P . \]
+If $P$ is viewed as a pair of variables $(X,Y)$, this map
+can be written as $(f(X,Y), g(X,Y))$ for some rational functions $f,g$.
+
+This is an example of a \emph{curve endomorphism}, because points of
+$E(\Fqk)$ are mapped to points of $E(\Fqk)$. Another important example
+is the $q$th power \emph{Frobenius map} $\Phi$,
+given by $(X, Y) \mapsto (X^{q}, Y^{q})$. (In general one defines
+$q^k$th power Frobenius maps but we only define the $q$th power map,
+and if we need higher powers $k$ we shall write $\Phi^k$.)
+
+\begin{theorem}
+[Hasse]
+\[ \Phi^k \circ \Phi^k - [t] \circ \Phi^k + [q^k] = [0] \]
+where $t = q^k + 1 - \#E(\Fqk)$.
+\end{theorem}
+
+Since $E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r$ any curve endomorphism
+can be viewed as a $2\times 2$ matrix when restricted to $E[r]$.
+
+In particular for a prime $r$ dividing $\#E(\Fq)$ the eigenvalues
+of $\Phi$ are the solutions to $x^2 - t x + q \pmod{r}$.
+The polynomial factorizes as $(x - q)(x - 1)$ thus any eigenvalues
+must be $q$ or $1$. We can describe the corresponding eigenspaces.
+
+Clearly $E(\Fq)[r]$ is a $1$-eigenspace, hence if $E[r] \subset E(\Fq)$
+then $\Phi$ is simply the identity.
+
+Otherwise consider the set $G = \{P \mid \tr P = O \}$
+where the trace is defined by
+\[ \tr P = P + \Phi(P) + ... + \Phi^{k-1}(P)  .\]
+
+Then $G$ is group, and furthermore $\Phi(G) = G$ hence $G$ is an eigenspace.
+As it cannot be a $1$-eigenspace it must be a $q$-eigenspace.
+
 For this chapter we break with tradition and use multiplicative
 notation for divisors. In addition, we will omit an arbitrary
 number of poles or zeroes at $O$. This is not problematic because we
@@ -23,15 +65,15 @@ rather than parentheses.)
 On an elliptic curve, in our unorthodox notation:
 \begin{description}
 \item[Lines:]
-a line through the points $P, Q$ has divisor
-\[ (P)(Q)(-P-Q) . \]
+a line $L$ through the points $P, Q$ has divisor
+\[ (L) = (P)(Q)(-P-Q) . \]
 \item[Tangents:]
-when $Q = P$ we have a tangent line at $P$ with divisor
-\[ (P)^2 (-2P) . \]
+when $Q = P$ we have a tangent line $T$ at $P$ with divisor
+\[ (T) = (P)^2 (-2P) . \]
 \item[Verticals:]
-when $Q = -P$, we have a vertical line through the point $P$
-giving the divisor
-\[ (P)(-P) . \]
+when $Q = -P$, we have a vertical line $V$ through the point $P$
+with divisor
+\[ (V) = (P)(-P) . \]
 \end{description}
 
 There are advantages to using this notation. Using additive group
@@ -54,7 +96,8 @@ Earlier papers on pairing-based cryptosystems advocated the Weil pairing.
 We shall see that the related Tate pairing has more advantages.
 Nonetheless we first describe the Weil pairing (as used in cryptography)
 for historical reasons, and also because it is simpler thus
-serves well as an introduction.
+serves well as an introduction. The inputs to the Tate pairing are come
+from different groups, and the definition involves quotient groups.
 
 Let $E$ be an elliptic curve containing $n$ points over a field $\mathbb{F}_q$.
 Let $G$ be a cyclic subgroup of $E(\mathbb{F}_q)$ of order $r$ with $r, q$
@@ -154,6 +197,16 @@ The output of this pairing is some $x \in K^*$
 that represents the coset $x K^{*r}$. To standardize the coset
 representative, we exponentiate the output of the Tate pairing
 by $(q^k - 1) / r$.
+
+On the positive side, the second input to the Tate pairing is also a coset
+representative. This means it can be any point of $E(K)$ and may
+be of any order. (For example,
+if the order of a point $Q$ is not a mulitple of $r$ then $Q$ represents
+the coset $O + r E(K)$. Otherwise $Q$ represents some nonidentity
+element.)
+
+In contrast, when evaluating the Weil pairing we must ensure that the second
+input $Q$ satisfies $r Q = O$.
 
 \section {Miller's Algorithm}
 

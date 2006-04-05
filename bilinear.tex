@@ -57,6 +57,14 @@ $e(g,g) \ne 1$
 $e(g^a, g^b) = e(g,g)^{a b}$ for all $a, b \in \mathbb{Z}$
 \end{enumerate}
 
+Note a symmetric bilinear map is completely defined by the value it
+takes at $e(g,g)$. Thus there always exist $r$ bilinear maps: if
+$e(g,g)=1$ then we have the degenerate case and the other $r-1$ maps are
+equivalent up to a constant,
+in the sense that if $e_1(g,g) = g_1$ and $e_2(g,g) = g_2$
+then $e_2 = g_1^{-1} g_2 e_1$. The difficulty is in finding such a map
+that is efficiently computable.
+
 We can immediately see the power of such a map: given
 $g, g^x, g^y, g^z$, then by bilinearity and nondegeneracy,
 $z = x y$ if and only if

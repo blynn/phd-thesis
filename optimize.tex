@@ -14,9 +14,11 @@ For $a$ equal to small const,
 $aZ^2 =  Z^2 + ... + Z^2$ which is pretty cheap and
 do $(X-aZ^2)(X+aZ^2)$.
 
+We find when the embedding degree is greater than $1$ we may simplify
+the Tate pairing as follows \cite{barreto, barreto2}.
 \begin{theorem}
-Let $E$ be an elliptic curve over $\mathbb{F}_q$.
-Let $P \in E(\mathbb{F}_q)$ be a point of prime order $r$.
+Let $E$ be an elliptic curve over $\F_q$.
+Let $P \in E(\F_q)$ be a point of prime order $r$.
 Let $G = \langle P \rangle$, and let $k$ be the embedding degree of $G$.
 
 If $k > 1$ then
@@ -28,7 +30,7 @@ where $f_P$ is a function with divisor $r\langle P\rangle - r\langle O\rangle$.
 \end{theorem}
 
 \begin{proof}
-Choose any point $R \in E(\mathbb{F}_q)$ that is not one of
+Choose any point $R \in E(\F_q)$ that is not one of
 $O, -P, Q, -Q, Q - P$,
 and consider the function $f'_P$ that satisfies $(f'_P) = r\langle P+R\rangle
 - r\langle R \rangle$.
@@ -36,7 +38,7 @@ The Tate pairing can be computed by
 \[
 (f'_P(Q)/f'_P(O))^{(q^k-1)/r}
 \]
-We have $f'(O) \in \mathbb{F}_q^*$ since it does not have a zero or pole
+We have $f'(O) \in \F_q^*$ since it does not have a zero or pole
 at $O$. Hence
 $f'(O)^{(q^k-1)/r} = 1$ by Fermat's Little Theorem (we know $q-1$ must
 divide $(q^k - 1)/r$ since $r\nmid q-1$) thus
@@ -57,42 +59,66 @@ Hence
 \[e(P,Q) = f_P(Q)^{(q^k-1)/r} . \]
 \end{proof}
 
-\section {Twist Curves}
+TODO:
+(The proof of the above theorem is unclear in \cite{barreto}.
+It can be salvaged: $f(X) + Y g(x) / u(X) + Y v(X)$, must have $g = v = 0$
+since rational function agrees at $R, -R$. Then we have $f(x) / u(X)$
+which splits in some extension of $K$ and
+has divisor of the form $(\prod (P_i)(-P_i) / (Q_i)(-Q_i)$ which can
+never be $(P)^n$.
 
-Let $E : y^2 = x^3 + a x + b$ be an elliptic curve over $\mathbb{F}_q$,
+\section {Twist Curves and the Trace-Zero Group}
+
+Let $E : y^2 = x^3 + a x + b$ be an elliptic curve over $\F_q$,
 and $P$ be a point of prime order $r$.
 Suppose the embedding degree $k$ of $G = \langle P \rangle$ is even.
 
-Let $d = k / 2$. Let $v$ be a quadratic nonresidue in $\mathbb{F}_{q^d}$,
-so that $\mathbb{F}_{q^k} = \mathbb{F}_{q^d}[\sqrt{v}]$.
-Define $E'$ to be the curve $y^2 = x^3 + v^2 a x + v^3 b$. $E'$ is a twist
-of $E$.
+Let $d = k / 2$. Let $v$ be a quadratic nonresidue in $\F_{q^d}$,
+so that $\F_{q^k} = \F_{q^d}[\sqrt{v}]$.
+Let $E'$ be the twist of $E$ hence
+$E' : y^2 = x^3 + v^2 a x + v^3 b$.
 
-Define the map $\Psi:E'\rightarrow E(\mathbb{F}_q^k)$ by
+Define the map $\Psi:E'\rightarrow E(\F_q^k)$ by
 \[ \Psi(x,y) = (v^{-1}x, v^{-3/2}y) . \]
+
+\begin{theorem}
+Let $E : y^2 = x^3 + a x + b$ be an elliptic curve over $\Fq$,
+and $P$ be a point of prime order $r$.
+Suppose the embedding degree $k$ of $G = \langle P \rangle$ is even.
+Write $d = 2k$. Let $E'$ be the twist of $E$ in $\Fqd$.
+
+Then $r \mid \#E'(\Fqd)$.
+\end{theorem}
+
+\begin{proof}
+If $\#E(\F_{q^d} = q^d + 1 - c$ then
+\[ \#E'(\F_{q^d}) = q^d + 1 + c \]
+and
+\[ \#E(\F_{q^k}) = (q^{d} + 1 + c)(q^{d} + 1 - c) . \]
+The group $E(\F_{q^d})$ only contains $r$ points of $E[r]$ otherwise
+the embedding degree would be at most $d$, and similarly
+$E(\Fqk)$ contains all $r^2$ points of $E[r]$,
+hence
+\[ r \mid q^{d} + 1 + c = \#E(\Fqd) .\]
+\end{proof}
 
 Let $P$ be any point of order $r$ in $E(\Fq)$ and
 $Q'$ be any point whose order is a multiple of $r$ in $E'(\F_{q^d})$.
-In practice a randomly chosen point of $E'(\F_{q^d})$ is likely to work.
+In practice a randomly chosen point of $E'(\F_{q^d})$ will do.
 
-Let $G = \langle P \rangle, H = \langle \Psi(Q)\rangle$. The
-latter is a subgroup in $E'(\Fqk)$.
+Let $G = \langle P \rangle, H = \langle Q' + r E'(\Fqd) \rangle$.
+Note $H$ is a subgroup of $E'(\Fqd) / rE'(\Fqd)$.
 
-Let $e$ be the Tate pairing.
-Then $e$ is a bilinear map.
+Let $f$ be the Tate pairing.
+Then $e$ definied by
+\[e(P,Q') = f(P, \Psi(Q')) \]
+is a bilinear map.
 We may subsitute the Weil pairing if additionally
-$Q$ is a point of order $r$ not in $G$.
-
-(Recall if $\#E(\mathbb{F}_{q^d} = q^d + 1 - c$ then
-$\#E'(\mathbb{F}_{q^d}) = q^d + 1 + c$ and
-$\#E(\mathbb{F}_{q^k}) = (q^{d} + 1 + c)(q^{d} + 1 - c)$.
-$E(\mathbb{F}_{q^d})$ does not contain $E[r]$ otherwise the embedding
-degree would be at most $d$, so $r \mid q^{d} + 1 + c$ and
-there exist order $r$ points in $E'(\mathbb{F}_{q^d})$.)
+$r Q' = O$.
 
 In practical terms, this means most operations are performed in
-$\mathbb{F}_{q^d}$  or $\mathbb{F}_q$. The $\Psi$ map and
-other computations ain $\Fqk$ are only performed
+$\F_{q^d}$  or $\F_q$. The $\Psi$ map and
+other computations in $\Fqk$ are only performed
 when a pairing is being evaluated.
 
 We may view this trick as a
@@ -109,14 +135,81 @@ a symmetric pairing, then although most computations can still be done
 in $\Fq$, we cannot employ the optimization of the next section. For
 many applications symmetry is not important, and efficiency is more important.
 
-TODO: also don't have asymmetric pairing. need general bilinear map defn.
-or do we?
+We can say more about this particular group selection.
+
+\begin{theorem}
+Let $E : y^2 = x^3 + a x + b$ be an elliptic curve over $\F_q$,
+and $P$ be a point of prime order $r$.
+Suppose the embedding degree $k$ of $G = \langle P \rangle$ is even.
+Then write $d = k / 2$. Let $v$ be a quadratic nonresidue in $\F_{q^d}$,
+Let $E'$ be given by $y^2 = x^3 + v^2 a x + v^3 b$.
+Define the map $\Psi:E'\rightarrow E(\F_q^k)$ by
+\[ \Psi(x,y) = (v^{-1}x, v^{-3/2}y) . \]
+
+Then $\Psi(E'(\F_{q^d})[r])$ is precisely the subgroup of trace zero points
+in $E(\Fqk)[r]$.
+\end{theorem}
+
+\begin{proof}
+Given $Q' = (X,Y) \in E'(\F_{q^d})$ we have $\Psi(Q') = (a, b)$
+where $a \in \F_{q^d}$, and $b$ has the form $b = c \sqrt{v}$ for some
+$c \in \F_{q^d}$.
+
+Now $\Phi_d(\sqrt{v}) = -\sqrt{v}$ (by direct verification and using
+$v^{(q^d - 1)/2} = -1$ since $v$ is a quadratic nonresidue, or
+from Galois theory: $\sqrt{v}$ must
+be mapped to some other root of its minimal polynomial as $\Phi_d$ fixes
+$\F_{q^d}$ but not $\F_{q^k}$).
+Thus $\Phi^d(a) = a$ and $\Phi^d(b) = -b$, whence
+
+\[ \Phi^d(\Psi(Q')) = \Phi^d(a,b) = (a, -b) = -\Psi(Q') \]
+
+But it can be easily checked that
+any point $Q \in E(\Fqk)$ satisfying $\Phi^d(Q) = -Q$ also satisfies
+$\tr Q = O$, hence $\Psi(Q')$ is a point of trace zero.
+
+Conversely, suppose $Q$ is a point of trace zero in $E(\Fqk)[r]$.
+We have previously seen this implies $\Phi(Q) = q Q$,
+thus $\Phi^d(Q) = q^d Q$.
+
+Since $q^k = 1 \bmod r$, we have $q^d = -1 \bmod r$ (we cannot
+have $q^d = 1 \bmod r$ since $k > d$ is the embedding degree).
+Hence $\Phi^d(Q) = -Q$.
+
+If we write $Q=(a,b)$ then this implies $a \in \F_{q^d}$ and $b = c \sqrt{v}$
+for some $c \in \F_{q^d}$, thus $\Psi^{-1}(Q)$ lies on $E'(\F_{q^d}$.
+
+Alternatively we may employ a counting argument to show the converse,
+as there are exactly
+$r$ points in $E'(\F_{q^d})[r]$ and exactly $r$ points in $E(\Fqk)[r]$ of trace
+zero.)
+\end{proof}
+
+One consequence of this is that the asymmetric bilinear pairing defintion
+cannot be used. Recall this requires an efficiently
+computable bilinear nondegenerate map
+\[
+e:G_1 \times G_2 \rightarrow G_T
+\]
+along with an efficiently computable group isomorphism
+$\phi : G_2 \rightarrow G_1$.
+
+For a randomly chosen $Q$ in $E(\Fqk)[r]$ we have $\tr Q \ne O$ with
+overwhelming probability, and one can take $\phi$ to be the trace map
+as an efficiently computable isomorphism between $\langle Q \rangle$
+and $E(\Fq)[r]$.
+
+However, as we are picking $Q$ to be a point of trace zero, this choice
+of $\phi$ no longer applies, thus we must use the more general definition
+of a bilinear pairing.
+
+TODO: Mike's even degree polynomial recommendation?
 
 \section {Denominator Elimination}
 
 We use the same notation and assumptions as the previous section.
 In other words, again let $E : y^2 = x^3 + a x + b$ be an elliptic curve
-over $\mathbb{F}_q$,
+over $\F_q$,
 and $P$ be a point of prime order $r$.
 Suppose the embedding degree $k$ of $G = \langle P \rangle$ is even
 and write $k = 2d$.
