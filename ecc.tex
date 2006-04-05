@@ -58,7 +58,15 @@ Define $t_n$ recursively by
 \[ t_n = t_1 t_{n-1} - q t_{n-2} .\]
 Then $\#E(\Fqk) = q^k + 1 - t_k$.
 
-TODO: twist
+\section {Twisting Curves}
+
+Let $E$ be an elliptic curve $Y^2 = X^3 + a X + b$ in $\Fq$,
+let $v$ be a quadratic nonresidue in $\Fq$. Consider the
+curve $E'$ given by $Y^2 = X^3 + a v^2 X + v^3 b$.
+
+Let $t = q + 1 - \#E(\Fq)$.
+Then $\#E'(\Fq) = q + 1 + t$.
+
 
 \section {The Chord-Tangent Composition Law}
 
@@ -116,7 +124,8 @@ $r$-torsion points of $E$. It can be shown that
 
 When $r=2$ this is easy to see: a point has order 2 if and only if it has
 a zero $y$-coordinate. As $E$ is nonsingular
-$x^3 + ax + b = 0$ has three distinct solutions, thus there are always
+$x^3 + ax + b = 0$ has three distinct solutions, thus we can always find
+some field $\Fqk$ where $E$ has
 four points of order 2: the point $O$ and three points of the form
 $(\alpha, 0)$ where $\alpha$ is a root of the cubic.
 
