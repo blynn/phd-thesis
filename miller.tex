@@ -2,7 +2,24 @@
 
 \section {Rational Functions}
 
-Consider the field $\Fqk(X,Y)_{E(X,Y)}$.
+We denote the ring of polynomials in two variables $X,Y$
+with coefficients in $\Fqk$ by $\Fqk[X,Y]$. 
+
+Let $E$ be an elliptic curve $Y^2 = X^3 + aX + b$ over $\Fqk$.
+It can be shown that a polynomial $f$ satisfies $f(X,Y) = 0$
+whenever $E(X,Y) = 0$ if and only if $f(X,Y)$ is a multiple of $E(X,Y)$.
+
+Thus define $\Fqk[E] = \Fqk[X,Y]_{E(X,Y)}$. In other words we look at all
+possible polynomials and consider two of them to be
+equivalent if they take the same values on all points of $E$.
+Every element $f(X,Y)$ in $\Fqk[E]$ can be written in the form
+$f_x(X) + Y f_y(X)$ for polynomials $f_x, f_y \in \Fqk[X]$ because
+we may replace $Y^2$ by $X^3 + aX + b$.
+
+Define $\Fqk(E)$ to be the field of fractions of $\Fqk[E]$.
+That is, elements of $\Fqk(E)$ can be written in the form
+$f(X,Y) / g(X,Y)$ where $f, g$ are polynomials in two variables $X, Y$
+and $g$ is not a multiple of $E$.
 
 \section {Curve Endomorphisms}
 
@@ -42,18 +59,80 @@ where the trace is defined by
 Then $G$ is group, and furthermore $\Phi(G) = G$ hence $G$ is an eigenspace.
 As it cannot be a $1$-eigenspace it must be a $q$-eigenspace.
 
+\section {Zeroes and Poles}
+
+when we study a polynomial $f(X)$, the roots of $f(X)$ play an important
+role. For example, if the roots are $\alpha_1,...,\alpha_n$ we may
+instantly write down a polynomial with those roots, unique up to a constant:
+$(X-\alpha_1)...(X-\alpha_n)$. Then when considering the quotient of
+two polynomials $f(X)/g(X)$, we see the zeroes are the roots of $f$ and
+the poles are the roots of $g$.
+
+One way to view roots is to view them as places where the curve $Y = f(X)$
+intersects with the curve $Y = 0$. we now generalize to elliptic curves.
+
+When studying an element $f(X,Y) \in \Fqk[E]$, we take note of points of
+intersection between $f(X,Y)$ and $E$.
+We call these points of intersection \emph{zeroes} of $f$.
+
+For example, consider the case $f(X,Y) = X-x$ for some $x\in\Fqk$.
+Then $X-x$ intersects $E$ at one, two, or zero places depending
+on whether $x^3 + a x + b$ is nonzero, and if so, whether it is a quadratic
+residue or not.
+We immediately see that zeroes in this case are harder to work with than
+zeroes of a polynomial: given a polynomial $X - x$ we instantly know it has
+exactly one root $x$, while for elliptic curves, it may have 0,1, or 2
+zeroes.
+
+There are further complications. When $X - x$ intersects $E$ at one point,
+it is analogous to a repeated root of a polynomial: it is in
+fact a zero of multiplicity 2. The point at infinity also needs to be
+considered. It turns out that, roughly speaking, any equation of a line
+has a pole of mulitplicity 3 at $O$, but since $X - x$ passes through $O$,
+$X-x$ has a pole of multiplicity 2 at $O$.
+
+Recall An element of $\Fqk(E)$ can be written as $f(X,Y)/g(X,Y)$.
+In this case the zeroes are the zeroes of $f$ and the poles of $g$,
+and the poles are the poles of $f$ and the zeroes of $g$.
+
+Note that knowing the zeroes and poles of the quotient of two
+polynomial $f(X)/g(X)$ allows us to write down $f(X)/g(X)$ (up to multiplcation
+by a constant factor). Suppose the zeroes and poles are $\alpha_1,...,\alpha_n$
+with mulitplicites $a_1,...,a_n$ where $\alpha_i$ is a zero of multiplcity
+$a_i$ if $a_i > 0$, and otherwise a pole of multiplicity $-a_i$. Then
+we may write
+
+\[ f(X)/g(X) = (X-\alpha_i)^{a_i} \]
+
+It turns out knowing the zeroes and poles of
+a rational function on $E$ also allows us to write it down,
+up to multiplication by a constant. We also build up the function by
+multiplying together equations of lines. However, we will need more than
+just vertical lines.
+
+\section {Divisors}
+
+The standard way to notate zeroes and poles and their multiplicities
+is to use divisors.
+If we wish to record zeroes and poles $P_1,...,P_n$
+of orders $a_1,...,a_n$ (where $P_i$ is a zero of order
+$a_i$ if $a_i > 0$ and is a pole of order $-a_i$ otherwise), then
+we may write:
+\[ D = a_1\langle P_1\rangle + ... + a_n \langle P_n\rangle .\]
+
+With this notation, if we add the divisors of two functions together,
+then the resulting divisor reflects the zeroes and poles of the product
+of the two functions.
+
 For this chapter we break with tradition and use multiplicative
-notation for divisors. In addition, we will omit an arbitrary
+notation for divisors instead. In addition, we will omit an arbitrary
 number of poles or zeroes at $O$. This is not problematic because we
 will always be discussing principal divisors, thus the true multiplicity
 of $O$ can be computed from the multiplicities at the finite points.
 
-\section {Divisors}
-
-Let $D$ be divisor with zeroes and poles $P_1,...,P_n$ of mulitplicities
-$a_1,...,a_n$. Rather than write
-\[ D = a_1\langle P_1\rangle + ... + a_n \langle P_n\rangle \]
-we shall write $D$ as
+Let $D$ be the divisor with zeroes and poles $P_1,...,P_n$
+of mulitplicities $a_1,...,a_n$.
+We shall write $D$ as
 \[ D = (P_1)^{a_1} ... (P_n)^{a_n} . \]
 Furthermore if $D$ is a principal divisor, we will
 omit as many $(O)$ terms as we like, as its real order
@@ -86,8 +165,8 @@ Leaving out as many $(O)$ terms as we choose allows us to focus less on
 bookkeeping and more on the task at hand.
 The correct multiplicity of $(O)$ can always be determined later.
 
-Given a rational function $f$,
-$(f)$ denotes the divisor of $f$, thus in our notation
+We use
+$(f)$ to denote the divisor of $f$, thus in our notation
 for any rational functions $f, g$ we have $(f)(g) = (f g)$.
 
 \section {The Weil Pairing}
@@ -298,8 +377,11 @@ For $i \leftarrow t-1, ..., 0$ do
 After the algorithm terminates we have $x = f_r(Q)$ (and $Z = rP = O$).
 
 There are complications however. The intermediate functions have zeroes
-and poles that eventually cancel out, but during the computation
-attempting to evaluate a function at a zero or pole will cause problems.
+and poles that eventually cancel out. If we could derive algebraic expressions
+for the rational function then we could manipulate them to remove these
+zeroes and poles. But since we are evaluating the function as we go,
+we cannot do this, and attempting to evaluate a function at a zero
+or pole will cause problems.
 
 Recall in our defintion of the Tate pairing we get to pick a point $R$.
 Then we choose $R$ so that $Q+R$ and $R$ are never zeroes or poles

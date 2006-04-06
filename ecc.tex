@@ -1,5 +1,10 @@
 \chapter {Elliptic Curves}
 We review some basic facts about elliptic curves.
+By the end of this chapter we will have covered enough theory to implement
+standard elliptic curve cryptography except for the problem of generating
+suitable elliptic curves.
+We discuss pairings in the following chapter, and describe algorithms
+to find curve equations in the chapter after that.
 
 Let $\Fq$ be a field for some prime $q > 3$.
 Unless otherwise specified we shall always
@@ -121,7 +126,6 @@ $a = 1$ or $a = -3 d^2$ for some small integer $d$
 \section {The Chord-Tangent Law of Composition}
 
 We define an operation $+$ on $E(\Fqk)$.
-
 Let $P = (a,b), Q = (c,d) \in E(\Fqk)$ be finite points.
 
 If $P \ne Q$, then it is not hard to show that if $a \ne c$
@@ -161,7 +165,21 @@ and furthermore these isomorphisms are efficiently computable in either
 direction.
 (The latter case is not useful as discrete log is easy in $K^+$.)
 
-TODO: example?
+For example, consider the curve
+\[ E : y^2 = x^3 + x^2 \]
+This has a singular point at $(0,0)$. Then the other solutions to
+this curve (including the point at infinity) form a group
+$E_{ns}(\Fqk)$ for any finite field $\Fqk$.
+
+Furthermore, there is an isomorphism $E_{ns}(\Fqk) \rightarrow \Fqk^*$
+given by
+\[ (x,y) \mapsto \frac{y-x}{y+x} \]
+(and maps $O$ to $1$)
+which is efficienty computable in either direction.
+A little algebra
+shows the reverse map is
+\[ z \mapsto \left( x', \frac{1+z}{1-z} x' \right) \]
+where $x' = 4z/(1-z)^2$ for $z \ne 1$, and $1 \mapsto O$.
 
 Thus cryptography in finite fields can be viewed as a special
 case of elliptic curve cryptography, and strictly speaking,
@@ -182,7 +200,9 @@ Then we must have $r \mid \#E(\Fq)$.
 If $r^2 \nmid \#E(\Fq)$ then any random point $P' \in E(\Fq)$
 of order $P$ must lie in the group $G = \langle P \rangle$.
 Thus discrete log cryptosystems can easily be ported from finite fields
-to a group $\langle P \rangle$.
+to a group $\langle P \rangle$: instead of using a subgroup of order
+$r$ in $K^*$ for some finite field $K$,
+we find a subgroup of points of order $r$ in some elliptic curve.
 
 Originally, this was the only goal of elliptic curve cryptography:
 researchers focused on finding curves with groups with
@@ -197,8 +217,8 @@ $E(\Fqk)$ contains $r^2$ points $P$ satisfying $r P = O$,
 and there are no other points with this property even if larger field
 extensions are considered.
 
-Denote the set of these points by $E[r]$. They are sometimes called the
-$r$-torsion points of $E$. It can be shown that
+Denote the set of these points by $E[r]$, sometimes called the
+\emph{$r$-torsion points} of $E$. It can be shown that
 
 \[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r \]
 
@@ -276,14 +296,78 @@ y_3 &\leftarrow& (x_1 - x_3) \lambda - y_1
 In practice the most expensive step is the division in the computation of
 $\lambda$.
 
+The expressions for the lines $L,T,V$ will be used later in the computation
+of a pairing.
+
 \section {Representing Points}
 
-Projective coords. Mixin.
+Instead of using a pair of numbers to represent a point,
+we can use Jacobian projective coordinates: the triplet
+$(x,y,z)$ represents the point $(x/z^2, y/z^3)$.
 
-optim for Space vs. time
+Then to double the point $(x,y,z)$, we compute $(x_3, y_3, z_3)$ by:
+
+\[
+\begin{array}{rcl}
+\lambda_1 & \leftarrow & 3x^2 + a z^4 \\
+z_3 & \leftarrow & 2yz \\
+\lambda_2 & \leftarrow & 4xy^2 \\
+x_3 & \leftarrow & \lambda_2^2 - 2 \lambda_2 \\
+\lambda_3 & \leftarrow & 8 y^4 \\
+y_3 & \leftarrow & \lambda_1(\lambda_2 - x_3) - \lambda_3
+\end{array}
+\]
+
+We see the computation of $3x^2 + a z^4$ in general costs $3S + 1M$
+where $M$ and $S$ denote the time required for a multiplication and
+a squaring respectively. (We consider multiplication by
+a small constant to be negligible.)
+
+For $a=0$ tthe cost is only $1S$.
+
+For small $a$ or fairly small $a$ with low Hamming weight the cost is $3S$.
+
+For $a=-3$ we may compute $\lambda_1 = 3(x+z^2)(x-z^2)$ which costs
+$1M + 1S$.
+
+For $a = -3 d^2$ where $d$ is small or fairly small with low Hamming weight,
+we may compute $\lambda_1 = 3(x+dz^2)(x-dz^2)$ which also costs $1M + 1S$.
+By transforming the curve using the procedure mentioned in the first section,
+we can always obtain an $a$ that is faster than the general case.
+
+We omit the formulas for projective point addition, and for adding
+an affine point to a projective point, referring the reader instead
+to Blake et al. or Cohen et al. \cite{stuff}.
+The latter investigate other kinds of projective coordinates, where point
+doubling or multiplication is even faster.
+
+We can optimize point representations for space instead of time.
+Given $x$, we can solve $Y^2 = x^3 + ax + b$ for $Y$, thus
+a point $(x,y)$ can be represented by $x$ along with a single bit indicating
+which solution of $y$ to take. We discuss how to find square roots later.
+
+Alternatively, for some cases we can simply use $x$ alone. For example,
+suppose Alice needs to send Bob a point in some cryptosystem. She sends
+Bob $x$, who guesses the solution $y$. Bob attempts to proceed normally.
+If the protocol fails (e.g. the signature does not verify) then Bob tries
+$-y$ and tries again. This does not cost much more since the solutions are
+related by negation, and we will see that in some pairing-based systems
+one can check both possibilities at the same time.
+
+(Of course we can take this principle further. If every bit matters, Alice can
+omit $k$ bits of $x$, and leave Bob to try all $2^k$ possibilities.)
 
 \section {Point Multiplication}
 
-Preprocessing. Sliding Windows.
+Preprocessing. Sliding Windows. Multiexp.
+
+Not so useful for us, but maybe in $G_2$? look into this!
+
+Ciet Lange Sica Quisquater
+
+Cohen Miyaji Ono
 
 \section {Finding Random Points}
+
+Cantor-Zassenhaus.
+Bernstein.

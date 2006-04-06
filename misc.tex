@@ -23,7 +23,30 @@ More generally, for low degree extensions (e.g. 3, 6),
 hand-coded generalized Karatsuba multiplication algorithms \cite{wpkaratsuba}
 will improve running times.
 
-\section{Finding a Root of the Hilbert Polynomial}
+\section{Finding a Root of a Polynomial}
 
-As we only want a single root, we may skip many
-steps in the Cantor-Zassenhaus method.
+When computing parameters for curves using the CM method, we
+need to find a root of a Hilbert polynomial modulo a prime.
+As we only want a single root, we may use the Cantor-Zassenhaus
+method and skip many steps. For example, we do not care about
+the multiplicity of the factors or factors of degree higher than 1.
+Thus we may do the folliowing to find a root of a
+degree $n$ polynomial $f(x)$ in
+$\F_q$.
+
+\begin{enumerate}
+\item
+Compute $g(x) = \gcd(x^q - x, f(x))$.
+\item
+If $\deg g = 1$ then output the root and stop.
+\item
+Pick a random $r \in \Fq$. If $r$ is a root then stop.
+\item
+Compute $s(x) = (x-r)^{(q-1)/2} \bmod g(x)$.
+\item
+Compute $g'(x) = \gcd(s(x)+1, g(x))$. This is a proper factor of $g$
+with probability $1 - 2^{n-1}$. So if $g'(x) \ne 1$ set $g = g'$ and
+goto step 2.
+\item
+Goto step 3.
+\end{enumerate}

@@ -5,15 +5,6 @@ For faster pairings, it is desirable to choose $r$ so that repeated squaring
 algorithms can be optimized: e.g. choose $r$ to have a low Hamming weight,
 or to be a Solinas number (i.e. $r$ has the form $2^a \pm 2^b \pm 1$).
 
-TODO: My trick:
-The curve $E$ should be transformed (using twist-like trick)
-to the form $y^2 = x^3 - 3 a^2 x + b$ for some small $a$.
-For some curves $a = 0$, and this speeds things up (proj double)
-Otherwise ideally $a = 1$, diff. of two squares.
-For $a$ equal to small const,
-$aZ^2 =  Z^2 + ... + Z^2$ which is pretty cheap and
-do $(X-aZ^2)(X+aZ^2)$.
-
 We find when the embedding degree is greater than $1$ we may simplify
 the Tate pairing as follows \cite{barreto, barreto2}.
 \begin{theorem}

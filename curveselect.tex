@@ -210,6 +210,11 @@ If the signature still does not verify then reject it.
 
 Thus signatures are roughly 160 bits in length.
 
+Verification of the signature involves computing $e(P, Q)$ for some points
+$P, Q$. By the bilinearity of the pairing, if we have guessed the point $Q$
+wrongly, we can obtain the value of $e(P,-Q) = e(P,Q)^{-1}$ by performing
+an inversion rather than recompute another pairing.
+
 Later we will see we can do better than this, and in effect check both
 cases at once.
 
