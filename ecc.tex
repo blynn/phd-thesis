@@ -19,9 +19,9 @@ $E$ is \emph{singular} if $\Delta = 0$ (so the cubic has distinct solutions),
 and \emph{nonsingular} otherwise.
 
 Unless otherwise stated we always consider nonsingular elliptic curves.
-Note: later we will examine the confusingly named \emph{supersingular} curves,
-which are a particular kind of nonsingular curves (and are \emph{not} singular).
-The antonym of supersingular is \emph{ordinary} or \emph{nonsupersingular}.
+(Later we will examine \emph{supersingular} curves which are a
+particular kind of nonsingular curves and are \emph{not} singular.
+The antonym of supersingular is \emph{ordinary} or \emph{nonsupersingular}.)
 
 For every curve, there is a special point $O$, sometimes denoted $\infty$,
 called the \emph{point at infinity}
@@ -47,6 +47,7 @@ Then $|t| \le 2\sqrt{q^k}$.
 
 Thus the number of points on an elliptic curve in a given field
 is on the same order as the size of the field.
+The quantity $t$ is called the \emph{trace of Frobenius}.
 
 \begin{theorem}
 [Weil] Let $t = q + 1 - \#E(\Fq)$
@@ -62,6 +63,25 @@ Let $t_1 = q + 1 - \#E(\Fq)$.
 Define $t_n$ recursively by
 \[ t_n = t_1 t_{n-1} - q t_{n-2} .\]
 Then $\#E(\Fqk) = q^k + 1 - t_k$.
+
+For example, consider the curve E\cite{bk} given by
+\[ Y^2 = X^3 + X + 6 \]
+over $\F_{19}$. There are 18 points
+\[
+\begin{array}{llllll}
+(0,5), & (4,6), & (2,4), & (3,6), & (14,3), & (12,13), \\
+(18,2), & (10,3), & (6,0), & (10,16), & (18, 17), & (12,6), \\
+(14,16), & (3,13), & (2,15), & (4,13), & (0,14), & O
+\end{array}
+\]
+thus the trace of Frobenius $t = 2$.
+
+Over $\F_{{19}^2}$, we have
+\[
+\#E(\F_{{19}^2}) = 19^2 + 1 - t_2
+\]
+where $t_2 = 2\cdot 2 - 19 \cdot 2 = -34$, thus
+$\#E(\F_{{19}^2}) = 396$.
 
 \section {Twisting Curves}
 
@@ -125,6 +145,8 @@ $a = 1$ or $a = -3 d^2$ for some small integer $d$
 
 \section {The Chord-Tangent Law of Composition}
 
+TODO: pictures
+
 We define an operation $+$ on $E(\Fqk)$.
 Let $P = (a,b), Q = (c,d) \in E(\Fqk)$ be finite points.
 
@@ -146,11 +168,23 @@ This operation turns $E(\Fqk)$ into a group.
 The point $O$ is the identity, and the inverse
 of a point $P = (x,y)$ is the point $-P = (x,-y)$.
 
+As usual, for an integer $n$ define $0 P = O$, $1 P = P$,
+$n P = (n-1)P + P$ for $n > 1$ and $n P = -(-n)P$ for $n < 0$.
+
 The previous chapter used mulitplicative group notation to emphasize
 the connection
 between discrete log cryptosystems and pairing-based cryptosystems.
 Traditionally one uses additive group notation for the elliptic curve group
-(since the group is Abelian), and we will adhere to that convention.
+(since the group is Abelian), and we will adhere to this convention in this
+section.
+Cryptographers sometimes employ multiplicative notation instead,
+in order to stress the similarities between the elliptic curve group and
+the multiplicative group of a finite field.
+
+For the curve $Y^2 = X^3 + X + 6$ over $\F_{19}$,
+it can be verified for instance that
+$(0, 5) + (0, 5) = (4, 6)$,
+and $(0, 5) + (2, 15) = (4, 13)$.
 
 \section {Singular Elliptic Curves}
 

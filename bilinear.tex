@@ -25,12 +25,20 @@ They take two group elements as input and output an element of another cyclic
 group also of order $r$.
 
 Once armed with bilinear maps, we can construct many new cryptosystems
-that would not otherwise exist. Possibly the most famous example is a
-practical identity-based encryption scheme \cite{bf}.
-Researchers were unable to build such a cryptosystem by
+that would not otherwise exist. One example is a
+identity-based encryption.
+Propsed in 1984 \cite{shamir1984},
+researchers were unable to build such a cryptosystem by
 conventional means for approximately
-twenty years since the problem was posed, though we note that a
-scheme based on quadratic residues has been proposed \cite{cocks01}.
+twenty years. 
+With bilinear maps, a relatively straightforward scheme
+was found \cite{bf}. With a little more work, identity-based schemes
+with additional useful properties (such as authenticated or hierarchical
+identity-based encryption) can be constructed.
+
+We note that a
+scheme based on quadratic residues that does not require bilinear maps
+has since been discovered \cite{cocks01}.
 
 Bilinear pairings made their debut in cryptography in the 1990s \cite{mov,fr,fmr},
 and were used to break cryptosystems. They were first considered for
