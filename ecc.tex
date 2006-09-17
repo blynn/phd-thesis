@@ -10,8 +10,7 @@ Let $\Fq$ be a field for some prime $q > 3$.
 Unless otherwise specified we shall always
 define curves over a field of prime order and of characteristic greater
 than three.
-
-An elliptic curve $E$ is an equation of the form
+An elliptic curve $E$ over such a field $\Fq$ is an equation of the form
 \[ E: Y^2 = X^3 + a X + b \]
 where $a, b \in \Fq$.
 Let $\Delta = 4 a^3 + 27b^2$ (the discriminant of the cubic in $x$). Then
@@ -87,13 +86,15 @@ $\#E(\F_{{19}^2}) = 396$.
 
 Let $E$ be an elliptic curve $Y^2 = X^3 + a X + b$ in $\Fq$ where
 $q$ is a prime power.
-Let $v$ be a quadratic nonresidue in $\Fq$. Consider the
-\emph{twist} of $E$: the curve $E'$ defined by $Y^2 = X^3 + a v^2 X + v^3 b$.
+Let $v$ be a quadratic nonresidue in $\Fq$.
+Consider
+the curve $E'$ given by $Y^2 = X^3 + a v^2 X + v^3 b$,
+which we call the (quadratic) \emph{twist} of the curve $E$.
 
 Let $g(X) = X^3 + a X + b$, and $h(X) = X^3 + a v^2 X + v^3 b$.
 Note $h(X) = v^3 g(Xv^{-1})$.
 
-We consider three cases.
+There are three cases.
 
 \begin{enumerate}
 \item
@@ -111,7 +112,7 @@ $Y^2 = g(xv^{-1})$ has no solutions and
 and $Y^2 = h(x)$ has exactly two solutions.
 \end{enumerate}
 
-Thus as $x$ runs through all the elements of $\Fq$, so does $xv^{-1}$,
+As $x$ runs through all the elements of $\Fq$, so does $xv^{-1}$,
 and we see that total number of solutions to either equation $E$ and $E'$
 over $\Fq$ is $2q$.
 Since $O$ is always a solution of any elliptic curve we have
@@ -125,18 +126,32 @@ given by
 
 \[ \Psi(x,y) = (c^2 x,c^3 y) \]
 
-hence in some sense $E$ and $E'$ are the same curve. (For a quadratic
-nonresidue $v$, $c$ exists in $\F_{q^2}$ and we have a map between
-$E'(\F_{q^2})$ and $E(\F_{q^2})$.)
+hence in some sense $E$ and $E'$ are the same curve, so the choice of
+quadratic nonresidue $v$ does not matter as they all lead to the same twist.
 
-In practice, we use this fact to change the equation of a given elliptic
+Note a quadratic
+nonresidue $v$ becomes a quadratic residue in $\F_{q^2}$ (that is, we
+can find a square root $c$ of $v$)
+and we have a map between
+$E'(\F_{q^2})$ and $E(\F_{q^2})$. Roughly speaking, curves that are twists
+of each other become the same curve when considered in a quadratic extension
+of the field they are defined in.
+
+For example, since $2$ is a quadratic nonresidue in $\F_{19}$,
+the curve $E : Y^2 = X^3 + X + 6$ (over $\F_{19}$) has the
+twist $E': Y^2 = X^3 + 4 X + 10$, and $E'(\F_{19})$ contains 22 points.
+
+In $\F_{19^2}$, both $E$ and $E'$ contain 396 points, and we can map
+points of $E'$ to points of $E$ via $(x,y) \rightarrow (2 x, 2\sqrt{2} y)$.
+
+We can use quadratic residues to transform the equation of a given elliptic
 curve $E$ into a form that allows certain optimizations.
 It turns out that ideally we would like $a = 0$ to reduce the amount of
 operations needed to compute on an elliptic curve, but for a general curve
 this can never the case. We shall see it is good to have $a = -3$.
 
 Then from above, a curve $Y^2 = X^3 + aX + b$ can be transformed into
-one of the form $Y^2 = X^3 - 3X + b$ if we can find $c\in \Fq$
+one of the form $Y^2 = X^3 - 3X + b'$ if we can find $c\in \Fq$
 satisfying $a c^4 = -3$.
 
 This is not always possible, so a compromise is to have
@@ -177,8 +192,9 @@ between discrete log cryptosystems and pairing-based cryptosystems.
 Traditionally one uses additive group notation for the elliptic curve group
 (since the group is Abelian), and we will adhere to this convention in this
 section.
-Cryptographers sometimes employ multiplicative notation instead,
-in order to stress the similarities between the elliptic curve group and
+Cryptographers sometimes employ multiplicative notation instead (as we have
+in the first chapter),
+because elliptic curve groups are often used exactly where one would use
 the multiplicative group of a finite field.
 
 For the curve $Y^2 = X^3 + X + 6$ over $\F_{19}$,
@@ -186,12 +202,11 @@ it can be verified for instance that
 $(0, 5) + (0, 5) = (4, 6)$,
 and $(0, 5) + (2, 15) = (4, 13)$.
 
-\section {Singular Elliptic Curves}
+\section {Singular Elliptic Curves and Conventional Cryptography}
 
-We do not discuss cryptography using
-singular elliptic curves, because it turns out this
-is equvialent to conventional cryptography.
-It can be shown that the set $E_{ns}$ nonsingular points (which is all but
+We note that using singular elliptic curves
+is equivalent to conventional cryptography.
+It can be shown that the set $E_{ns}$ nonsingular points (all but
 one) of a singular ellitpic curve over a field $K$
 also form a group under the chord-tangent law,
 and either $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite{prop2.5silverman},
@@ -366,7 +381,9 @@ $1M + 1S$.
 
 For $a = -3 d^2$ where $d$ is small or fairly small with low Hamming weight,
 we may compute $\lambda_1 = 3(x+dz^2)(x-dz^2)$ which also costs $1M + 1S$.
-By transforming the curve using the procedure mentioned in the first section,
+By transforming the curve using the procedure mentioned in the section on
+twist curves (i.e. twisting curves, but using quadratic residues instead
+of nonresidues so that the resulting curve is isomorphic to the original),
 we can always obtain an $a$ that is faster than the general case.
 
 We omit the formulas for projective point addition, and for adding

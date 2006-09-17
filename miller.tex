@@ -6,6 +6,7 @@ We denote the ring of polynomials in two variables $X,Y$
 with coefficients in $\Fqk$ by $\Fqk[X,Y]$. 
 
 Let $E$ be an elliptic curve $Y^2 = X^3 + aX + b$ over $\Fqk$.
+Write $E(X,Y)$ for the polynomial $Y^2 - X^3 - aX - b$.
 It can be shown that a polynomial $f$ satisfies $f(X,Y) = 0$
 whenever $E(X,Y) = 0$ if and only if $f(X,Y)$ is a multiple of $E(X,Y)$.
 
@@ -69,7 +70,8 @@ two polynomials $f(X)/g(X)$, we see the zeroes are the roots of $f$ and
 the poles are the roots of $g$.
 
 One way to view roots is to view them as places where the curve $Y = f(X)$
-intersects with the curve $Y = 0$. we now generalize to elliptic curves.
+intersects with the curve $Y = 0$. We now generalize by replacing $Y=0$
+with an elliptic curve.
 
 When studying an element $f(X,Y) \in \Fqk[E]$, we take note of points of
 intersection between $f(X,Y)$ and $E$.
@@ -80,7 +82,7 @@ Then $X-x$ intersects $E$ at one, two, or zero places depending
 on whether $x^3 + a x + b$ is nonzero, and if so, whether it is a quadratic
 residue or not.
 We immediately see that zeroes in this case are harder to work with than
-zeroes of a polynomial: given a polynomial $X - x$ we instantly know it has
+zeroes of a polynomial: given a polynomial $X - x$ we know it has
 exactly one root $x$, while for elliptic curves, it may have 0,1, or 2
 zeroes.
 
@@ -105,7 +107,7 @@ we may write
 \[ f(X)/g(X) = (X-\alpha_i)^{a_i} \]
 
 It turns out knowing the zeroes and poles of
-a rational function on $E$ also allows us to write it down,
+a rational function on $E$ also allows us to instantly write its equation,
 up to multiplication by a constant. We also build up the function by
 multiplying together equations of lines. However, we will need more than
 just vertical lines.
