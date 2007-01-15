@@ -1,32 +1,32 @@
 \chapter{Bilinear Maps}
 
-Much of modern cryptography depends (and was founded\cite{diffie76new})
-on a cyclic group $G = \langle g \rangle$ of prime order $r$ where certain
-problems are hard to solve:
+Asymmetric ciphers, or public-key cryptosystems are perhaps
+the most celebrated contribution of modern cryptography.
+They certainly have had the most impact. It is hard to imagine
+what the world would be like without their revolutionary
+approach to key distribution.
 
-\begin{description}
-\item [Discrete Log Problem.]
-Given $g, g^x$, compute $x$.
-\item [Computational Diffie-Hellman Problem.]
-Given $g, g^x, g^y$, compute $g^{x y}$.
-\item [Decisional Diffie-Hellman Problem.]
-Given $g, g^x, g^y, g^z$, determine if $x y = z$.
-\end{description}
+All public-key cryptosystems in wide use today can trace their
+roots to the Diffie-Hellman key exchange protocol \cite{diffie76new}
+or the RSA cryptosystem \cite{RSA}.
+The former depends on cyclic groups of prime order
+with particular properties. (The latter, although similar, differs
+substantially. For example, RSA uses groups that
+are not cyclic and requires that the order of the group to be unknown
+to the attacker.)
 
-TODO: formal defn of hard
+Roughly speaking, bilinear maps, also called pairings,
+give some of these cyclic groups additional properties.
+Initially, in the 1990s,
+these additional properties were seen as detrimental
+as they could be exploited to break cryptosystems \cite{mov, fr, fmr}.
+but it was later found that they can also be exploited to build cryptosystems.
+Rather than avoiding such groups, one can use them to construct new
+cryptosystems, giving rise to pairing-based cryptography.
 
-A vast array of cryptosystems can be built thanks to these groups. 
-But what if we could somehow augment these groups and increase their
-capabilities?
-
-Bilinear maps, or pairings, are functions with special
-properties that exist for some of these groups.
-They take two group elements as input and output an element of another cyclic
-group also of order $r$.
-
-Once armed with bilinear maps, we can construct many new cryptosystems
-that would not otherwise exist. One example is a
-identity-based encryption.
+Boneh and Franklin's identity-based encryption \cite{bf} scheme was perhaps
+the most famous early example of what could be achieved using
+bilinear maps, though not the first \cite{sok, j}.
 Propsed in 1984 \cite{shamir1984},
 researchers were unable to build such a cryptosystem by
 conventional means for approximately
@@ -38,11 +38,82 @@ identity-based encryption) can be constructed.
 
 We note that a
 scheme based on quadratic residues that does not require bilinear maps
-has since been discovered \cite{cocks01}.
+has since been discovered \cite{cocks01}, albeit one that is signifcantly
+less practical.
+However, many of the other new systems may not exist without pairings,
+as it is not known how to build them using conventional means.
 
-Bilinear pairings made their debut in cryptography in the 1990s \cite{mov,fr,fmr},
-and were used to break cryptosystems. They were first considered for
-constructing cryptosystems years later \cite{sok}.
+\section{Cyclic Groups}
+
+Let $G = \langle g \rangle$ of prime order $r$.
+Let $g, h$ be generators of $G$
+and let $x, y, z$ be integers in $[0, r-1]$.
+Consider the following problems.
+
+\begin{description}
+\item [Discrete Log Problem.]
+Given $g, g^x$, compute $x$.
+\item [Computational Diffie-Hellman Problem.]
+Given $g, g^x, g^y$, compute $g^{x y}$.
+\item [Decisional Diffie-Hellman Problem.]
+Given $g, g^x, g^y, g^z$, determine if $x y = z$.
+\end{description}
+
+A vast array of cryptosystems including the Diffie-Hellman key
+exchange protocol can be built assuming one of these problems
+is difficult to solve.
+
+TODO: formal defn of hard:
+efficient inverse, multiply, random, hash, etc.
+
+\section{Concrete Cyclic Groups}
+
+There are two mathematical settings to choose from
+when implementing cyclic groups: finite fields and elliptic curves.
+
+For finite fields, one
+chooses a prime $n$ and uses
+a subgroup $G$ of $\mathbb{Z}_n^*$
+of prime order $r$, so the group operation is field multiplication.
+
+An RSA cryptosystem arises when $n$ is instead chosen to be the product of two
+large primes $P$, $Q$, in which case computations are still possible
+in $\mathbb{Z}_n^*$ even if its order is unknown.
+
+For elliptic curves, one takes an elliptic curve $E$ over some
+finite field $K$ and takes some subgroup $G$ of the group of points
+$E(K)$ with prime order $r$, so the group operation is point addition.
+
+There is no ellitpic curve version of RSA. However, we shall encounter
+a case which may be confusingly similar to RSA: when a curve is
+chosen such that its group of points has order $n = PQ$.
+
+Finite fields were proposed first, and as a result, much research has
+been performed on implementing finite fields and potential weaknesses.
+Of particular note is the discovery of subexponential discrete log
+algorithms such as index calculus, resulting in recommendations that
+field sizes be at least 1024 bits.
+
+Elliptic curves were investigated later, and their use in cryptography
+was at first viewed as experimental. However, they are now much less
+controversial thanks to the efforts of many researchers. Many optimizations
+and algorithms were discovered for elliptic curve cryptography,
+and encouringly, no specialized elliptic curve discrete log algorithm
+has been found, that is, the fastest known way to break discrete log
+for a general elliptic curve is to use a algorithm for a generic
+cyclic group (such as Pollard rho, or lambda) implying that a group
+size of 160 bits is roughly equivalent to 1024-bit finite field security.
+TODO: cite?
+
+Thus currently elliptic curves present many advantages over finite fields.
+Despite more complex algorithms for basic operations, they are much faster
+and more compact due to a smaller group size.
+
+We note that finite fields can be viewed as a special case of elliptic
+curves due to a correspondence between certain singular curves and
+multipicative groups of finite fields.
+
+\section{Bilinear Maps}
 
 We shall begin with the original and simplest definition of the pairing.
 
@@ -212,6 +283,8 @@ order is useful for some cryptosystems\cite{bgn},
 but we must be aware that in this case even if $g_1$ and $g_2$ have order
 $r$, $e(g_1, g_2)$ may not be a generator of $G_T$, but rather a generator
 of some subgroup of $G_T$ whose order is a factor of $r$.
+
+TODO: not quite RSA?
 
 \section{Exponentiation as a Bilinear Pairing}
 
