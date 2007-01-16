@@ -65,8 +65,76 @@ A vast array of cryptosystems including the Diffie-Hellman key
 exchange protocol can be built assuming one of these problems
 is difficult to solve.
 
-TODO: formal defn of hard:
-efficient inverse, multiply, random, hash, etc.
+\section{Formal Security Definitions}
+
+For completeness we include formal
+definitions of difficult problems commonly used by cryptographers.
+We do not use them as we do not provide any security proofs; our
+focus is on the implementation of pairing-based cryptosystems, not
+their correctness.
+
+There are two flavours of definitions. One is asymptotic and the
+other uses fixed security parameters.
+
+We first describe the asymptotic definition. Roughly speaking, a problem
+is hard if there is no efficient algorithm that can solve it.
+
+We say a function $f:\mathbb{Z}_{\ge 0} \rightarrow \mathbb{R}_{\ge 0}$
+is negligible if for all $c > 0$ there exists a $\lambda_0 > 0$ such that
+for all $\lambda \ge \lambda_0$, $f(\lambda) < 1 / \lambda^c$.
+Intuitively a function is negligible if it is smaller than any polynomial
+function for sufficiently large inputs. Examples of negligible functions
+are $2^{-\lambda}$ and $\lambda^{-\log\lambda}$, while $\lambda^{-10000000}$
+is nonnegligible.
+
+Let $\mathcal G = \{G_1, G_2, ... \}$ be a family of cyclic groups
+where $G_i$ has order $i$.
+For a probabilistic expected polynomial-time algorithms $A$
+define the \emph{advantage} of $A$ to be
+\[
+Adv_A(t) = \Pr [ A(g, g^x) = x ]
+\]
+is negligible,
+where $g$ is randomly chosen (uniformly) from $G_t$ and $x$ from
+$[0, |G_t|-1]$.
+
+Then we say that
+the discrete log problem is hard in $\mathcal G$ if $Adv_A$ is negligible.
+
+Decisional variants of problems must be handled differently.
+For example, we say the decisional Diffie-Hellman problem is hard if
+for all probabilistic expected polynomial-time algorithms $A$
+\[
+Adv_A(t) = | \Pr [ A(g, g^x, g^y, g^z) = B(x, y, z) ] - 1/2 |
+\]
+is negligible,
+where $g$ is randomly chosen from $G_t$, $x, y$ from $[0,r-1]$, and
+$z$ from $[0,r-1]$ with probability 1/2 and set to $x y$ otherwise,
+and where $B$ returns 1 if $x y = z$ and 0 otherwise.
+
+The other kind of definition on the other hand is couched explicitly in
+terms of running times and probabilities. It is useful when examining
+groups of a particular size, and similarly in cases where there are no
+families of infinite size (e.g. an asymptotic definition cannot be used
+with the DES cipher since DES keys are always 56 bits long).
+
+When using fixed security parameters, we say the discrete
+log problem is $(t, \epsilon)$-hard in a given
+group $G$ if for all probabilistic $t$-time algorithms $A$ we have
+\[ \Pr [ A(g, g^x) = x ] < \epsilon \]
+where $g$ is uniformly chosen from $G$ and $x$ from $[0, |G| -1]$.
+
+The security definitions for other problems in either flavour
+are similarly constructed and are omitted here.
+
+Of course, there is always another requirement for cyclic groups
+used in cryptography.
+Multiplying group elements, inverting group elements,
+choosing group elements at random and hashing to a group
+element must all be efficient, and in practice, ``efficient''
+means fast enough so that on the platform that the system is deployed
+the user will not notice any slowdown. With pairing-based cryptography,
+the bilinear map must also be efficient.
 
 \section{Concrete Cyclic Groups}
 
@@ -216,10 +284,14 @@ Given $g,g^x,...,g^{(x^q)}$, compute $c, g^{1/(x_c)}$
 for any $c\in\{1,...,r-1\}$.
 \end{description}
 
-TODO: Reductions between them
+Just as an algorithm that solves discrete log can be used to solve
+the computational and decisional Diffie-Hellman problems, security reductions
+exist between some of these new problems~\cite{jouxsurvey}.
 
-Various cryptosystems rely on one or more of the above problems to be
-hard.
+The above signature scheme does not use any of these new assumptions,
+instead using the pairing to solve the decisional Diffie-Hellman problem.
+On the other hand some pairing-based cryptosystems not only require the
+pairing, they also rely on one or more of the above problems to be hard.
 
 Sometimes a conventional cryptosystem suggests
 a pairing-based counterpart. For example,
@@ -229,6 +301,9 @@ at a conference. Someone taking the ideas from both talks would not have much
 difficulty in synthesizing their results. Indeed,
 a pairing-based ring signature scheme was presented about one
 year later\cite{bgls}.
+
+As before, both asymptotic and fixed-security-parameter formal security
+definitions can be constructed for each of the above problems.
 
 \section{Pairings Redefined}
 

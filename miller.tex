@@ -1,33 +1,22 @@
 \chapter {The Tate Pairing}
 
+The Weil and Tate pairings take points known as \emph{torsion points}
+as input. In the Weil pairing, both inputs are torsion points.
+They are defined in terms of \emph{rational funcitons}.
+They output an element of a finite field (that turns out to be a root of unity).
+
 \section {Torsion Points}
 
-Let $K$ be a field of characteristic $q$.
+Let $K$ be a field of characteristic $q$. Let $E$ be an elliptic curve defined
+over $K$. Let $n=\#E(K)$
 Suppose $P\in E(K)$ satisfies $r P = O$, so that $P$ has order $r$ or a
 factor of $r$.
 We call $P$ an \emph{$r$-torsion point}.
 We denote the set of $r$-torsion points in $E(K)$ by
 $E(K)[r]$.
 
-If we could somehow pick random points from and hash to
-$\langle P \rangle$ then we can operate within a cyclic group of order
-$r$ and we are done: cryptosystems that can be instantiated on a finite field
-using a subgroup of order $r$ can easily be instantiated on $E(K)$.
-
-For this chapter let us assume $n = \#E(K)$ is known.
-Then if $r$ is a factor of $n$, as previously mentioned,
-we can easily hash to or randomly pick
-an $r$-torsion point by first hashing to or picking some point $P \in E(K)$
-and multiplying by $n/r$.
-
-Thus if $E(K)[r]$, the group of $r$-torsion points,
-happens to be a cyclic group then we must have $E(K)[r] = \langle P \rangle$
-and we have achieved our goal.
-
-In general however $E(K)[r]$ is not cyclic. We shall require the aid
-of a well-known theorem~\cite{silverman}.
-
-Suppose $r$ is coprime to $q$.
+It will be seen that for the curves we consider,
+$q$ and $n$ are always coprime thus $r$ is coprime to $q$ since $r \mid n$.
 The case when $r$ is not coprime
 to $q$ can also be considered but leads to \emph{anomalous curves},
 which are unsuitable for cryptography TODO: cite.
@@ -39,26 +28,11 @@ and furthermore, for all $k' \ge k$ we have $E(\mathbb{F}_{q^{k'}} [r]
 = E(\Fqk)[r]$.
 Roughly speaking, there are no other $r$-torsion points beyond the
 first $r^2$ points found, no matter how large the field extensions get.
-(That is, if $K$ is the algebraic closure of $\Fq$ then $\#E(K)[r] = r^2$.)
-We define $E[r] = E(\Fqk)[r]$.
+(That is, if $\bar{K}$ is the algebraic closure of $K$ then $\#E(\bar{K})[r] = r^2$.)
+We define $E[r] = E(\Fqk)[r]$, the set of
+\emph{$r$-torsion points} of $E$.
 
-The theorem suggests the following strategy. Chose any 
-REWRITE
-
-TODO: picking r vresus getting r chosen for us. discuss this?
-
-Then we must have $r \mid \#E(\Fq)$.
-
-If $r^2 \nmid \#E(\Fq)$ then any random point $P' \in E(\Fq)$
-of order $r$ must lie in the group $G = \langle P \rangle$.
-Thus discrete log cryptosystems can easily be ported from finite fields
-to a group $\langle P \rangle$: instead of using a subgroup of order
-$r$ in $K^*$ for some finite field $K$,
-we use a subgroup of points of order $r$ in some elliptic curve.
-
-
-We denote the set of \emph{$r$-torsion points} of $E$.
-by $E[r]$. It can be shown that
+It can be shown that
 
 \[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r \]
 
@@ -80,8 +54,10 @@ We shall later construct a function
 that takes pairs of elements from $E[r]$ and outputs an $r$th root of unity
 that is bilinear and nondegnerate.
 
-
 \section {Rational Functions}
+
+We study the behaviour of quotients of polynomials in two variables on
+points on an elliptic curve.
 
 We denote the ring of polynomials in two variables $X,Y$
 with coefficients in $\Fqk$ by $\Fqk[X,Y]$. 
@@ -99,7 +75,7 @@ $f_x(X) + Y f_y(X)$ for polynomials $f_x, f_y \in \Fqk[X]$ because
 we may replace $Y^2$ by $X^3 + aX + b$.
 
 Define $\Fqk(E)$ to be the field of fractions of $\Fqk[E]$.
-That is, elements of $\Fqk(E)$ can be written in the form
+Elements of $\Fqk(E)$ can be written in the form
 $f(X,Y) / g(X,Y)$ where $f, g$ are polynomials in two variables $X, Y$
 and $g$ is not a multiple of $E$.
 
@@ -143,7 +119,7 @@ As it cannot be a $1$-eigenspace it must be a $q$-eigenspace.
 
 \section {Zeroes and Poles}
 
-when we study a polynomial $f(X)$, the roots of $f(X)$ play an important
+When we study a polynomial $f(X)$, the roots of $f(X)$ play an important
 role. For example, if the roots are $\alpha_1,...,\alpha_n$ we may
 instantly write down a polynomial with those roots, unique up to a constant:
 $(X-\alpha_1)...(X-\alpha_n)$. Then when considering the quotient of
@@ -174,7 +150,7 @@ considered. It turns out that, roughly speaking, any equation of a line
 has a pole of mulitplicity 3 at $O$, but since $X - x$ passes through $O$,
 $X-x$ has a pole of multiplicity 2 at $O$.
 
-Recall An element of $\Fqk(E)$ can be written as $f(X,Y)/g(X,Y)$.
+Recall an element of $\Fqk(E)$ can be written as $f(X,Y)/g(X,Y)$.
 In this case the zeroes are the zeroes of $f$ and the poles of $g$,
 and the poles are the poles of $f$ and the zeroes of $g$.
 
@@ -183,20 +159,21 @@ polynomial $f(X)/g(X)$ allows us to write down $f(X)/g(X)$ (up to multiplcation
 by a constant factor). Suppose the zeroes and poles are $\alpha_1,...,\alpha_n$
 with mulitplicites $a_1,...,a_n$ where $\alpha_i$ is a zero of multiplcity
 $a_i$ if $a_i > 0$, and otherwise a pole of multiplicity $-a_i$. Then
-we may write
+we may write $f(X)/g(X)$ immediately by multiplying equations of
+vertical lines correctly:
 
 \[ f(X)/g(X) = (X-\alpha_i)^{a_i} \]
 
 It turns out knowing the zeroes and poles of
 a rational function on $E$ also allows us to instantly write its equation,
 up to multiplication by a constant. We also build up the function by
-multiplying together equations of lines. However, we will need more than
-just vertical lines.
+multiplying together equations of lines, but not just using
+vertical lines.
 
 \section {Divisors}
 
-The standard way to notate zeroes and poles and their multiplicities
-is to use divisors.
+Divisors are the standard way
+to notate zeroes and poles and their multiplicities.
 If we wish to record zeroes and poles $P_1,...,P_n$
 of orders $a_1,...,a_n$ (where $P_i$ is a zero of order
 $a_i$ if $a_i > 0$ and is a pole of order $-a_i$ otherwise), then
@@ -488,4 +465,4 @@ $y$-coordinate, then in fact we are computing a vertical line at $P$.
 The logic of the algorithm can be modified slightly to avoid checking
 for these special cases.
 
-TODO: example
+TODO: example, security

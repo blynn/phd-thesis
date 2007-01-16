@@ -55,14 +55,14 @@ the GMP routine itself gives a total of four unnecessary conversions.
 Another example is that an external library may be able to handle integers
 of arbitrary length, but a particular deployment of a cryptosystem is
 concerned only with integers in a certain range. Routines that know
-in advance how many bytes their input integers need could be faster than
+in advance how many bytes their input integers take can be faster than
 a more general routine.
 
 \section{All or Nothing}
 
 The nature of cryptography in a finite field requiring $n$ bytes per element
-means that the value of an integer data structure
-is often either zero, or an integer roughly $n$ bytes in length.
+leads to the value of an integer data structure
+often containing either zero, or an integer roughly $n$ bytes in length.
 This is because many cryptographic operations can be viewed as a series of
 arithmetic operations on $n$-byte numbers uniformly chosen at random.
 
@@ -114,6 +114,40 @@ and
 More generally, for low degree extensions (e.g. 3, 6),
 hand-coded generalized Karatsuba multiplication algorithms \cite{wpkaratsuba}
 will improve running times.
+
+\section{Last-Second Conversions}
+
+One easy optimization is also easy to overlook as it is hidden by
+notation.
+
+Consider a type A pairing $e : E(\mathbb{F}_q) \times E(\mathbb{F}_q)
+\rightarrow \mathbb{F}_q^2$, and suppose we have chosen to
+use $\mathbb{F}_q [i]$ to represent $\mathbb{F}_q^2$.
+
+During the computation of the pairing,
+we evaluate $g(Q')$ where $g = aX + bY + c$ is an equation of some line and
+$Q' = \phi(Q)$, where $\phi$ is defined by  $(X,Y) \rightarrow (-X, iY)$
+and $Q$ is some point $(x,y)$ in $E(\mathbb{F}_q)$.
+
+If we follow the notation blindly, we would first compute the point
+$Q'$ which takes twice as much storage as $Q$ (as the field it lies over is
+twice as big), and computing $g(Q')$ involves
+operations on elements of $\mathbb{F}_q[i]$.
+
+Instead, it is wiser to never explicitly compute $Q'$, and instead
+performs the following:
+
+\begin{enumerate}
+\item
+$Re(R) = c - a x$
+\item
+$Im(R) = b y$
+\end{enumerate}
+
+Now $R = g(Q')$, and we have only computed in $\mathbb{F}_q$.
+
+Similar statements can be made for other pairing types, with greater
+savings in some cases.
 
 \section{Finding a Root of a Polynomial}
 

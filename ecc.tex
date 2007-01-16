@@ -332,7 +332,7 @@ scheme based on cyclic groups of prime order:
 Choose any curve $E(K)$ and somehow work out $n = \#E(K)$.
 \item
 Find a prime $r$ dividing $n$, such that $r^2 \nmid n$.
-We shall work in the unique cyclic subgroup of points $G \subset E(K)$
+We shall work in the unique cyclic subgroup $G \subset E(K)$ of points
 of order $r$.
 \item
 When a random group element of $G$ is required, first choose a random point
@@ -355,8 +355,8 @@ As a result,
 instead of choosing a curve first and counting the number of points $n$ and
 hoping for a large prime factor $r$ of $n$,
 we must use certain families of curves where the size of the group
-is known in advance and has certain properties. We shall explore this
-more in a later chapter.
+is known in advance and has certain properties. We shall elaborate on this
+in a later chapter.
 
 For now, we will present one case where $\#E(K)$ is always easy to work out
 and furthermore $E(K)$ is always cyclic.
@@ -411,14 +411,48 @@ Let $g(X) = x^3 + a X + b$. Then
 we must find a square root of $g(x)$.
 
 For a field of prime order one can use the Tonelli-Shanks algorithm
-to compute square roots. For a general finite field,
+to compute square roots~\cite{bss, handbook},
+which we quote here for handy reference.
+
+Suppose we wish to compute $b = \sqrt{a}$ in
+a field $\Fq$ for some prime $q$. (These paragraphs should be viewed
+as self-contained; the notation from earlier paragraphs does not apply here.)
+
+\begin{enumerate}
+\item
+Find an element $g \in \Fq$ that is not a square. This can be done
+by choosing a random element $g$ until $g^{(q-1)/2} = -1$. 
+Clearly this $g$ can be stored for use in later square root computations.
+\item
+Since $q$ is odd (unless $q = 2$ in which case square roots are trivial),
+we may write $q - 1 = 2^s t$ for some odd $t$.
+\item
+$e \leftarrow 0$
+\item
+for $i \leftarrow 2$ to $s$ do
+\begin{enumerate}
+\item
+if $(ag^{-e})^{(q-1)/2^i} \ne 1$ then $e \leftarrow 2^{i-1} + e$.
+\end{enumerate}
+\item
+$h \leftarrow ag^{-e}$
+\item
+$b \leftarrow g^{e/2} h^{(t+1)/2}$
+\item
+Return $b$
+\end{enumerate}
+
+We can briefly explain the Tonelli-Shanks algorithm as follows.
+Square roots in a cyclic group of order $t$ where $t$ is odd can be
+computed by exponentiating by $(t+1)/2$.
+The fact that $\Fq^* \cong \mathbb{Z}_{2^s}^+
+\times \mathbb{Z}_t^+$ leads to the above.
+
+For a general finite field,
 one must use a more complex algorithm. Perhaps the simplest of these
 Legendre's method which can be viewed as a special
 case of the Cantor-Zassenhaus algorithm for factoring polynomials that
 will be described in a later chapter.
-
-TODO: quote Tonelli-Shanks for easy reference
-
 Faster algorithms exist, though sometimes require precomputation~\cite{djb}.
 
 Approximately half the time no square root exists.
@@ -532,7 +566,7 @@ a multiexponentiation trick to roughly halve the number of point doublings
 In its simplest form, $P + Q$ is precomputed and stored,
 then a double-and-add algorithm is used to compute the
 final result. Instead of describing the algorithm in full, we present
-and example:
+an example:
 
 To compute $12 P + 7 Q$ one precomputes $P + Q$, then:
 
@@ -566,3 +600,28 @@ Cite Lange Sica Quisquater
 Cohen Miyaji Ono
 
 \section {Security}
+
+We have not yet shown any benefits to using elliptic curves instead
+of finite fields. On the contrary, although a group inversion is
+almost free, the group operation, hashing, and random element generation
+are considerably more expensive for the same field.
+
+Their strength derives from the fact that no discrete log algorithm for
+general elliptic curves that outperforms generic methods has ever been
+discovered.
+
+The best generic methods are based on the birthday paradox, and have
+$O(\sqrt{n})$ expected running time (where $n$ is the order of the group).
+A group order around 160 bits in length is sufficient to defeat such attacks.
+In contrast, subexponential discrete log algorithms for finite fields
+mean that one must use at least 1024-bit finite fields for security.
+
+Hence one may work with fields over six times smaller in length
+if elliptic curves are used. The increase in speed in
+the underlying field arithmetic easily compensates for the more
+complex group operations. Thus choosing elliptic curves instead of
+finite fields results in savings in both space and time.
+
+However, as we shall later find, in pairing-based cryptography,
+we must use certain elliptic curves for which mappings to finite fields
+exist, and thus we must worry about index calculus.
