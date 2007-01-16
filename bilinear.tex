@@ -88,7 +88,7 @@ are $2^{-\lambda}$ and $\lambda^{-\log\lambda}$, while $\lambda^{-10000000}$
 is nonnegligible.
 
 Let $\mathcal G = \{G_1, G_2, ... \}$ be a family of cyclic groups
-where $G_i$ has order $i$.
+where the order of $G_i$ is an $i$-bit number.
 For a probabilistic expected polynomial-time algorithms $A$
 define the \emph{advantage} of $A$ to be
 \[
@@ -119,9 +119,9 @@ families of infinite size (e.g. an asymptotic definition cannot be used
 with the DES cipher since DES keys are always 56 bits long).
 
 When using fixed security parameters, we say the discrete
-log problem is $(t, \epsilon)$-hard in a given
+log problem is $(t, \varepsilon)$-hard in a given
 group $G$ if for all probabilistic $t$-time algorithms $A$ we have
-\[ \Pr [ A(g, g^x) = x ] < \epsilon \]
+\[ \Pr [ A(g, g^x) = x ] < \varepsilon \]
 where $g$ is uniformly chosen from $G$ and $x$ from $[0, |G| -1]$.
 
 The security definitions for other problems in either flavour
@@ -140,6 +140,7 @@ the bilinear map must also be efficient.
 
 There are two mathematical settings to choose from
 when implementing cyclic groups: finite fields and elliptic curves.
+We give a short summary here but will expound on elliptic curves later.
 
 For finite fields, one picks a prime $n$ and uses
 a subgroup $G$ of $\mathbb{Z}_n^*$
@@ -165,10 +166,11 @@ field sizes be at least 1024 bits.
 
 Elliptic curves were investigated later, and their use in cryptography
 was at first viewed as experimental. However, they are now much less
-controversial thanks to the efforts of many researchers. Many optimizations
+controversial thanks to the efforts of many researchers. A myriad
+of optimizations
 and algorithms were discovered for elliptic curve cryptography,
 and encouringly, a specialized elliptic curve discrete log algorithm
-is yet to be found. In other words, the fastest known way to break discrete log
+has yet to be found. In other words, the fastest known way to break discrete log
 for a general elliptic curve is to use a algorithm for a generic
 cyclic group (such as Pollard rho or lambda method) implying that a group
 size of 160 bits is roughly equivalent to 1024-bit finite field security.
@@ -253,7 +255,8 @@ Given a message-signature pair $h, \sigma$ and public key $g^x$,
 check that $\langle{ g, h, g^x, \sigma}\rangle$ is a Diffie-Hellman tuple.
 \end{description}
 
-It can be shown that this signature scheme is secure against existential
+It can be shown that under the computational Diffie-Hellman assumption,
+this signature scheme is secure against existential
 forgery under a chosen-message attack in the random oracle model \cite{bls}.
 
 Hence an abstract view of the pairing is all that is needed to build a
@@ -372,6 +375,22 @@ order is useful for some cryptosystems\cite{bgn},
 but we must be aware that in this case even if $g_1$ and $g_2$ have order
 $r$, $e(g_1, g_2)$ may not be a generator of $G_T$, but rather a generator
 of some subgroup of $G_T$ whose order is a factor of $r$.
+
+When $r$ is composite, it is incorrect to say all nondegenerate pairings are
+equivalent up to a constant. Indeed, if $d > 1$ is a divisor of $r$
+and $g_1, g_2$ generators of $G_1, G_2$ respectively, then a bilinear map
+that takes $(g_1, g_2)$ to a $d$th root of unity is still nondegenerate.
+Since there is more than one choice for $d$ for a composite $r$,
+these maps cannot be equivalent up to a constant. They are however still
+completely determined by $e(g_1, g_2)$ where $g_1, g_2$ are generators.
+
+This also means that $e(g_1, g_2) = 1$ does not imply at least
+one of $g_1, g_2$ is the identity element, in contrast to the case when
+$r$ is prime.
+
+Thus some care is needed when dealing with composite $r$.
+Facts about the pairing that are true for prime $r$ do not always carry over.
+We shall encounter a concrete example of this phenomenon later.
 
 Note when $r$ is chosen to be a product of two primes, the resulting scheme
 is still substantially different to RSA as the groups are cyclic and of

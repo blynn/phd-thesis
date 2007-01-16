@@ -89,8 +89,9 @@ performing field arithmetic in $\mathbb{F}_{q^k}$.
 
 However, if the embedding degree $k$ is 1, the Tate pairing may
 be computable in $\mathbb{F}_q$, but the Weil pairing may not be.
-Usually this is not significant because we shall see we prefer
-$k > 1$. However, the Tate pairing turns out to have other benefits.
+Usually this is not significant because we shall see
+$k > 1$ is preferred.
+However, the Tate pairing turns out to have other benefits.
 
 In practice, we construct a curve $E(\Fq)$ and find the smallest
 possible $k$ such that $\#E(\Fq) | q^k - 1$, that is the embedding degree
@@ -110,6 +111,28 @@ since $E[3]$ is not cyclic, thus the Weil pairing cannot be computed.
 In contrast, $3 \mid 19-1$ hence the Tate pairing can be
 computed in $\mathbb{F}_{19}$. In fact, we find $e(P, R + 3G) = 11$, where
 $e$ denotes the Tate pairing.
+(Recall that pairings are only unique up to a constant, so different
+implementations may give different results.
+Sjnce the cube roots of unity in
+$\mathbb{F}_{19}$ are $1, 7, 11$, we expect $7$ or $11$.)
+
+We can also use this curve to exhibit
+interesting behaviour that can occur with
+pairings on cyclic groups with composite order.
+If we move to $\mathbb{F}_{19^2}$,
+it can be checked that
+$e(R, R) = 17$,  a ninth root of unity.
+Thus we have a pairing that maps two groups of order 18
+to a group that has order 9.
+This implies, for example, $e(R, 9R) = 1$.
+
+In contrast, if the order of $R$ were some prime $r$, nondegeneracy implies
+that $e(P, Q)$ must also be of order $r$ for any
+$P, Q \in \langle R \rangle \setminus \{ O \}$.
+In fact, $e(P, Q) = 1$ would imply at least one of $P, Q$ is $O$ in this case.
+Because most pairing-based cryptosystems use groups of prime order,
+one may become so accustomed to these facts that one may erroneously
+assume them to be true when working with groups of composite order.
 
 \section {Security Considerations}
 
@@ -181,7 +204,7 @@ Ideally we have $r \approx \#E(\mathbb{F}_q) \approx q$
 and hence $q$ is also about 160 bits. This gives an
 embedding degree $k$ around $1024 / 160 = 6.4$.
 
-We shall see how to construct curves of embedding degree 6 and 12.
+We later describe how to construct curves of embedding degree 6 and 12.
 For the near future, embedding degree 6 should be reasonable if used along
 with an $r$ that is at lesat $170$ bits long,
 and embedding degree 12 curves may be more desirable as time passes.

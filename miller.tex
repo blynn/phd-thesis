@@ -7,7 +7,9 @@ They output an element of a finite field (that turns out to be a root of unity).
 
 \section {Torsion Points}
 
-Let $K$ be a field of characteristic $q$. Let $E$ be an elliptic curve defined
+Let $K$ be a finite field of characteristic $q$, so that
+$K = \mathbb{F}_q^m$ for some natural number $m$.
+Let $E$ be an elliptic curve defined
 over $K$. Let $n=\#E(K)$
 Suppose $P\in E(K)$ satisfies $r P = O$, so that $P$ has order $r$ or a
 factor of $r$.
@@ -16,7 +18,8 @@ We denote the set of $r$-torsion points in $E(K)$ by
 $E(K)[r]$.
 
 It will be seen that for the curves we consider,
-$q$ and $n$ are always coprime thus $r$ is coprime to $q$ since $r \mid n$.
+$n$ and $q$ are always coprime thus $r$ is also coprime to $q$
+(since $r \mid n$).
 The case when $r$ is not coprime
 to $q$ can also be considered but leads to \emph{anomalous curves},
 which are unsuitable for cryptography TODO: cite.
@@ -36,7 +39,7 @@ It can be shown that
 
 \[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r \]
 
-(that $E[r]$ is the product of two cyclic groups of order $r$).
+(that is, $E[r]$ is the product of two cyclic groups of order $r$).
 
 When $r=2$ this is easy to see: a point has order 2 if and only if it has
 a zero $y$-coordinate. As $E$ is nonsingular
@@ -85,6 +88,10 @@ Given a point $P$ and integer $m$ consider the \emph{multiplication by $m$ map}
 $[m]$ given by \[ P \mapsto m P . \]
 If $P$ is viewed as a pair of variables $(X,Y)$, this map
 can be written as $(f(X,Y), g(X,Y))$ for some rational functions $f,g$.
+(Using the explicit formulas for point addition and doubling
+given in the previous chapter, we can write down
+explicit formulas for $f$ and $g$ for any $m$, but even for relatively
+small $m$ the expressions are unwieldy.)
 
 This is an example of a \emph{curve endomorphism}, because points of
 $E(\Fqk)$ are mapped to points of $E(\Fqk)$. Another important example
@@ -100,6 +107,8 @@ where $t = q^k + 1 - \#E(\Fqk)$.
 \end{theorem}
 
 Since $E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r$ any curve endomorphism
+that maps $E[r]$ to $E[r]$ (which is true for Frobenius and
+multiplication-by-$m$ maps)
 can be viewed as a $2\times 2$ matrix when restricted to $E[r]$.
 
 In particular for a prime $r$ dividing $\#E(\Fq)$ the eigenvalues
@@ -114,8 +123,23 @@ Otherwise consider the set $G = \{P \mid \tr P = O \}$
 where the trace is defined by
 \[ \tr P = P + \Phi(P) + ... + \Phi^{k-1}(P)  .\]
 
-Then $G$ is group, and furthermore $\Phi(G) = G$ hence $G$ is an eigenspace.
-As it cannot be a $1$-eigenspace it must be a $q$-eigenspace.
+We know this set contains more than just the point at infinity
+since for any $P \in E[r] \setminus E(\Fq)[r]$,
+the point $P - \Phi(P)$ is nontrivial and has trace zero.
+Straightforward computations show that $G$ is closed under the group laws,
+and also show that $\Phi(G) = G$. Hence $G$ is an eigenspace.
+
+As $G$ cannot be the $1$-eigenspace (which has already been accounted for;
+$E(\Fq)[r]$ is the $1$-eigenspace), $G$ must be the $q$-eigenspace,
+which implies $|G| = r$.
+
+This result will be important later, so we will restate it:
+
+\begin{theorem}
+The set of points of trace zero
+$G = \{P \mid \tr P = O \}$ is a cyclic group of order $r$,
+and every $P \in G$ satisfies $\Phi(P) = q P$.
+\end{theorem}
 
 \section {Zeroes and Poles}
 
@@ -234,9 +258,10 @@ for any rational functions $f, g$ we have $(f)(g) = (f g)$.
 Earlier papers on pairing-based cryptosystems advocated the Weil pairing.
 We shall see that the related Tate pairing has more advantages.
 Nonetheless we first describe the Weil pairing (as used in cryptography)
-for historical reasons, and also because it is simpler thus
+for historical reasons, and also because its simpler description
 serves well as an introduction. The inputs to the Tate pairing are come
-from different groups, and the definition involves quotient groups.
+from different groups, and the definition involves quotient groups,
+which can obscure the basic idea.
 
 Let $E$ be an elliptic curve containing $n$ points over a field $\mathbb{F}_q$.
 Let $G$ be a cyclic subgroup of $E(\mathbb{F}_q)$ of order $r$ with $r, q$
@@ -248,7 +273,8 @@ $f:E[r] \times E[r] \rightarrow \Fqk$ as follows.
 
 For a pair of points $P, Q \in E[r]$,
 let $f_P$ be a rational function with divisor $(f_P) = (P)^r$,
-(In standard notation this is $r\langle P\rangle  - r\langle O\rangle$.)
+(In other words, we have $r$ zeroes at $P$ and $r$ poles at $O$.
+In standard notation this is $r\langle P\rangle  - r\langle O\rangle$.)
 and similarly let $f_Q$ be a rational function with divisor $(f_Q) = (Q)^r$.
 
 Choose any $R, S \in E(\Fqk)$ such that $R \ne -P, O$ and $S \ne -Q, O$.
@@ -465,4 +491,4 @@ $y$-coordinate, then in fact we are computing a vertical line at $P$.
 The logic of the algorithm can be modified slightly to avoid checking
 for these special cases.
 
-TODO: example, security
+TODO: example, say security will be detailed in next chapter
