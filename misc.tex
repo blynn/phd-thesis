@@ -1,7 +1,99 @@
 \chapter{Miscellaneous Optimizations}
 
-We describe various
-optimizations unrelated to pairings, or elliptic curves in general.
+Optimizing a pairing-based cryptosystem can be quite involved:
+
+\begin{enumerate}
+\item
+Much effort must be devoted to speeding up
+integer and finite field arithmetic operations, as they are present
+in large amounts at the lowest level. For best results, platform-dependent
+hand-coded assembly should be used.
+Fortunately a lot of research has been conducted in this area,
+and many implementations exist, some of them freely available.
+\item
+Elliptic curve operations should also be fast. Though less studied,
+publications on this subject exist~\cite{bss}.
+\item
+Speeding up the pairing has only been a high priority relatively recently,
+and is one of the main focusses of this work.
+\item
+Sometimes modifications to a scheme will garner savings by
+permitting larger amounts of precomputation, exploiting pairing
+properties, moving exponentiations to cheaper groups, compressing points or
+pairings, and so on.
+\item
+Needless to say, each of these classes of optimizations cannot be viewed
+in isolation. An optimization that may not usually help could be beneficial
+when the behaviour of the whole system is taken into account.
+Similarly, one optimization could adversely affect another.
+
+For one example, see the below
+discussion on Montgomery representation.
+\end{enumerate}
+
+\section{Using Existing Libraries}
+
+In all the author's pairing implementations, to avoid loss of portability
+and assembly coding (as well as the need to learn platform-specific
+low-level tricks), pre-existing multiprecision arithmetic libraries
+were utilized.
+
+Unfortunately, there does not seem to be a freely available library for
+finite fields. Rather, libraries dealing with arbitrary-precision integers
+are popular. Although it is easy to graft finite field routines on top
+of any such library, there can be some losses.
+
+For example, the GMP library has a highly optimized modular exponentiation
+routine that uses Montgomery reduction (see below),
+but expects the input not to be
+in Montgomery form, and also outputs normal integers.
+This means if numbers are already internally stored in Montgomery form,
+they must be converted to a normal integer first, and then converted
+back to Montgomery form afterwards. Including the unwanted conversions in
+the GMP routine itself gives a total of four unnecessary conversions.
+
+Another example is that an external library may be able to handle integers
+of arbitrary length, but a particular deployment of a cryptosystem is
+concerned only with integers in a certain range. Routines that know
+in advance how many bytes their input integers need could be faster than
+a more general routine.
+
+\section{All or Nothing}
+
+The nature of cryptography in a finite field requiring $n$ bytes per element
+means that the value of an integer data structure
+is often either zero, or an integer roughly $n$ bytes in length.
+This is because many cryptographic operations can be viewed as a series of
+arithmetic operations on $n$-byte numbers uniformly chosen at random.
+
+One approach to exploit this is to attach a flag to every integer variable
+that signifies when the variable contains the zero value. Then operations
+such as addition and multiplication check this flag: if one of the input
+variables is zero, the output is trivial to determine and no looping
+is required, otherwise the computation should proceed on all $n$ bytes as
+with high probability each of the $n$ bytes will be nonzero and thus
+contribute to the result.
+
+In some cases it may help to test for one as well.
+
+\section{Montgomery Reduction}
+
+For RSA or a discrete-log system in a finite field, it is recommended
+only to use Montgomery reduction during an exponentiation
+as the time lost from switching back and forth between representations
+does not compensate for the savings gained for individual multiplications~\cite{handbook}.
+
+Pairing-based cryptosystems on the other hand can benefit from having
+all coordinates of points stored in Montgomery representation, with conversion
+only during input and output (though even then, there is no reason why keys
+and such could not be stored in Montgomery representation). This is because
+during point additions and multiplications as well as pairing computations,
+there are many finite field operations but never a need to convert the
+coordinates back to its normal representation.
+
+Division is slower using Montgomery representation, but this drawback is
+of no concern if projective coordinates are used, where each division is
+replaced by a few multiplications in any case.
 
 \section{Dedicated Squaring}
 

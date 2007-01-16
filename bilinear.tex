@@ -9,44 +9,46 @@ approach to key distribution.
 All public-key cryptosystems in wide use today can trace their
 roots to the Diffie-Hellman key exchange protocol \cite{diffie76new}
 or the RSA cryptosystem \cite{RSA}.
-The former depends on cyclic groups of prime order
-with particular properties. (The latter, although similar, differs
-substantially. For example, RSA uses groups that
+The former depends on cyclic groups
+with particular properties. (The latter, though
+using similar arithmetic operations, relies
+on different factors. For example, RSA uses groups that
 are not cyclic and requires that the order of the group to be unknown
 to the attacker.)
 
-Roughly speaking, bilinear maps, also called pairings,
-give some of these cyclic groups additional properties.
+Roughly speaking, bilinear maps, or pairings,
+give cyclic groups additional properties.
 Initially, in the 1990s,
 these additional properties were seen as detrimental
-as they could be exploited to break cryptosystems \cite{mov, fr, fmr}.
-but it was later found that they can also be exploited to build cryptosystems.
-Rather than avoiding such groups, one can use them to construct new
-cryptosystems, giving rise to pairing-based cryptography.
+as they could be exploited to break cryptosystems \cite{mov, fr, fmr},
+but it was later found that they could also be exploited to build cryptosystems.
+Rather than avoiding pairings, one can seek them out to construct new
+schemes. Thus pairing-based cryptography came into being.
 
-Boneh and Franklin's identity-based encryption \cite{bf} scheme was perhaps
+Boneh and Franklin's identity-based encryption scheme \cite{bf} was perhaps
 the most famous early example of what could be achieved using
 bilinear maps, though not the first \cite{sok, j}.
-Propsed in 1984 \cite{shamir1984},
-researchers were unable to build such a cryptosystem by
+First proposed in 1984 \cite{shamir1984},
+researchers were unable to build an identity-based encryption scheme by
 conventional means for approximately
 twenty years. 
 With bilinear maps, a relatively straightforward scheme
 was found \cite{bf}. With a little more work, identity-based schemes
 with additional useful properties (such as authenticated or hierarchical
-identity-based encryption) can be constructed.
+identity-based encryption TODO:cite) can be constructed.
 
-We note that a
-scheme based on quadratic residues that does not require bilinear maps
+We note that an identity-based scheme
+scheme based on quadratic residues (and not bilinear maps)
 has since been discovered \cite{cocks01}, albeit one that is signifcantly
 less practical.
-However, many of the other new systems may not exist without pairings,
-as it is not known how to build them using conventional means.
+However, this is the exception rather than the rule. In general it is not
+known how to find conventional
+equivalents of a given pairing-based cryptosystem.
 
 \section{Cyclic Groups}
 
 Let $G = \langle g \rangle$ of prime order $r$.
-Let $g, h$ be generators of $G$
+Let $g$ be a generator of $G$
 and let $x, y, z$ be integers in $[0, r-1]$.
 Consider the following problems.
 
@@ -71,8 +73,7 @@ efficient inverse, multiply, random, hash, etc.
 There are two mathematical settings to choose from
 when implementing cyclic groups: finite fields and elliptic curves.
 
-For finite fields, one
-chooses a prime $n$ and uses
+For finite fields, one picks a prime $n$ and uses
 a subgroup $G$ of $\mathbb{Z}_n^*$
 of prime order $r$, so the group operation is field multiplication.
 
@@ -85,11 +86,11 @@ finite field $K$ and takes some subgroup $G$ of the group of points
 $E(K)$ with prime order $r$, so the group operation is point addition.
 
 There is no ellitpic curve version of RSA. However, we shall encounter
-a case which may be confusingly similar to RSA: when a curve is
+a case which may potentially be confused with RSA: when a curve is
 chosen such that its group of points has order $n = PQ$.
 
-Finite fields were proposed first, and as a result, much research has
-been performed on implementing finite fields and potential weaknesses.
+Finite fields were proposed first, and much has been published
+on implementing finite fields and their potential weaknesses.
 Of particular note is the discovery of subexponential discrete log
 algorithms such as index calculus, resulting in recommendations that
 field sizes be at least 1024 bits.
@@ -98,10 +99,10 @@ Elliptic curves were investigated later, and their use in cryptography
 was at first viewed as experimental. However, they are now much less
 controversial thanks to the efforts of many researchers. Many optimizations
 and algorithms were discovered for elliptic curve cryptography,
-and encouringly, no specialized elliptic curve discrete log algorithm
-has been found, that is, the fastest known way to break discrete log
+and encouringly, a specialized elliptic curve discrete log algorithm
+is yet to be found. In other words, the fastest known way to break discrete log
 for a general elliptic curve is to use a algorithm for a generic
-cyclic group (such as Pollard rho, or lambda) implying that a group
+cyclic group (such as Pollard rho or lambda method) implying that a group
 size of 160 bits is roughly equivalent to 1024-bit finite field security.
 TODO: cite?
 
@@ -137,7 +138,8 @@ $e(g^a, g^b) = e(g,g)^{a b}$ for all $a, b \in \mathbb{Z}$
 \end{enumerate}
 
 Note a symmetric bilinear map is completely defined by the value it
-takes at $e(g,g)$. Thus there always exist $r$ bilinear maps: if
+takes at $e(g,g)$. Essentially there is always exactly one bilinear map
+for any given cyclic group: if
 $e(g,g)=1$ then we have the degenerate case and the other $r-1$ maps are
 equivalent up to a constant,
 in the sense that if $e_1(g,g) = g_1$ and $e_2(g,g) = g_2$
@@ -149,13 +151,19 @@ $g, g^x, g^y, g^z$, then by bilinearity and nondegeneracy,
 $z = x y$ if and only if
 $e(g, g^z) = e(g^x, g^y)$. In other words we can solve the Decisional
 Diffie-Hellman problem.
+Note some existing cryptosystems rely on the intractability of this
+problem thus cannot be constructed on a cyclic group with
+a computable pairing.
 
 However, it is not known how to solve the Computational Diffie-Hellman
 or discrete log problem using a pairing.
 
 \section{A Signature Scheme}
 
-Thus we can construct a cyclic group where the Computational Diffie-Hellman
+This abstract definition can easily be used to construct
+a cryptosystem. We have just noted that if cyclic group with such a
+bilinear map exists, then we have a group where the Computational
+Diffie-Hellman
 problem is thought to be hard, yet the Decisional variant is easy to solve.
 Such groups have been named Gap Diffie-Hellman groups\cite{bls} and
 imply a signature scheme:
@@ -184,7 +192,12 @@ Hence an abstract view of the pairing is all that is needed to build a
 cryptosystem, and frequently this suffices. However,
 we shall see that it can be useful to understand pairings in more detail.
 For example, we need more facts to show the above signature scheme is
-short, which was initially the reason it was proposed.
+short, the original motivation for its proposal.
+
+This signature scheme in fact has other useful properties, including
+batched verification and allowing the
+the simple construction of aggregate, ring and verifiably-encrypted
+signatures\cite{bgls}.
 
 \section{New Hardness Assumptions}
 
@@ -208,14 +221,14 @@ TODO: Reductions between them
 Various cryptosystems rely on one or more of the above problems to be
 hard.
 
-Similarly, sometimes it is easy to convert a conventional cryptosystem
-into a pairing-based cryptosystem. For example,
+Sometimes a conventional cryptosystem suggests
+a pairing-based counterpart. For example,
 the above pairing-based signature scheme and a ring signature scheme
 due to Rivest et al. \cite{rst} were presented in adjacent sessions
-at a conference. Someone who attended both talks would not have much
-difficulty in synthesizing the two ideas together. Indeed,
+at a conference. Someone taking the ideas from both talks would not have much
+difficulty in synthesizing their results. Indeed,
 a pairing-based ring signature scheme was presented about one
-year later\cite{bls2}.
+year later\cite{bgls}.
 
 \section{Pairings Redefined}
 
@@ -252,6 +265,7 @@ we use the following definition.
 Let $r$ be a prime.
 Let $G_1, G_T$ be cyclic groups of order $r$.
 Let $G_2$ be a group where each element except the identity has order $r$.
+In particular $G_2$ is not necessarily cyclic.
 Again we use multiplicative group notation.
 A bilinear pairing $e$ is an efficiently computable function
 \[
@@ -284,7 +298,9 @@ but we must be aware that in this case even if $g_1$ and $g_2$ have order
 $r$, $e(g_1, g_2)$ may not be a generator of $G_T$, but rather a generator
 of some subgroup of $G_T$ whose order is a factor of $r$.
 
-TODO: not quite RSA?
+Note when $r$ is chosen to be a product of two primes, the resulting scheme
+is still substantially different to RSA as the groups are cyclic and of
+known order.
 
 \section{Exponentiation as a Bilinear Pairing}
 
@@ -292,9 +308,9 @@ Given some integer $r > 1,$
 let us take $G_1 = G_T = \mathbb{Z}_r^*$ and $G_2 = \mathbb{Z}_{r-1}^+$.
 Define $e:G_1\times G_2 \rightarrow G_T$ by $e(g, a)= g^a$.
 
-Then it is easily seen that exponentiation in a cyclic group satisfies
-the definition of a bilinear
-pairing. Thus we may view all discrete log and RSA cryptosystems
+Then it is easily seen that if we relax the condition that the groups
+are cyclic, then exponentiation satisfies the definition of a bilinear pairing.
+Thus we may view all discrete log and RSA cryptosystems
 as pairing-based cryptosystems, though there are significant differences
 in this setting. For example, the discrete log problem is easy
 in $G_2$ and $G_1 = G_T$.
@@ -307,24 +323,93 @@ pairings. For example:
 Given $g \in G_1, c \in G_T$, find $a \in G_2$ such that $e(g,a) = c$.
 \item[RSA Problem.]
 Given $a \in G_2, c \in G_T$, find $g \in G_1$ with
-$e(g,a) = c$
+$e(g,a) = c$.
 \item[Strong RSA Problem.]
 Given $c \in G_T$, find $g \in G_1, a\in G_2$ with
 $e(g,a) = c$
 \end{description}
 
-TODO: can build pairing schemes using same assumptions?
+Thinking of conventional cryptosystems as pairing-based cryptosystems
+can inspire new ideas.
 
 \section{Choosing a Definition}
 
-Many cryptosystems designed under the original version of the pairing can
-be trivially modified so that they remain secure under the revised
-definition, possibly assuming different problems are difficult.
-Those that cannot be modified have a limited selection of pairings.
+The symmetric pairing is often selected
+as it allows simpler and briefer mathematical statements and definitions,
+and the symmetry can be useful.
+However, there are few families of groups that allow such a pairing.
+
+In practice, one can usually trivially modify such
+schemes and their corresponding
+security proofs to use a more general pairing definition,
+so that other groups can be used. For example, one may have to replace the
+the Computation Diffie-Hellman assumption with
+the co-Computation Diffie-Hellman problem. Or perhaps
+a minor reworking allows the cryptosystem to function when $G_2$
+is not cyclic.
+Of course, the schemes that cannot be changed have a limited selection
+of pairings.
 
 We shall see there are other subtle caveats.
-For example, suppose a design goal of a cryptosystem is to minimize the
-number of bits needed to represent a group element. If we use
-a symmetric pairing, then in typical use, elements will be 512 bits long.
+For example, if we use a symmetric pairing, then in typical use,
+elements will be 512 bits long.
 If we forgo symmetry and use two groups $G_1, G_2$,
-then it turns out we can find a 160-bit $G_1$ and a 320-bit $G_2$.
+then it turns out we may achieve a 160-bit $G_1$ and a 320-bit $G_2$,
+though pairings will be slower.
+
+\section{Concrete Bilinear Maps}
+
+There is only one known setting for cryptographically useful bilinear maps,
+namely elliptic curves with an efficiently computable
+Tate (or similar) pairing.
+
+In practical terms, this means $G$, or $G_1$ and $G_2$ are groups of points on
+an elliptic curve, and that $G_T$ is a subgroup of a multiplicative group
+of a finite field.
+
+Mathematicians have traditionally employed additive notation for the
+group of points on an elliptic curve (perhaps to emphasize that it is
+Abelian). As a result, publications in the area often use additive group
+notation along with uppercase letters for elements for the input groups.
+
+We have used multiplicative notation in this chapter to highlight the
+Diffie-Hellman heritage of pairing-based cryptography. This notation also
+suggests the right way to compare elliptic curve and finite field operations:
+point multiplications should be compared with exponentiations, not
+integer multiplications. Later we will switch to additive notation when
+discussing the underlying mathematics.
+
+When deploying a pairing-based cryptosystem one must select a type of
+curve to use. The correct choice depends on several factors,
+which we discuss in later chapters.
+
+We conclude with a toy example of the aforementioned signature scheme.
+Let $q = 427211363219$.
+Consider the curve $E : y^2 = x^3 + x$ over
+$\Fq$. Then $E(\Fq)$ contains a subgroup
+$G$ of order $r = 524353$ (which is a prime factor of $427211363219 + 1$).
+Take a random generator
+\[ g = (359473638793, 293998693014) \]
+for the system parameter, and a random secret key
+\[ x = 66995 . \]
+Then the corresponding public key is
+\[ g^x = (166505572345, 357692656519) . \]
+Suppose a message hashes to
+\[ h = (370499138522, 78458612837) . \]
+Then the corresponding signature is
+\[ \sigma = h^x = (278647014375, 78919786700) . \]
+To verify, we must check that $e(g, \sigma) = e(g^x , h)$
+which turns out to be
+\[ 85791756805 + 99975533880i \]
+(an element of $K[i]$ that has order $r$).
+The exact value of last result may vary
+from implementation to implementation (the pairing is unique up to a
+constant and different algorithms may result in different constants),
+but both sides of the equation will still match.
+
+The order $r$ in the above example is roughly 20 bits in length,
+while the order $q$ of the field, and the actual space taken up by
+a (compressed) elements of $G_1$ and $G_2$ is roughly 40 bits. In real life,
+for the particular elliptic curve we chose,
+one would require a 160-bit $r$ and 512-bit $q$
+for secure signatures.

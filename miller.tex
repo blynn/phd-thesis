@@ -1,5 +1,86 @@
 \chapter {The Tate Pairing}
 
+\section {Torsion Points}
+
+Let $K$ be a field of characteristic $q$.
+Suppose $P\in E(K)$ satisfies $r P = O$, so that $P$ has order $r$ or a
+factor of $r$.
+We call $P$ an \emph{$r$-torsion point}.
+We denote the set of $r$-torsion points in $E(K)$ by
+$E(K)[r]$.
+
+If we could somehow pick random points from and hash to
+$\langle P \rangle$ then we can operate within a cyclic group of order
+$r$ and we are done: cryptosystems that can be instantiated on a finite field
+using a subgroup of order $r$ can easily be instantiated on $E(K)$.
+
+For this chapter let us assume $n = \#E(K)$ is known.
+Then if $r$ is a factor of $n$, as previously mentioned,
+we can easily hash to or randomly pick
+an $r$-torsion point by first hashing to or picking some point $P \in E(K)$
+and multiplying by $n/r$.
+
+Thus if $E(K)[r]$, the group of $r$-torsion points,
+happens to be a cyclic group then we must have $E(K)[r] = \langle P \rangle$
+and we have achieved our goal.
+
+In general however $E(K)[r]$ is not cyclic. We shall require the aid
+of a well-known theorem~\cite{silverman}.
+
+Suppose $r$ is coprime to $q$.
+The case when $r$ is not coprime
+to $q$ can also be considered but leads to \emph{anomalous curves},
+which are unsuitable for cryptography TODO: cite.
+
+It can be proved~\cite{silverman} that for some integer $k \ge 1$,
+$E(\Fqk)[r]$ contains exactly $r^2$ points and is isomorphic to
+$\mathbb{Z}_r^+ \times \mathbb{Z}_r^+$,
+and furthermore, for all $k' \ge k$ we have $E(\mathbb{F}_{q^{k'}} [r]
+= E(\Fqk)[r]$.
+Roughly speaking, there are no other $r$-torsion points beyond the
+first $r^2$ points found, no matter how large the field extensions get.
+(That is, if $K$ is the algebraic closure of $\Fq$ then $\#E(K)[r] = r^2$.)
+We define $E[r] = E(\Fqk)[r]$.
+
+The theorem suggests the following strategy. Chose any 
+REWRITE
+
+TODO: picking r vresus getting r chosen for us. discuss this?
+
+Then we must have $r \mid \#E(\Fq)$.
+
+If $r^2 \nmid \#E(\Fq)$ then any random point $P' \in E(\Fq)$
+of order $r$ must lie in the group $G = \langle P \rangle$.
+Thus discrete log cryptosystems can easily be ported from finite fields
+to a group $\langle P \rangle$: instead of using a subgroup of order
+$r$ in $K^*$ for some finite field $K$,
+we use a subgroup of points of order $r$ in some elliptic curve.
+
+
+We denote the set of \emph{$r$-torsion points} of $E$.
+by $E[r]$. It can be shown that
+
+\[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r \]
+
+(that $E[r]$ is the product of two cyclic groups of order $r$).
+
+When $r=2$ this is easy to see: a point has order 2 if and only if it has
+a zero $y$-coordinate. As $E$ is nonsingular
+$x^3 + ax + b = 0$ has three distinct solutions, thus we can always find
+some field $\Fqk$ where $E$ has
+four points of order 2: the point $O$ and three points of the form
+$(\alpha, 0)$ where $\alpha$ is a root of the cubic.
+
+Moreover,
+the line through any two of the finite points is simply the line $Y = 0$,
+which certainly intersects $E$ at the other finite point.
+The proof is much less trivial for general $r$.
+
+We shall later construct a function
+that takes pairs of elements from $E[r]$ and outputs an $r$th root of unity
+that is bilinear and nondegnerate.
+
+
 \section {Rational Functions}
 
 We denote the ring of polynomials in two variables $X,Y$

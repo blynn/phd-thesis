@@ -1,15 +1,21 @@
 \chapter {Elliptic Curves}
-We review some basic facts about elliptic curves.
-By the end of this chapter we will have covered enough theory to implement
-standard elliptic curve cryptography except for the problem of generating
-suitable elliptic curves.
+We review basic facts about elliptic curves.
+Aside from the problem of generating suitable elliptic curves,
+we will cover enough theory to replace finite fields with
+elliptic curves in cryptosystems based on cyclic groups, except
+for the issue of finding suitable curves.
 We discuss pairings in the following chapter, and describe algorithms
-to find curve equations in the chapter after that.
+to find suitable curves in the chapter after that.
 
 Let $\Fq$ be a field for some prime $q > 3$.
 Unless otherwise specified we shall always
 define curves over a field of prime order and of characteristic greater
 than three.
+Elliptic curves can be implemented over fields of characteristic 2 and 3
+and enjoy many optimizations,
+but suffer from specialized discrete log attacks and should generally
+be avoided.
+
 An elliptic curve $E$ over such a field $\Fq$ is an equation of the form
 \[ E: Y^2 = X^3 + a X + b \]
 where $a, b \in \Fq$.
@@ -18,24 +24,25 @@ $E$ is \emph{singular} if $\Delta = 0$ (so the cubic has distinct solutions),
 and \emph{nonsingular} otherwise.
 
 Unless otherwise stated we always consider nonsingular elliptic curves.
-(Later we will examine \emph{supersingular} curves which are a
-particular kind of nonsingular curves and are \emph{not} singular.
+(Later we will encounter \emph{supersingular} curves, a particular
+flavour of nonsingular curves and are \emph{not} singular despite their
+name.
 The antonym of supersingular is \emph{ordinary} or \emph{nonsupersingular}.)
-
-For every curve, there is a special point $O$, sometimes denoted $\infty$,
-called the \emph{point at infinity}
-that is always a solution. (By considering the equation in
-projective coordinates one can show that $O = (0,1,0)$ is always a unique
-infinite solution to the equation. Intuitively,
-the point $O$ can be thought of as the point where all lines
-parallel to the Y-axis meet.) The other solutions to the equation $E$
-are called \emph{finite points}.
 
 For any field $\Fqk$ define $E(\Fqk)$ (or $E/\Fqk$)
 to be the set of all solutions
-of $E$ over $\Fqk$ along with the point $O$. We write $\#E(\Fqk)$ 
+of $E$ over $\Fqk$, called the \emph{finite points}
+along with a special point denoted $O$,
+that is called the \emph{point at infinity}. We write $\#E(\Fqk)$ 
 or $|E(\Fqk)|$ for
 the number of elements of $E(\Fqk)$.
+
+Although irrelevant, the reader may be curious about the point at infinity.
+Briefly, by considering the equation in
+projective coordinates one can show that $O = (0,1,0)$ is always a unique
+infinite solution to the equation. Intuitively,
+the point $O$ can be thought of as the point where all lines
+parallel to the Y-axis meet.
 
 We quote two well-known theorems from the theory of elliptic curves.
 
@@ -91,6 +98,11 @@ Consider
 the curve $E'$ given by $Y^2 = X^3 + a v^2 X + v^3 b$,
 which we call the (quadratic) \emph{twist} of the curve $E$.
 
+\begin{theorem}
+Let $t = q + 1 - \#E(\Fq)$. Then $\#E'(\Fq) = q + 1 + t$.
+\end{theorem}
+
+The proof is straightforward.
 Let $g(X) = X^3 + a X + b$, and $h(X) = X^3 + a v^2 X + v^3 b$.
 Note $h(X) = v^3 g(Xv^{-1})$.
 
@@ -116,9 +128,7 @@ As $x$ runs through all the elements of $\Fq$, so does $xv^{-1}$,
 and we see that total number of solutions to either equation $E$ and $E'$
 over $\Fq$ is $2q$.
 Since $O$ is always a solution of any elliptic curve we have
-$\#E(\Fq) + \#E(\Fq) = 2q + 2$.
-
-Let $t = q + 1 - \#E(\Fq)$. Then $\#E'(\Fq) = q + 1 + t$.
+$\#E(\Fq) + \#E(\Fq) = 2q + 2$, proving the theorem.
 
 On the other hand if $v$ is a quadratic residue then $v = c^2$ for some
 $c \in \Fq$. Then we have a map $\Psi : E'(\Fq) \rightarrow E(\Fq)$
@@ -148,7 +158,8 @@ We can use quadratic residues to transform the equation of a given elliptic
 curve $E$ into a form that allows certain optimizations.
 It turns out that ideally we would like $a = 0$ to reduce the amount of
 operations needed to compute on an elliptic curve, but for a general curve
-this can never the case. We shall see it is good to have $a = -3$.
+this an impossible transformation. We shall see a reasonable alternative
+is $a = -3$.
 
 Then from above, a curve $Y^2 = X^3 + aX + b$ can be transformed into
 one of the form $Y^2 = X^3 - 3X + b'$ if we can find $c\in \Fq$
@@ -186,113 +197,25 @@ of a point $P = (x,y)$ is the point $-P = (x,-y)$.
 As usual, for an integer $n$ define $0 P = O$, $1 P = P$,
 $n P = (n-1)P + P$ for $n > 1$ and $n P = -(-n)P$ for $n < 0$.
 
-The previous chapter used mulitplicative group notation to emphasize
+Recall the previous chapter used mulitplicative group notation to emphasize
 the connection
-between discrete log cryptosystems and pairing-based cryptosystems.
-Traditionally one uses additive group notation for the elliptic curve group
+between discrete log cryptosystems and pairing-based cryptosystems:
+we are using elliptic curve groups where one would use
+the multiplicative group of a finite field.
+
+Mathematicians use additive group notation for the elliptic curve group
 (since the group is Abelian), and we will adhere to this convention in this
 section.
-Cryptographers sometimes employ multiplicative notation instead (as we have
-in the first chapter),
-because elliptic curve groups are often used exactly where one would use
-the multiplicative group of a finite field.
 
 For the curve $Y^2 = X^3 + X + 6$ over $\F_{19}$,
 it can be verified for instance that
 $(0, 5) + (0, 5) = (4, 6)$,
 and $(0, 5) + (2, 15) = (4, 13)$.
 
-\section {Singular Elliptic Curves and Conventional Cryptography}
-
-We note that using singular elliptic curves
-is equivalent to conventional cryptography.
-It can be shown that the set $E_{ns}$ nonsingular points (all but
-one) of a singular ellitpic curve over a field $K$
-also form a group under the chord-tangent law,
-and either $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite{prop2.5silverman},
-and furthermore these isomorphisms are efficiently computable in either
-direction.
-(The latter case is not useful as discrete log is easy in $K^+$.)
-
-For example, consider the curve
-\[ E : y^2 = x^3 + x^2 \]
-This has a singular point at $(0,0)$. Then the other solutions to
-this curve (including the point at infinity) form a group
-$E_{ns}(\Fqk)$ for any finite field $\Fqk$.
-
-Furthermore, there is an isomorphism $E_{ns}(\Fqk) \rightarrow \Fqk^*$
-given by
-\[ (x,y) \mapsto \frac{y-x}{y+x} \]
-(and maps $O$ to $1$)
-which is efficienty computable in either direction.
-A little algebra
-shows the reverse map is
-\[ z \mapsto \left( x', \frac{1+z}{1-z} x' \right) \]
-where $x' = 4z/(1-z)^2$ for $z \ne 1$, and $1 \mapsto O$.
-
-Thus cryptography in finite fields can be viewed as a special
-case of elliptic curve cryptography, and strictly speaking,
-those that complain that elliptic curve cryptography in general
-is too experimental and untested must qualify
-their remarks by making exceptions for singular curves!
-
-We note that if an efficiently bilinear nondegenerate pairing could be found
-for singular curves then the Decisional Diffie-Hellman problem could be broken
-in finite fields.
-
-\section {Torsion Points}
-
-Suppose $P\in E(\Fq)$ has order $r$ (so $r P = O$),
-where $r$ is coprime to $q$.
-
-Then we must have $r \mid \#E(\Fq)$.
-If $r^2 \nmid \#E(\Fq)$ then any random point $P' \in E(\Fq)$
-of order $P$ must lie in the group $G = \langle P \rangle$.
-Thus discrete log cryptosystems can easily be ported from finite fields
-to a group $\langle P \rangle$: instead of using a subgroup of order
-$r$ in $K^*$ for some finite field $K$,
-we find a subgroup of points of order $r$ in some elliptic curve.
-
-Originally, this was the only goal of elliptic curve cryptography:
-researchers focused on finding curves with groups with
-suitable orders that were resistant to discrete log attacks and also
-efficient to compute on so that conventional cryptography could be
-performed in elliptic curves.
-In contrast, pairing-based cryptography exploits more facts
-about points of a particular order $r$.
-
-It can be proved that for some integer $k \ge 1$,
-$E(\Fqk)$ contains $r^2$ points $P$ satisfying $r P = O$,
-and there are no other points with this property even if larger field
-extensions are considered.
-
-Denote the set of these points by $E[r]$, sometimes called the
-\emph{$r$-torsion points} of $E$. It can be shown that
-
-\[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r \]
-
-(that $E[r]$ is the product of two cyclic groups of order $r$).
-
-When $r=2$ this is easy to see: a point has order 2 if and only if it has
-a zero $y$-coordinate. As $E$ is nonsingular
-$x^3 + ax + b = 0$ has three distinct solutions, thus we can always find
-some field $\Fqk$ where $E$ has
-four points of order 2: the point $O$ and three points of the form
-$(\alpha, 0)$ where $\alpha$ is a root of the cubic.
-
-Moreover,
-the line through any two of the finite points is simply the line $Y = 0$,
-which certainly intersects $E$ at the other finite point.
-The proof is much less trivial for general $r$.
-
-We shall later construct a function
-that takes pairs of elements from $E[r]$ and outputs an $r$th root of unity
-that is bilinear and nondegnerate.
-
 \section {Explicit Formulas}
 
-Let $E: y^2 = x^3 + ax + b$ be an elliptic curve over $\Fq$. Let
-$P_1, P_2 \in E(\Fq)$ and suppose
+Let $E: y^2 = x^3 + ax + b$ be an elliptic curve over $\Fqk$. Let
+$P_1, P_2 \in E(\Fqk)$ and suppose
 we wish to find $P_3 = P_1 + P_2$.
 Note the case where at least one of $P_1, P_2$ is $O$ is trivial,
 so assume both $P_1$ and $P_2$ are finite.
@@ -322,7 +245,7 @@ the equation of $L$ or $T$ is given by:
 We can find the $x$-coordinate of the other point of intersection $(x_3, -y_3)$
 by substituting $Y = \lambda X + \mu$ into $E$. We find
 \[ E(X, \lambda X+\mu) = X^3 - \lambda^2 X^2 + a_1 X + a_0 = 0 \]
-for some $a_1, a_0 \in \Fq$, thus the sum of the roots
+for some $a_1, a_0 \in \Fqk$, thus the sum of the roots
 $x_1 + x_2 + x_3 = \lambda^2$.
 
 This allows us to compute $x_3, y_3$. Explicitly we have for $P_1 \ne P_2$:
@@ -342,11 +265,179 @@ x_3 &\leftarrow& \lambda^2 - 2x_1 \\
 y_3 &\leftarrow& (x_1 - x_3) \lambda - y_1
 \end{array}
 \]
-In practice the most expensive step is the division in the computation of
+The most expensive step is the division in the computation of
 $\lambda$.
 
 The expressions for the lines $L,T,V$ will be used later in the computation
 of a pairing.
+
+\section {Elliptic Curve Cryptography}
+
+Having described an Abelian group operation on points on an elliptic curve,
+we can almost see how elliptic curves may be used in cryptography.
+Let $E$ be an elliptic curve over a field $K$.
+
+Firstly, we can generate random points on $E$:
+after generating a random $x \in K$, we can attempt to solve $E$ for $y$ by
+using any finite field square root algorithm which we discuss below.
+If no solution exists, simply pick a new random $x$.
+
+Hashing to a point in $E$ is similar. The input is hashed to some
+$x \in K$, and then a corresponding $y$ is sought. On failure,
+a new $x$-coordinate is deterministically generated from $x$, and again
+we attempt to solve $E$ for $y$. Repeating this process as many times as
+necessary eventually yields a valid point $(x,y) \in E(K)$.
+
+Let $F$ be a finite field.
+The above formulas describe how to compute inverses and sums of
+points. Thus it seems natural to replace elements of $F^*$
+with elements of $E(K)$, and perform
+point addition instead of modular multiplication.
+
+The elliptic curve
+equivalent of exponentiation is called
+\emph{point multiplication}: $a P$ represents
+adding $P$ to itself $a$ times just as $g^a$ represents $g$ multiplied
+by itself $a$ times in finite fields.
+Point multiplication can be performed efficiently via carefully
+chosen point
+additions, in a process that mirrors the repeated squaring technique
+for exponentiation in finite fields.
+
+Recall that cryptographic schemes in $F^*$ often operate
+within a subgroup $G$ of a particular order $r$,
+so elements chosen at random and hashed to must have
+order $r$, or a factor of $r$. But an element of $F^*$
+in general does not have the desired order.
+Thus after choosing or hashing to some element $x \in F^*$,
+to obtain an element of a suitable order one simply exponentiates $x$
+by $n / r$ where $n = \#F^*$.
+
+Similarly, the construction a point of order $r$ (or a factor of $r$)
+from some given point $P \in E(K)$ is accomplished by multiplying $P$ by
+$n / r$ where $n = \#E(K)$.
+
+Assume for now that we know $n = \#E(K)$. Then from group theory (a
+Sylow theorem), for any prime $r$ dividing $n$,
+there exists a point $P \in E(K)$ of order $r$.
+
+Then if $r^2$ does not divide $n$ then there is exactly one
+subgroup $G$ of $E(K)$ of order $r$.
+
+This suggests the following procedure for implementing any cryptographic
+scheme based on cyclic groups of prime order:
+
+\begin{enumerate}
+\item
+Choose any curve $E(K)$ and somehow work out $n = \#E(K)$.
+\item
+Find a prime $r$ dividing $n$, such that $r^2 \nmid n$.
+We shall work in the unique cyclic subgroup of points $G \subset E(K)$
+of order $r$.
+\item
+When a random group element of $G$ is required, first choose a random point
+of $E(K)$ and then multiply by $n / r$. Similarly, when hashing to
+a point of $G$, first hash to a point in $E(K)$ and then mulitply by
+$n / r$.
+\item
+Other operations are straightforward: every time a group
+operation is required, we perform a point addition. To find an inverse
+of a group element, we negate the $y$-coordinate of a point. When
+an exponentiation is called for we carry out a point multiplication
+\end{enumerate}
+
+TODO: table? diagram?
+
+But how do we compute $\#E(K)$? Fast algorithms exist for this~\cite{bss}
+but it turns out that if a pairing is desired, we must seek out
+elliptic curves whose orders satisfy various conditions.
+As a result,
+instead of choosing a curve first and counting the number of points $n$ and
+hoping for a large prime factor $r$ of $n$,
+we must use certain families of curves where the size of the group
+is known in advance and has certain properties. We shall explore this
+more in a later chapter.
+
+For now, we will present one case where $\#E(K)$ is always easy to work out
+and furthermore $E(K)$ is always cyclic.
+
+\section {Singular Elliptic Curves}
+
+Using singular elliptic curves
+is equivalent to conventional cryptography.
+It can be shown that the set $E_{ns}$ nonsingular points (all but
+one) of a singular elliptic curve over a field $K$
+also form a group under the chord-tangent law,
+and either $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite{prop2.5silverman}.
+Furthermore these isomorphisms are efficiently computable in either
+direction.
+(The latter case is not useful as discrete log is easy in $K^+$.)
+
+For example, consider the curve
+\[ E : y^2 = x^3 + x^2 \]
+This has a singular point at $(0,0)$. Then the other solutions to
+this curve (including the point at infinity) form a group
+$E_{ns}(\Fqk)$ for any finite field $\Fqk$.
+
+Furthermore, there is an isomorphism $E_{ns}(\Fqk) \rightarrow \Fqk^*$
+given by
+\[ (x,y) \mapsto \frac{y-x}{y+x} \]
+(and maps $O$ to $1$)
+which is efficienty computable in either direction.
+A little algebra
+shows the reverse map is
+\[ z \mapsto \left( x', \frac{1+z}{1-z} x' \right) \]
+where $x' = 4z/(1-z)^2$ for $z \ne 1$, and $1 \mapsto O$.
+
+This example has little practical value as point additions are slower than
+modular multiplications and points, having two coordinates, take twice as
+much storage as an element of a finite field. However, it does suggest
+that cryptography in finite fields can be viewed as a special
+case of elliptic curve cryptography, and strictly speaking,
+those that complain that elliptic curve cryptography is controversial,
+too experimental and untested must qualify
+their remarks by making exceptions for singular curves!
+
+We note that if an efficiently bilinear nondegenerate pairing could be found
+for singular curves then the Decisional Diffie-Hellman problem could be broken
+in finite fields.
+
+\section {Generating Random Points}
+
+Let $E$ be an elliptic curve over a field $K$.
+To generate a random point, first generate $x \in K$ randomly.
+Next, we solve $E : Y^2 = X^3 + a X + b$ for $Y$.
+Let $g(X) = x^3 + a X + b$. Then
+we must find a square root of $g(x)$.
+
+For a field of prime order one can use the Tonelli-Shanks algorithm
+to compute square roots. For a general finite field,
+one must use a more complex algorithm. Perhaps the simplest of these
+Legendre's method which can be viewed as a special
+case of the Cantor-Zassenhaus algorithm for factoring polynomials that
+will be described in a later chapter.
+
+TODO: quote Tonelli-Shanks for easy reference
+
+Faster algorithms exist, though sometimes require precomputation~\cite{djb}.
+
+Approximately half the time no square root exists.
+In the case that $K$ has prime order,
+one can compute the Legendre symbol before attempting to square root $g(x)$.
+More generally it can be checked that $X^2 - g(x)$ is reducible. Alternatively,
+one can proceed with a square root algorithm and square the result and
+compare with $g(x)$.
+
+In any event, if $g(x)$ is not a square then simply start again and
+chose another random $x \in K$. Eventually a suitable $x$ will be found.
+Once found, a coin is flipped that decides which of the square roots will
+be the $y$-coordinate.
+
+It is impossible to choose the point at infinity with this method,
+which is usually desirable. Clearly, if one wishes to be able to pick
+the point at infinity, one could simply add a step before choosing $x$:
+with $1/n$ probability choose $O$ otherwise proceed normally, where
+$n = \#E(K)$.
 
 \section {Representing Points}
 
@@ -372,7 +463,7 @@ where $M$ and $S$ denote the time required for a multiplication and
 a squaring respectively. (We consider multiplication by
 a small constant to be negligible.)
 
-For $a=0$ tthe cost is only $1S$.
+For $a=0$ the cost is only $1S$.
 
 For small $a$ or fairly small $a$ with low Hamming weight the cost is $3S$.
 
@@ -386,13 +477,18 @@ twist curves (i.e. twisting curves, but using quadratic residues instead
 of nonresidues so that the resulting curve is isomorphic to the original),
 we can always obtain an $a$ that is faster than the general case.
 
+TODO: quote them instead for handy reference:
 We omit the formulas for projective point addition, and for adding
 an affine point to a projective point, referring the reader instead
 to Blake et al. or Cohen et al. \cite{stuff}.
+
 The latter investigate other kinds of projective coordinates, where point
 doubling or multiplication is even faster.
 
-We can optimize point representations for space instead of time.
+\section {Point Compression}
+
+We can optimize point representations for space instead of time,
+useful for transmission and storage.
 Given $x$, we can solve $Y^2 = x^3 + ax + b$ for $Y$, thus
 a point $(x,y)$ can be represented by $x$ along with a single bit indicating
 which solution of $y$ to take. We discuss how to find square roots later.
@@ -405,20 +501,68 @@ $-y$ and tries again. This does not cost much more since the solutions are
 related by negation, and we will see that in some pairing-based systems
 one can check both possibilities at the same time.
 
-(Of course we can take this principle further. If every bit matters, Alice can
+(Of course we can take this principle further. Alice can
 omit $k$ bits of $x$, and leave Bob to try all $2^k$ possibilities.)
 
 \section {Point Multiplication}
 
-Preprocessing. Sliding Windows. Multiexp.
+Point multiplication is the elliptic curve equivalent of modular
+exponentiation, thus optimizations that apply to one often apply to the other.
 
-Not so useful for us, but maybe in $G_2$? look into this!
+One difference is that group inversion is much cheaper in elliptic curves:
+one simply negates the $y$-coordinate, an operation that is essentially free,
+whereas in finite fields one must spend time running the extended
+Euclidean algorithm.
 
-Ciet Lange Sica Quisquater
+This allows one to use non-adjacent forms (or signed windows), which
+TODO: refer to bss, handbook
+Sliding Windows.
+
+If it is known in advance that a particular point $P$ will feature in
+several point mulitplications, preprocessing can be employed, namely
+multiples of $P$ used often in the exponentiation routine
+are computed and stored.
+
+When computing expressions
+of the form $a P + b Q$ (the equivalent of $g^x h^y$ in
+finite fields), rather than computing $a P$ and $b Q$ separately
+and adding the results, one can use
+a multiexponentiation trick to roughly halve the number of point doublings
+(if $a$ and $b$ are about the same length).
+In its simplest form, $P + Q$ is precomputed and stored,
+then a double-and-add algorithm is used to compute the
+final result. Instead of describing the algorithm in full, we present
+and example:
+
+To compute $12 P + 7 Q$ one precomputes $P + Q$, then:
+
+\begin{enumerate}
+\item
+$R \leftarrow P$
+\item
+$R \leftarrow 2R$
+\item
+$R \leftarrow R + (P + Q)$
+\item
+$R \leftarrow 2R$
+\item
+$R \leftarrow R + Q$
+\item
+$R \leftarrow 2R$
+\item
+$R \leftarrow R + Q$
+\end{enumerate}
+
+Multiexponentiation can
+be generalized to computing any expression of the form
+$a_1 P_1 + ... + a_t P_t$. Multiexponentiation can also be combined with
+sliding window techniques.
+One drawback is the amount of precomputation needed,
+which worsens as $t$ increases, and also as the size of the sliding window
+is increased in which case one must store $m P + n Q$ for several $m, n$.
+
+Cite Lange Sica Quisquater
 
 Cohen Miyaji Ono
 
-\section {Finding Random Points}
-
-Cantor-Zassenhaus.
-Bernstein.
+\section {Security}
