@@ -11,8 +11,8 @@ roots to the Diffie-Hellman key exchange protocol \cite{diffie76new}
 or the RSA cryptosystem \cite{RSA}.
 The former depends on cyclic groups
 with particular properties. (The latter, though
-using similar arithmetic operations, relies
-on different factors. For example, RSA uses groups that
+using similar arithmetic operations, relies on different principles.
+For example, RSA uses groups that
 are not cyclic and requires that the order of the group to be unknown
 to the attacker.)
 
@@ -62,14 +62,17 @@ Given $g, g^x, g^y, g^z$, determine if $x y = z$.
 \end{description}
 
 A vast array of cryptosystems including the Diffie-Hellman key
-exchange protocol can be built assuming one of these problems
-is difficult to solve.
+exchange protocol can be built assuming one of these problems,
+or one of many other related problems, is difficult to solve.
+
+The discrete log problem is the most important, for if it could be
+solved, all other related problems could also be solved.
 
 \section{Formal Security Definitions}
 
-For completeness we include formal
-definitions of difficult problems commonly used by cryptographers.
-We do not use them as we do not provide any security proofs; our
+For completeness we include formal definitions of difficult problems
+commonly used by cryptographers.
+We do not need them as we do not provide any security proofs; our
 focus is on the implementation of pairing-based cryptosystems, not
 their correctness.
 
@@ -228,7 +231,7 @@ a computable pairing.
 However, it is not known how to solve the Computational Diffie-Hellman
 or discrete log problem using a pairing.
 
-\section{A Signature Scheme}
+\section{The BLS Signature Scheme}
 
 This abstract definition can easily be used to construct
 a cryptosystem. We have just noted that if cyclic group with such a
@@ -236,7 +239,7 @@ bilinear map exists, then we have a group where the Computational
 Diffie-Hellman
 problem is thought to be hard, yet the Decisional variant is easy to solve.
 Such groups have been named Gap Diffie-Hellman groups\cite{bls} and
-imply a signature scheme:
+imply a signature scheme, often referred to as the BLS Signature Scheme:
 
 \begin{description}
 \item[Setup.]
@@ -462,7 +465,7 @@ an elliptic curve, and that $G_T$ is a subgroup of a multiplicative group
 of a finite field.
 
 Mathematicians have traditionally employed additive notation for the
-group of points on an elliptic curve (perhaps to emphasize that it is
+group of points on an elliptic curve (since it is
 Abelian). As a result, publications in the area often use additive group
 notation along with uppercase letters for elements for the input groups.
 

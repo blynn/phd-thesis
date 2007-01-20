@@ -1,8 +1,8 @@
 \chapter {The Tate Pairing}
 
-The Weil and Tate pairings take points known as \emph{torsion points}
-as input. In the Weil pairing, both inputs are torsion points.
-They are defined in terms of \emph{rational funcitons}.
+The Weil and Tate pairings \emph{torsion points}
+as input, and in the case of the Weil pairing, both inputs are torsion points.
+They can be defined using \emph{rational functions}.
 They output an element of a finite field (that turns out to be a root of unity).
 
 \section {Torsion Points}
@@ -35,11 +35,9 @@ first $r^2$ points found, no matter how large the field extensions get.
 We define $E[r] = E(\Fqk)[r]$, the set of
 \emph{$r$-torsion points} of $E$.
 
-It can be shown that
+It can be shown that $E[r]$ is the product of two cyclic groups of order $r$:
 
-\[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r \]
-
-(that is, $E[r]$ is the product of two cyclic groups of order $r$).
+\[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r . \]
 
 When $r=2$ this is easy to see: a point has order 2 if and only if it has
 a zero $y$-coordinate. As $E$ is nonsingular
@@ -53,9 +51,10 @@ the line through any two of the finite points is simply the line $Y = 0$,
 which certainly intersects $E$ at the other finite point.
 The proof is much less trivial for general $r$.
 
-We shall later construct a function
-that takes pairs of elements from $E[r]$ and outputs an $r$th root of unity
-that is bilinear and nondegnerate.
+The Weil pairing is a bilinear map
+takes pairs of elements from $E[r]$ and outputs an $r$th root of unity
+in $\Fqk$. The Tate pairing is similar but only the first
+input is from $E(\Fq)[r]$.
 
 \section {Rational Functions}
 
@@ -256,7 +255,7 @@ for any rational functions $f, g$ we have $(f)(g) = (f g)$.
 \section {The Weil Pairing}
 
 Earlier papers on pairing-based cryptosystems advocated the Weil pairing.
-We shall see that the related Tate pairing has more advantages.
+We shall see that the related Tate pairing can be used instead.
 Nonetheless we first describe the Weil pairing (as used in cryptography)
 for historical reasons, and also because its simpler description
 serves well as an introduction. The inputs to the Tate pairing are come
@@ -361,7 +360,7 @@ where $\Phi$ denotes the Frobenius map.
 The output of this pairing is some $x \in K^*$
 that represents the coset $x K^{*r}$. To standardize the coset
 representative, we exponentiate the output of the Tate pairing
-by $(q^k - 1) / r$.
+by $(q^k - 1) / r$, which can take a substantial amount of time.
 
 On the positive side, the second input to the Tate pairing is also a coset
 representative. This means it can be any point of $E(K)$ and may

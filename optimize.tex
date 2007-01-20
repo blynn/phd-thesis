@@ -1,5 +1,87 @@
 \chapter{Optimizing the Pairing}
 
+TODO: move to a good spot
+\section {Twisting Curves}
+
+Let $E$ be an elliptic curve $Y^2 = X^3 + a X + b$ in $\Fq$ where
+$q$ is a prime power.
+Let $v$ be a quadratic nonresidue in $\Fq$.
+Consider
+the curve $E'$ given by $Y^2 = X^3 + a v^2 X + v^3 b$,
+which we call the (quadratic) \emph{twist} of the curve $E$.
+
+\begin{theorem}
+Let $t = q + 1 - \#E(\Fq)$. Then $\#E'(\Fq) = q + 1 + t$.
+\end{theorem}
+
+The proof is straightforward.
+Let $g(X) = X^3 + a X + b$, and $h(X) = X^3 + a v^2 X + v^3 b$.
+Note $h(X) = v^3 g(Xv^{-1})$.
+
+There are three cases.
+
+\begin{enumerate}
+\item
+If $g(xv^{-1}) = 0$ then $v^3g(xv^{-1}) = h(x) = 0$ thus
+$Y = 0$ is the unique solution to both the
+equations $Y^2 = g(xv^{-1})$ and $Y^2 = h(x)$.
+\item
+If $g(xv^{-1})$ is a quadratic residue then $Y^2 = g(xv^{-1})$
+has exactly two solutions,
+and $Y^2 = v^3 g(xv^{-1}) = h(x)$ has no solutions (since $v^3$
+is a quadratic nonresidue).
+\item
+If $g(xv^{-1})$ is a quadratic nonresidue then the situation is reversed:
+$Y^2 = g(xv^{-1})$ has no solutions and
+and $Y^2 = h(x)$ has exactly two solutions.
+\end{enumerate}
+
+As $x$ runs through all the elements of $\Fq$, so does $xv^{-1}$,
+and we see that total number of solutions to either equation $E$ and $E'$
+over $\Fq$ is $2q$.
+Since $O$ is always a solution of any elliptic curve we have
+$\#E(\Fq) + \#E(\Fq) = 2q + 2$, proving the theorem.
+
+On the other hand if $v$ is a quadratic residue then $v = c^2$ for some
+$c \in \Fq$. Then we have a map $\Psi : E'(\Fq) \rightarrow E(\Fq)$
+given by
+
+\[ \Psi(x,y) = (c^2 x,c^3 y) \]
+
+hence in some sense $E$ and $E'$ are the same curve, so the choice of
+quadratic nonresidue $v$ does not matter as they all lead to the same twist.
+
+Note a quadratic
+nonresidue $v$ becomes a quadratic residue in $\F_{q^2}$ (that is, we
+can find a square root $c$ of $v$)
+and we have a map between
+$E'(\F_{q^2})$ and $E(\F_{q^2})$. Roughly speaking, curves that are twists
+of each other become the same curve when considered in a quadratic extension
+of the field they are defined in.
+
+For example, since $2$ is a quadratic nonresidue in $\F_{19}$,
+the curve $E : Y^2 = X^3 + X + 6$ (over $\F_{19}$) has the
+twist $E': Y^2 = X^3 + 4 X + 10$, and $E'(\F_{19})$ contains 22 points.
+
+In $\F_{19^2}$, both $E$ and $E'$ contain 396 points, and we can map
+points of $E'$ to points of $E$ via $(x,y) \rightarrow (2 x, 2\sqrt{2} y)$.
+
+We can use quadratic residues to transform the equation of a given elliptic
+curve $E$ into a form that allows certain optimizations.
+It turns out that ideally we would like $a = 0$ to reduce the amount of
+operations needed to compute on an elliptic curve, but for a general curve
+this an impossible transformation. We shall see a reasonable alternative
+is $a = -3$.
+
+Then from above, a curve $Y^2 = X^3 + aX + b$ can be transformed into
+one of the form $Y^2 = X^3 - 3X + b'$ if we can find $c\in \Fq$
+satisfying $a c^4 = -3$.
+
+This is not always possible, so a compromise is to have
+$a = 1$ or $a = -3 d^2$ for some small integer $d$
+(or $d$ of low Hamming weight), which can be achieved in a similar manner.
+
+
 TODO: Miller:
 For faster pairings, it is desirable to choose $r$ so that repeated squaring
 algorithms can be optimized: e.g. choose $r$ to have a low Hamming weight,
@@ -42,7 +124,7 @@ Then we have
 \[ (f'_P V_R^r V_P^r / L^r) = r \langle P \rangle - r \langle O \rangle
 = (f_P) \]
 None of $V_R, V_P, L$ have zeroes or poles at $Q$ by choice of $R$.
-Sicne each of $V_R(Q), V_P(Q), L(Q)$ is ultimately exponentiated by $q^k-1$
+Since each of $V_R(Q), V_P(Q), L(Q)$ is ultimately exponentiated by $q^k-1$
 we have $f'_P(Q) = f_P(Q)$.
 (Alternatively we could appeal to Fermat's Little Theorem
 again, since the lines can be chosen to have coefficients in $\F_q$.)
@@ -82,7 +164,7 @@ Then $r \mid \#E'(\Fqd)$.
 \end{theorem}
 
 \begin{proof}
-If $\#E(\F_{q^d} = q^d + 1 - c$ then
+If $\#E(\F_{q^d}) = q^d + 1 - c$ then
 \[ \#E'(\F_{q^d}) = q^d + 1 + c \]
 and
 \[ \#E(\F_{q^k}) = (q^{d} + 1 + c)(q^{d} + 1 - c) . \]
@@ -168,7 +250,7 @@ have $q^d = 1 \bmod r$ since $k > d$ is the embedding degree).
 Hence $\Phi^d(Q) = -Q$.
 
 If we write $Q=(a,b)$ then this implies $a \in \F_{q^d}$ and $b = c \sqrt{v}$
-for some $c \in \F_{q^d}$, thus $\Psi^{-1}(Q)$ lies on $E'(\F_{q^d}$.
+for some $c \in \F_{q^d}$, thus $\Psi^{-1}(Q)$ lies on $E'(\F_{q^d})$.
 
 Alternatively we may employ a counting argument to show the converse,
 as there are exactly
@@ -300,10 +382,139 @@ by $(q^2 - q + 1)/r$ using a standard algorithm.
 In this case we have shrunk the exponent to roughly one third its original
 size.
 
-TODO: collating divisons
+\section { Collating Inversions }
 
+Recall the computation of a pairing involves several iterations
+of multiplying by an expression of the form $g(Q) / h(Q)$
+where $g, h$ are equations of lines and $Q$ is some point.
+
+A straightforward optimization is to defer the division,
+and have one inversion at the end instead of one per iteration, at
+the cost of an extra variable.
+In other words, compute $(g_1(Q) ... g_m(Q)) / (h_1(Q) ... h_m(Q)$ instead
+of $(g_1(Q) / h_1(Q)) ... (g_m(Q) / h_m(Q)$.
+
+\section {Precomputation of Lines}
+
+In many pairing-based cryptosystems, a group element such as a system parameter
+or a key that rarely changes is fed to the pairing over and over again in
+typical use, behaviour that we can exploit with precomputation.
+
+For example, in the BLS signature scheme, a system parameter and
+signer's public key are given to the pairing during verification, thus
+an application that verifies many BLS signatures from the same sender will be a
+good candidate for this optimization.
+
+Recall during a pairing computation, the coefficients in equations of the form
+$aX + bY + c$ are calculated. These lines
+are derived entirely from one of the input points,
+hence much time can be saved every time the same input point is encountered
+if we precompute and store $a, b, c$ for every line.
+
+\section { Multipairings }
+
+Because Miller's algorithm has features in common with an exponentation
+routine, when computing products or quotients of pairings,
+
+\section { Pairing Compression }
+
+We quote results without proof from a paper
+due to Scott and Barreto~\cite{compressedpairings}.
+
+We first examine the simplest case.
+Suppose we have constructed a pairing
+with an elliptic curve $E$ over a field $\Fq$ with embedding degree 2,
+so that the output of the pairing is an element of order $r$
+in $\F_{q^2}$, where $r$ is the order of the cyclic subgroup being used.
+
+Suppose $\F_{q^2}$ has been implemented as $\F_q[\alpha]$.
+A typical choice is $\alpha = i (=\sqrt{-1})$.
+
+From above, the last step of the optimized Tate exponentiation
+consists of exponentiating a number of the form $a + \alpha b$ by
+$(q + 1) / r$.
+
+It can be shown $a + \alpha b$ must be \emph {unitary} (the proof
+applies to any element of $\F_{q^2}$ whose order divides $q+1$), which
+is to say $a^2 - \alpha^2 b^2 = 1$. This in turn implies
+\emph{Lucas sequences} can be used to compute powers. Let $P = 2a$.
+
+Define
+\[ V_0 = 2, V_1 = P, V_{n+1} = P V_n - V_{n-1} . \]
+
+It turns out that $(a+\alpha b)^n = V_n / 2 + \alpha b U$,
+where $U = (P V_n - 2 V_{n-1}) / (P^2 - 4)
+= (2 V_{n+1} - P V_n) / (P^2 - 4)$.
+
+Consider the following \emph {laddering algorithm}.
+Let $n_t ... n_0$ be the binary respresentation of $n$.
+
+\begin{enumerate}
+\item
+$v_0 \leftarrow 2, v_1 \leftarrow P, j \leftarrow t$
+\item
+If $j = 0$ then
+\begin{enumerate}
+\item
+$v_1 \leftarrow v_0 v_1 - P, v_0 \leftarrow v_0^2 - 2$
+\item
+Halt
+\end{enumerate}
+\item
+If $n_j = 1$ then
+\begin{enumerate}
+\item
+$v_0 \leftarrow v_0 v_1 - P, v_1 \leftarrow v_1^2 - 2$
+\end{enumerate}
+\item
+Else
+\begin{enumerate}
+\item
+$v_1 \leftarrow v_0 v_1 - P, v_0 \leftarrow v_0^2 - 2$
+\end{enumerate}
+\item
+$j \leftarrow j - 1$
+\item
+Goto the step 2.
+\end{enumerate}
+
+It can be shown that upon termination, for even $n$ we have
+$v_0 = V_n$ and $v_1 = V_{n+1}$, otherwise
+$v_0 = V_{n-1}$ and $v_1 = V_n$, and we can easily compute $U$ in either
+case.
+
+Note we usually have $r$ odd (every pairing-based cryptosystem yet
+proposed chooses
+$r$ to be an odd prime or a product of two odd primes) and $q + 1$
+even (we never work in characteristic 2 fields), so we
+only encounter the case when $n = (q + 1) / r$ is even.
+
+Clearly the above is faster than a standard $\F_{q^2}$ exponentiation
+procedure as all operations take place in the smaller field $\Fq$.
+
+This method applies to any curve of even embedding degree, but we shall
+find that for embedding degree $k = 6$ an even better algorithm exists.
+However, before describing it, we first discuss pairing compression.
+
+Because the output of a pairing is some unitary element $a + \alpha b \in
+\F_{q^2}$, for each value of $a$, there are two possibile values for $b$
+since $a^2 - \alpha^2 b^2 = 1$.
+
+Just as point compression works by recording only the $x$-coordinate and
+one bit that signifies which $y$-coordinate to take, we may compress pairing
+values by recording only the $a$ value and one bit that represents which
+solutions of $a^2 - \alpha^2 b^2 = 1$ the $b$ takes.
+
+To invert a group element on an elliptic curve is to negate the $y$-coordinate.
+Similarly, we have $(a + \alpha b)^{-1} = a - \alpha b$ for pairing values.
+
+Furthermore, yet another similarity is that in some applications it may
+be possible to dispose of $b$ entirely and not bother recording which solution
+to take.
+
+The BLS signature scheme is a good example of when this is useful.
+
+TODO: alternative Tate pairing computation method
+TODO: ignoring last iteration
+TODO: sliding windows, NAF (why NAF can be used)
 TODO: char 3 optimizations
-
-TODO: precomputation
-
-TODO: pairing compression

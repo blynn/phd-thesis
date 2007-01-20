@@ -1,17 +1,28 @@
 \chapter{Curve Selection}
 
-TODO: do we need to define embedding degrees for subgroups?
-
 Let $E$ be an elliptic curve defined over a finite field $K$.
 Let $P \in E(K)$ be a point of prime order $r$. Let $G = \langle P \rangle$.
+
+We intend to build cryptosystems that operate in $G$. Hence
+we perform field arithemtic in $K$ during cryptographic operations,
+while the security of the resulting systems depends on the size of $r$.
+Recall the size of $K$ is roughly the size of $\#E(K)$,
+thus we desire $r$ to be as close to $\#E(K)$ as possible. Ideally,
+$r$ and $\#E(K)$ are the same size, both being say $l$-bit numbers,
+meaning we have $l$-bit security
+in $G$ and the running times depend on operations on $l$-bit numbers.
+
+We focus on the case where $r$ and $\#E(K)$ take roughly the same number of
+bits (that is, they differ by some small constant), but we note
+that relaxing this condition
+allows us to use a wider variety of pairings.
 
 If $L$ is a field extension of $K$
 that contains the $r$th roots of unity (so $r$ divides $|L| - 1$),
 then the Tate pairing
 on $G$ can be computed by performing operations in $L$.
 
-On the other hand,
-let $E[r]$ denote the group of points of order $r$.
+On the other hand, let $E[r]$ denote the group of points of order $r$.
 The Weil pairing is defined on $E[r]$. For some field extension
 $L'$ of $K$, $E(L')$ contains $E[r]$, and the Weil pairing can be
 computed by performing operations in $L'$.
@@ -20,14 +31,17 @@ In order for the Tate pairing to be efficiently computable,
 operations must be efficient in $L$.
 Similarly, for the Weil pairing to be efficiently
 computable, operations must be efficient in $L'$.
-
 Thus we seek fields $L$ or $L'$ that are small enough so that field
 operations are still fast.
 
+We will define the \emph{embedding degree} which can be thought of as measuring
+how much larger $L$ or $L'$ is compared to the field $K$.
+
 It turns out that such a field $L'$ will always contain the $n$th
-roots of unity, but the converse is not true: it is possible
-for a field $L$ to contain the $r$th roots of unity but
-at the same time part of $E[r]$ lies outside $E(L)$.
+roots of unity, thus we always have $L \subseteq L'$.
+The converse is not true. It is possible for the subset inclusion to be strict,
+or in other words, for a field $L$ to contain the $r$th roots of unity but
+at the same time have part of $E[r]$ lying outside $E(L)$.
 
 However, the converse is almost true:
 
@@ -40,13 +54,12 @@ $r \nmid q-1$.
 Then for any positive integer $k$,
 $E(\mathbb{F}_{q^k})$ contains all $r^2$
 points of order $r$ if and only if $r \mid q^k - 1$.
-
 \end{theorem}
 
 \begin{proof}
 It is well-known that if $E(\mathbb{F}_{q^k})$ contains $E[r]$
 then $r \mid q^k - 1$, even without assuming $r \mid N$ or
-$r \nmid q-1$.
+$r \nmid q-1$~\cite{bk}.
 
 Conversely, suppose $k > 1$ and $r \mid q^k - 1$.
 Let $\Phi$ denote the Frobenius map. Consider the subgroup $T$ of $E[r]$
@@ -73,34 +86,89 @@ $E[r] \subset E(\mathbb{F}_{q^k})$.
 
 \begin{definition}
 Let $E$ be an elliptic curve defined over $K = \mathbb{F}_q$.
-Let $P \in E(K)$ be a point of order $r$.
-Let $G = \langle P \rangle$.
-The \emph{embedding degree} of $G$ is the smallest positive integer $k$
-such that $r \mid q^k - 1$.
-
-If $k$ is the smallest positive integer such that
-$\#E(\Fq) | q^k - 1$
-then we say the embedding degree of the curve $E$ is $k$.
+Let $k$ be the smallest positive integer such that $\#E(\Fq) | q^k - 1$.
+Then we say that the embedding degree of the curve $E$ is $k$.
 \end{definition}
 
-Thus we have shown that if the embedding degree $k$ is greater than 1,
+Let $P \in E(K)$ be a point of order $r$.
+Let $G = \langle P \rangle$.
+If $r$ is a proper factor $\#E(\Fq)$,
+then it could be that for some $j < k$, although $\#E(\Fq)$ does not
+divide $q^j - 1$, we have $r | q^j - 1$, that is,
+$\mathbb{F}_{q^j}$ contains all the $r$th roots of unity and this
+subfield of $\mathbb{F}_{q^k}$ suffices for
+the Tate pairing computation on $G$.
+
+However, in practice, when we do use such a group $G$,
+$r$ is a large prime factor of $\#E(\Fq)$ and with overwhelming probability
+$\mathbb{F}_{q^k}$ is the smallest field extension that allows the computation
+of the pairing.
+
+In other words, in general, for a cyclic subgroup $G \subset \#E(\Fq)$
+the embedding degree $k$ of $E(\Fq)$
+may not be the smallest positive integer such that $r \mid q^k - 1$ but
+in practice, $r$ is a large prime factor of $\#E(\Fq)$ the probability that
+$k$ is not the integer we seek is negligible.
+
+If we insist on precision, we could revise our definition of the embedding
+degree to take the cyclic subgroup $G$ into account, but for cryptographically
+useful groups this subtlety may be ignored. Below, we shall make statements
+about embedding degrees ignoring the negligible probability that the
+real embedding degree could be smaller.
+
+Thus in practice, we construct a curve $E(\Fq)$ with some embedding degree
+$k$. Then $r$ is chosen to be a large prime factor of
+$\#E(\Fq)$ so that $k$ is also the smallest integer such that $r \mid q^k - 1$
+with overwhelming probability.
+
+However, for very small toy examples, after computing the embedding degree
+$k$ one should manually check if $r | q^j - 1$ for some $j < k$.
+
+At this point, our goal seems to be minimizing this embedding degree,
+so that $L$ is as close as possible to $K$, and if possible,
+to have $K = L$ and have all computations in a
+small a field as possible.
+
+However, the pairing is a double-edged sword. Though it
+bestows additional cryptographically useful properties upon cyclic groups,
+we will show how it also allows one to break the discrete log problem in $E(K)$
+by first breaking the discrete log problem in $L$.
+Since the latter are finite fields, subexponential
+algorithms such as index calculus are applicable, thus the size of $L$ and
+$L'$ must be large enough to resist this (1024 bits at the very least).
+
+This statement is true for every nonsingular elliptic curve, but in general
+the embedding degree is so large that it is futile to attempt this attack
+on a typical elliptic curve as $L$ and $L'$ are far too large for any
+practical calculations.
+However, for pairings, we actively seek curves with low embedding
+degrees and must take this attack into account.
+
+Thus we shall find that constructing a pairing is a delicate balancing act:
+$K$ must be large enough
+so that $E(K)$ can foil generic discrete log attacks
+(e.g. Pollard rho, baby-step-giant-step TODO: reference earlier chapter?).
+, while $L$ must be
+large enough to resist finite field discrete log attacks. At the same time,
+$K$ and $L$ should be as small as possible to minimize time and space
+usage.
+
+\section {Weil and Tate Pairing Comparison}
+
+The above theorem shows that if the embedding degree $k$ is greater than 1,
 then both the Tate pairing and the Weil pairing may be computed by
 performing field arithmetic in $\mathbb{F}_{q^k}$.
 
-However, if the embedding degree $k$ is 1, the Tate pairing may
+On the other hand, if the embedding degree $k$ is 1, the Tate pairing may
 be computable in $\mathbb{F}_q$, but the Weil pairing may not be.
 Usually this is not significant because we shall see
 $k > 1$ is preferred.
-However, the Tate pairing turns out to have other benefits.
+Nonetheless, we shall find the Tate pairing to be the best choice in
+any case due to other benefits.
 
-In practice, we construct a curve $E(\Fq)$ and find the smallest
-possible $k$ such that $\#E(\Fq) | q^k - 1$, that is the embedding degree
-of the curve is $k$. Then we take $r$ to be a large prime factor of
-$\#E(\Fq)$ so that $k$ is also the embedding degree of $E(\Fq)[r]$
-with high probability.
-
-For example, consider the curve $E: Y^2 = X^3 + X + 6$ which has
-18 points over $\mathbb{F}_{19}$.
+Consider the curve $E: Y^2 = X^3 + X + 6$ which has
+18 points over $\mathbb{F}_{19}$, quoted from a publication by
+Balasubramanian and Koblitz~\cite{bk}.
 The point $R=(0,5)$ generates a cyclic group of order 18,
 so the point $P = 6R = (12,13)$ generates a cyclic group of order 3.
 
@@ -119,9 +187,10 @@ $\mathbb{F}_{19}$ are $1, 7, 11$, we expect $7$ or $11$.)
 We can also use this curve to exhibit
 interesting behaviour that can occur with
 pairings on cyclic groups with composite order.
-If we move to $\mathbb{F}_{19^2}$,
-it can be checked that
-$e(R, R) = 17$,  a ninth root of unity.
+It can be checked that $e(R, R) = 17$, a ninth root of unity.
+(If were to strictly adhere to the definition of the Tate pairing
+the second input should be written as $R + 18G$ since it is supposed to be
+a coset, but this is superfluous since $18G$ is the trivial group.)
 Thus we have a pairing that maps two groups of order 18
 to a group that has order 9.
 This implies, for example, $e(R, 9R) = 1$.
@@ -131,48 +200,41 @@ that $e(P, Q)$ must also be of order $r$ for any
 $P, Q \in \langle R \rangle \setminus \{ O \}$.
 In fact, $e(P, Q) = 1$ would imply at least one of $P, Q$ is $O$ in this case.
 Because most pairing-based cryptosystems use groups of prime order,
-one may become so accustomed to these facts that one may erroneously
+one may become so accustomed to facts like these that one may erroneously
 assume them to be true when working with groups of composite order.
 
 \section {Security Considerations}
 
-Thus our goal is to find curves $E(\mathbb{F}_q)$ containing a subgroup
-$G$ of prime order $r$ with embedding degree $k$ small enough so that
-operations in $\mathbb{F}_{q^k}$ are efficiently computable.
-All other things being equal, we prefer $q$ to be small as possible so
-that operations in $G$ are fast as possible and can be represented by
-as few bits as possible.
+Consider a nonsingular elliptic curve $E$ over finie field $\Fq$ with
+embedding degree $k$.
+We mentioned earlier that with pairings,
+we can solve the discrete log problem in
+$E(\Fq)$ by first solving the discrete log problem in $E(\Fqk)$.
+We now give the details for this attack~\cite{mov,fr}.
+This attack was the first application of pairings in cryptography
+to appear in the literature, predating all publications describing
+constructive uses of the pairing.
 
-On such curves, the Tate pairing is always efficiently computable.
-If $k > 1$ then the Weil pairing is also efficiently computable.
-
-On the other hand, we must consider the lower bounds on $q$ and $q^k$.
-Recall elliptic curves are attractive for cryptography
-because unlike finite fields,
-no specialized discrete logarithm algorithm is known for a general elliptic
-curve.
-
-Generally speaking, for a cryptographically useful elliptic curve
-we need only ensure that $r$ is large enough to foil generic attacks
-(e.g. Pollard rho, baby-step-giant-step).
-
-However, a low embedding degree $k$ complicates matters. A bilinear map
-sends points of an elliptic curve to elements of a finite field
-$\mathbb{F}_{q^k}$. In particular, given a subgroup $G$ of $E(\mathbb{F}_q)$
-of prime order $r$, by bilinearity and nondegeneracy we have
+Let $P \in E(\Fq)$ be a point of prime order $r$.
+Let $G = \langle P \rangle$.
+By bilinearity and nondegeneracy of the Weil pairing
+$e : G \times G \rightarrow \Fqk$ we have
 \[ \dlog (P, nP) = \dlog ( e(P,P), e(P, nP) )
 = \dlog (e(P,P),e(P,P)^n) = n \]
 for $n \in \{0,...,r-1\}$.
-Thus if the discrete logarithm problem can be solved
-in $\mathbb{F}_{q^k}$, then it can also be solved in $G$ \cite{mov,fr}.
+Since $e(P,P), e(P, nP) \in \Fqk$,
+if the discrete logarithm problem can be solved
+in $\mathbb{F}_{q^k}$, then it can also be solved in $G$. The corresponding
+attack for the Tate pairing is similar.
 
-Hence we must also ensure $q^k$ is large enough so that
+Hence we must ensure $q^k$ is large enough so that
 finite field discrete logarithm algorithms such as index calculus are
 infeasible in $\mathbb{F}_{q^k}$.
 
-The curves used in pairing-based cryptography are special in other senses.
-They are supersingular, or have complex multiplication. This possibly means
-they are vulnerable, but no specific attacks for either case are known.
+Are there any other attacks that concern us? It turns out
+the curves used in pairing-based cryptography are special in other senses.
+They are supersingular, or have complex multiplication.
+Fortunately, no specific attacks for either case is known.
 
 We have now described all necessary conditions on the sizes of
 $r$ and $q^k$:
@@ -188,16 +250,19 @@ are as fast as possible.
 \item
 $q^k$ must be large enough so that finite field discrete logarithm attacks
 in $\mathbb{F}_{q^k}$ are ineffective.
+$q$ should not have low Hamming weight~\cite{someone}, nor be a power of
+$2$ or $3$.
 \item
 $q^k$ must be small enough so that operations in $\mathbb{F}_{q^k}$
-are efficient. $q^k$ should be small as possible so that operations
+are efficient. All other things being equal,
+$q^k$ should be small as possible so that operations
 are as fast as possible.
 \end{enumerate}
 
 Of course, the first three statements are true for any cryptographically
 useful elliptic curve, not just for pairing-based cryptography.
 
-Currently it is considered acceptable to have $r$ about 160-bits.
+Currently it is acceptable to have $r$ about 160-bits.
 As for $q^k$, 1024 bits is adequate for many applications, and calculations
 in fields of this size can certainly be performed.
 Ideally we have $r \approx \#E(\mathbb{F}_q) \approx q$
@@ -206,50 +271,14 @@ embedding degree $k$ around $1024 / 160 = 6.4$.
 
 We later describe how to construct curves of embedding degree 6 and 12.
 For the near future, embedding degree 6 should be reasonable if used along
-with an $r$ that is at lesat $170$ bits long,
+with an $r$ that is at least $170$ bits long,
 and embedding degree 12 curves may be more desirable as time passes.
-
-\section {Short Signatures}
-
-At this point we can see why the signature scheme introduced
-in the first chapter
-yields short signatures. Recall a signature is a single group element.
-We now know that this group can be instantiated as a subgroup of points
-of a certain order on an elliptic curve $E$, thus a signature is simply
-a point on $E$ over some field $\F_q$ where $q$ is about 160 bits.
-
-A point has two coordinates, but we can discard the $y$-coordinate entirely,
-and represent signatures by their $x$-coordinate only if we modify
-verification as follows:
-\begin{enumerate}
-\item
-Given an $x$-coordinate of a signature, find any solution $y$
-in the curve equation $E$.
-\item
-If the signature $(x,y)$ does not verify,
-check if the signature $(x, -y)$ verifies.
-\item
-If the signature still does not verify then reject it.
-\end{enumerate}
-
-Thus signatures are roughly 160 bits in length.
-
-Verification of the signature involves computing $e(P, Q)$ for some points
-$P, Q$. By the bilinearity of the pairing, if we have guessed the point $Q$
-wrongly, we can obtain the value of $e(P,-Q) = e(P,Q)^{-1}$ by performing
-an inversion rather than recompute another pairing.
-
-Later we will see we can do better than this, and in effect check both
-cases at once.
-
-Note instead of discarding the $y$-coordinate, we can
-replace it with a single bit signifying which solution of $y$ to take.
 
 \section {Approaches to Finding Curves}
 
 A randomly-chosen elliptic curve will have a large embedding
-degree, which bestows it with resistance to the aforementioned discrete log
-attack, but also makes it useless for pairing-based cryptography.
+degree, which instills it with resistance to the aforementioned discrete log
+attack, but also renders it useless for pairing-based cryptography.
 We must take one of two approaches to find curves suitable for pairings:
 
 \begin{enumerate}

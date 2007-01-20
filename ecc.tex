@@ -1,11 +1,78 @@
 \chapter {Elliptic Curves}
+
 We review basic facts about elliptic curves.
-Aside from the problem of generating suitable elliptic curves,
+Aside from the problem of generating suitable elliptic curves
+and counting the size of the resulting group,
 we will cover enough theory to replace finite fields with
-elliptic curves in cryptosystems based on cyclic groups, except
-for the issue of finding suitable curves.
+elliptic curves in cryptosystems based on cyclic groups.
+
 We discuss pairings in the following chapter, and describe algorithms
-to find suitable curves in the chapter after that.
+to find pairing-friendly curves in the chapter after that. We will not
+discuss curve-finding and point-counting algorithms that are geared
+towards standard elliptic curve cryptography (which necessarily requires
+curves that are not pairing-friendly), but instead direct
+the interested reader to the references~\cite{bss}.
+
+\section {Informal Overview of Elliptic Curves}
+
+We present a highly informal overview to elliptic curve theory,
+which may aid those that have not encountered them before.
+This section can be safely skipped.
+
+Consider a polynomial $C$ in two variables $X, Y$.
+We are interested in the solutions to $C = 0$
+which describe a curve on a two-dimensional plane.
+
+We first observe that if $C'$ is another curve that is an affine transformation
+of $C$, that is, if we can linearly transform (e.g. rotate, scale, shear)
+and then translate $C$ to
+obtain $C'$ then a correspondence exists between
+the solutions to $C = 0$ and the solutions to $C' = 0$. Knowing
+the solutions of one allows us to easily compute the solutions of the other,
+For this reason we consider $C$ and $C'$ to be equivalent.
+
+If every term in $C$ has combined degree of at most 1, that is,
+if $C = a X + b Y + c$ then $C$ describes a line. The geometry of lines
+is too simple to yield anything cryptographically useful.
+
+If every term in $C$ has combined degree at most 2, then $C$ describes
+a single line, a pair of lines, an ellipse, a parabola or a hyperbola.
+The first two possiblities can be viewed as special cases, occuring
+when $C$ is reducible or degenerate in some sense.
+
+By adding \emph{points of infinity} to the plane, we can find affine
+transformations that change any ellipse, parabola or hyperbola into the
+unit circle centred at the origin. Intuitively, the two ends of the parabola
+can be thought of as meeting
+at a point at infinity, forming a circle,
+and similarly opposite ends of hyperbolas connect at infinite points.
+
+TODO: diagram?
+
+Thus to study degree 2 curves is to study lines or circles, whose geometry
+is again is too simple for our purposes.
+
+However, degree 3 curves, called elliptic curves,
+are quite nontrivial (for starters, unlike the previous two
+cases cannot transform any (irreducible) elliptic curve into
+any other)
+and have a rich structure well-suited for cryptography.
+
+For any irreducible elliptic curve $C$,
+applying appropriate affine transformations
+produces an equation $C'$ of a certain form known
+as the \emph{Weierstrass form}.
+In this form, $C'$ always contains exactly one point at infinity.
+Transforming $C$ so
+that no points are infinite is
+possible but leads to more complicated
+equations. Using an equation that has
+exactly one point at infinity simplifies some of the resulting equations.
+
+For example, the Fermat curve $X^3 + Y^3 = 1$ becomes
+?!? after a suitable affine transformation.
+
+\section {Points on Elliptic Curves}
 
 Let $\Fq$ be a field for some prime $q > 3$.
 Unless otherwise specified we shall always
@@ -20,8 +87,8 @@ An elliptic curve $E$ over such a field $\Fq$ is an equation of the form
 \[ E: Y^2 = X^3 + a X + b \]
 where $a, b \in \Fq$.
 Let $\Delta = 4 a^3 + 27b^2$ (the discriminant of the cubic in $x$). Then
-$E$ is \emph{singular} if $\Delta = 0$ (so the cubic has distinct solutions),
-and \emph{nonsingular} otherwise.
+$E$ is \emph{singular} if $\Delta = 0$ (the cubic has a repeated root)
+and \emph{nonsingular} otherwise (the cubic has distinct roots).
 
 Unless otherwise stated we always consider nonsingular elliptic curves.
 (Later we will encounter \emph{supersingular} curves, a particular
@@ -89,86 +156,6 @@ Over $\F_{{19}^2}$, we have
 where $t_2 = 2\cdot 2 - 19 \cdot 2 = -34$, thus
 $\#E(\F_{{19}^2}) = 396$.
 
-\section {Twisting Curves}
-
-Let $E$ be an elliptic curve $Y^2 = X^3 + a X + b$ in $\Fq$ where
-$q$ is a prime power.
-Let $v$ be a quadratic nonresidue in $\Fq$.
-Consider
-the curve $E'$ given by $Y^2 = X^3 + a v^2 X + v^3 b$,
-which we call the (quadratic) \emph{twist} of the curve $E$.
-
-\begin{theorem}
-Let $t = q + 1 - \#E(\Fq)$. Then $\#E'(\Fq) = q + 1 + t$.
-\end{theorem}
-
-The proof is straightforward.
-Let $g(X) = X^3 + a X + b$, and $h(X) = X^3 + a v^2 X + v^3 b$.
-Note $h(X) = v^3 g(Xv^{-1})$.
-
-There are three cases.
-
-\begin{enumerate}
-\item
-If $g(xv^{-1}) = 0$ then $v^3g(xv^{-1}) = h(x) = 0$ thus
-$Y = 0$ is the unique solution to both the
-equations $Y^2 = g(xv^{-1})$ and $Y^2 = h(x)$.
-\item
-If $g(xv^{-1})$ is a quadratic residue then $Y^2 = g(xv^{-1})$
-has exactly two solutions,
-and $Y^2 = v^3 g(xv^{-1}) = h(x)$ has no solutions (since $v^3$
-is a quadratic nonresidue).
-\item
-If $g(xv^{-1})$ is a quadratic nonresidue then the situation is reversed:
-$Y^2 = g(xv^{-1})$ has no solutions and
-and $Y^2 = h(x)$ has exactly two solutions.
-\end{enumerate}
-
-As $x$ runs through all the elements of $\Fq$, so does $xv^{-1}$,
-and we see that total number of solutions to either equation $E$ and $E'$
-over $\Fq$ is $2q$.
-Since $O$ is always a solution of any elliptic curve we have
-$\#E(\Fq) + \#E(\Fq) = 2q + 2$, proving the theorem.
-
-On the other hand if $v$ is a quadratic residue then $v = c^2$ for some
-$c \in \Fq$. Then we have a map $\Psi : E'(\Fq) \rightarrow E(\Fq)$
-given by
-
-\[ \Psi(x,y) = (c^2 x,c^3 y) \]
-
-hence in some sense $E$ and $E'$ are the same curve, so the choice of
-quadratic nonresidue $v$ does not matter as they all lead to the same twist.
-
-Note a quadratic
-nonresidue $v$ becomes a quadratic residue in $\F_{q^2}$ (that is, we
-can find a square root $c$ of $v$)
-and we have a map between
-$E'(\F_{q^2})$ and $E(\F_{q^2})$. Roughly speaking, curves that are twists
-of each other become the same curve when considered in a quadratic extension
-of the field they are defined in.
-
-For example, since $2$ is a quadratic nonresidue in $\F_{19}$,
-the curve $E : Y^2 = X^3 + X + 6$ (over $\F_{19}$) has the
-twist $E': Y^2 = X^3 + 4 X + 10$, and $E'(\F_{19})$ contains 22 points.
-
-In $\F_{19^2}$, both $E$ and $E'$ contain 396 points, and we can map
-points of $E'$ to points of $E$ via $(x,y) \rightarrow (2 x, 2\sqrt{2} y)$.
-
-We can use quadratic residues to transform the equation of a given elliptic
-curve $E$ into a form that allows certain optimizations.
-It turns out that ideally we would like $a = 0$ to reduce the amount of
-operations needed to compute on an elliptic curve, but for a general curve
-this an impossible transformation. We shall see a reasonable alternative
-is $a = -3$.
-
-Then from above, a curve $Y^2 = X^3 + aX + b$ can be transformed into
-one of the form $Y^2 = X^3 - 3X + b'$ if we can find $c\in \Fq$
-satisfying $a c^4 = -3$.
-
-This is not always possible, so a compromise is to have
-$a = 1$ or $a = -3 d^2$ for some small integer $d$
-(or $d$ of low Hamming weight), which can be achieved in a similar manner.
-
 \section {The Chord-Tangent Law of Composition}
 
 TODO: pictures
@@ -206,11 +193,6 @@ the multiplicative group of a finite field.
 Mathematicians use additive group notation for the elliptic curve group
 (since the group is Abelian), and we will adhere to this convention in this
 section.
-
-For the curve $Y^2 = X^3 + X + 6$ over $\F_{19}$,
-it can be verified for instance that
-$(0, 5) + (0, 5) = (4, 6)$,
-and $(0, 5) + (2, 15) = (4, 13)$.
 
 \section {Explicit Formulas}
 
@@ -270,6 +252,11 @@ $\lambda$.
 
 The expressions for the lines $L,T,V$ will be used later in the computation
 of a pairing.
+
+For the curve $Y^2 = X^3 + X + 6$ over $\F_{19}$,
+using these formulas, it can be verified for instance that
+$(0, 5) + (0, 5) = (4, 6)$,
+and $(0, 5) + (2, 15) = (4, 13)$.
 
 \section {Elliptic Curve Cryptography}
 
@@ -348,7 +335,16 @@ an exponentiation is called for we carry out a point multiplication
 
 TODO: table? diagram?
 
-But how do we compute $\#E(K)$? Fast algorithms exist for this~\cite{bss}
+In the running example, $E : Y^2 = X^3 + X + 6$ over $\F_{19}$,
+the order of the group is $n = 18 = 3^2 \times 2$, and it so happens
+that the group is cyclic: it can be checked that $(0,5)$ is a generator.
+Thus this curve can be used
+for cryptography on a cyclic group of order $r = 3$. However, in general,
+if $r^2 | n$ there may be more than one subgroup of order $r$ and the
+above procedure cannot be followed.
+
+But how do we compute $\#E(K)$ for a given curve?
+As mentioned earlier, fast algorithms exist for this~\cite{bss}
 but it turns out that if a pairing is desired, we must seek out
 elliptic curves whose orders satisfy various conditions.
 As a result,
@@ -358,7 +354,7 @@ we must use certain families of curves where the size of the group
 is known in advance and has certain properties. We shall elaborate on this
 in a later chapter.
 
-For now, we will present one case where $\#E(K)$ is always easy to work out
+For now, we exhibit one case where $\#E(K)$ is always easy to work out
 and furthermore $E(K)$ is always cyclic.
 
 \section {Singular Elliptic Curves}
@@ -368,7 +364,7 @@ is equivalent to conventional cryptography.
 It can be shown that the set $E_{ns}$ nonsingular points (all but
 one) of a singular elliptic curve over a field $K$
 also form a group under the chord-tangent law,
-and either $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite{prop2.5silverman}.
+and $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite{prop2.5silverman}.
 Furthermore these isomorphisms are efficiently computable in either
 direction.
 (The latter case is not useful as discrete log is easy in $K^+$.)
@@ -390,8 +386,8 @@ shows the reverse map is
 where $x' = 4z/(1-z)^2$ for $z \ne 1$, and $1 \mapsto O$.
 
 This example has little practical value as point additions are slower than
-modular multiplications and points, having two coordinates, take twice as
-much storage as an element of a finite field. However, it does suggest
+modular multiplications, and keeping both coordinates of a point in memory
+takes twice as much space. However, it does suggest
 that cryptography in finite fields can be viewed as a special
 case of elliptic curve cryptography, and strictly speaking,
 those that complain that elliptic curve cryptography is controversial,
@@ -506,10 +502,8 @@ $1M + 1S$.
 
 For $a = -3 d^2$ where $d$ is small or fairly small with low Hamming weight,
 we may compute $\lambda_1 = 3(x+dz^2)(x-dz^2)$ which also costs $1M + 1S$.
-By transforming the curve using the procedure mentioned in the section on
-twist curves (i.e. twisting curves, but using quadratic residues instead
-of nonresidues so that the resulting curve is isomorphic to the original),
-we can always obtain an $a$ that is faster than the general case.
+By transforming the curve (see section ?!?)
+we can obtain an $a$ that is faster than the general case.
 
 TODO: quote them instead for handy reference:
 We omit the formulas for projective point addition, and for adding
@@ -519,15 +513,18 @@ to Blake et al. or Cohen et al. \cite{stuff}.
 The latter investigate other kinds of projective coordinates, where point
 doubling or multiplication is even faster.
 
-\section {Point Compression}
+\section {Point Compression and Reduction}
 
 We can optimize point representations for space instead of time,
 useful for transmission and storage.
 Given $x$, we can solve $Y^2 = x^3 + ax + b$ for $Y$, thus
 a point $(x,y)$ can be represented by $x$ along with a single bit indicating
-which solution of $y$ to take. We discuss how to find square roots later.
+which solution of $y$ to take. This technique is known as \emph{point
+compression}.
+We discuss how to find square roots later.
 
-Alternatively, for some cases we can simply use $x$ alone. For example,
+Alternatively, for some cases we can simply use $x$ alone, which
+is sometimes called \emph{point reduction}. For example,
 suppose Alice needs to send Bob a point in some cryptosystem. She sends
 Bob $x$, who guesses the solution $y$. Bob attempts to proceed normally.
 If the protocol fails (e.g. the signature does not verify) then Bob tries
@@ -622,6 +619,54 @@ the underlying field arithmetic easily compensates for the more
 complex group operations. Thus choosing elliptic curves instead of
 finite fields results in savings in both space and time.
 
-However, as we shall later find, in pairing-based cryptography,
-we must use certain elliptic curves for which mappings to finite fields
-exist, and thus we must worry about index calculus.
+The most important attribute of elliptic curves for our purposes
+is that without them, we cannot construct a cryptographically
+useful bilinear map.
+However, we shall later find pairings require certain elliptic curves,
+for which subexponential discrete log algorithms exist. In short,
+one can map pairing-friendly elliptic curve groups to finite fields, where
+index calculus can break the discrete log problem.
+
+\section {Short Signatures}
+
+At this point we can see why
+the signature scheme introduced
+in the first chapter features a short signature length.
+Recall in abstract terms,
+a signature is a single element of a cyclic group $G$ of prime order $r$
+and we need a bilinear map to exist on $G$.
+
+We shall see later
+a concrete instantiation of such a group with a pairing
+can be realized by using a subgroup of points
+on an elliptic curve $E$ over some field $\Fq$ where
+$q$ is about 160 bits long.
+
+A point has two coordinates, both taking about 160 bits to represent.
+We can use point reduction, that is, discard the $y$-coordinate entirely,
+and represent signatures by their $x$-coordinate only if we modify
+verification as follows:
+\begin{enumerate}
+\item
+Given an $x$-coordinate of a signature, find any solution $y$
+in the curve equation $E$.
+\item
+If the signature $(x,y)$ does not verify,
+check if the signature $(x, -y)$ verifies.
+\item
+If the signature still does not verify then reject it.
+\end{enumerate}
+
+Thus signatures are elements of $\Fq$ and hence roughly 160 bits in length.
+
+Verification of the signature involves computing $e(P, Q)$ for some points
+$P, Q$. By the bilinearity of the pairing, if we have guessed the point $Q$
+wrongly, we can obtain the value of $e(P,-Q) = e(P,Q)^{-1}$ by performing
+an inversion rather than recompute another pairing.
+
+Later we will see we can do better than this by using a technique known
+as pairing compression or reduction, and in effect check both
+cases at once.
+
+Note instead of discarding the $y$-coordinate, we can
+replace it with a single bit signifying which solution of $y$ to take.

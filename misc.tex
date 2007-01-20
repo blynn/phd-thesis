@@ -15,7 +15,8 @@ Elliptic curve operations should also be fast. Though less studied,
 publications on this subject exist~\cite{bss}.
 \item
 Speeding up the pairing has only been a high priority relatively recently,
-and is one of the main focuses of this work.
+and is one of the main focuses of this work. We have devoted an entire
+chapter to this topic.
 \item
 Sometimes modifications to a scheme will garner savings by
 permitting larger amounts of precomputation, exploiting pairing
@@ -47,10 +48,11 @@ For example, the GMP library has a highly optimized modular exponentiation
 routine that uses Montgomery reduction (see below),
 but expects the input not to be
 in Montgomery form, and also outputs normal integers.
-This means if numbers are already internally stored in Montgomery form,
+
+Hence if numbers are already internally stored in Montgomery form,
 they must be converted to a normal integer first, and then converted
 back to Montgomery form afterwards. Including the unwanted conversions in
-the GMP routine itself gives a total of four unnecessary conversions.
+GMP itself gives a total of four unnecessary conversions.
 
 Another example is that an external library may be able to handle integers
 of arbitrary length, but a particular deployment of a cryptosystem is
