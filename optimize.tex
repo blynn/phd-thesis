@@ -382,7 +382,7 @@ by $(q^2 - q + 1)/r$ using a standard algorithm.
 In this case we have shrunk the exponent to roughly one third its original
 size.
 
-\section { Collating Inversions }
+\section {Collating Inversions}
 
 Recall the computation of a pairing involves several iterations
 of multiplying by an expression of the form $g(Q) / h(Q)$
@@ -411,12 +411,7 @@ are derived entirely from one of the input points,
 hence much time can be saved every time the same input point is encountered
 if we precompute and store $a, b, c$ for every line.
 
-\section { Multipairings }
-
-Because Miller's algorithm has features in common with an exponentation
-routine, when computing products or quotients of pairings,
-
-\section { Pairing Compression }
+\section {Lucas Sequences}
 
 We quote results without proof from a paper
 due to Scott and Barreto~\cite{compressedpairings}.
@@ -496,8 +491,11 @@ This method applies to any curve of even embedding degree, but we shall
 find that for embedding degree $k = 6$ an even better algorithm exists.
 However, before describing it, we first discuss pairing compression.
 
-Because the output of a pairing is some unitary element $a + \alpha b \in
-\F_{q^2}$, for each value of $a$, there are two possibile values for $b$
+\section {Pairing Compression}
+
+We have seen that the output of a pairing is some unitary element
+$a + \alpha b \in \F_{q^2}$.
+Hence for each value of $a$, there are two possibile values for $b$
 since $a^2 - \alpha^2 b^2 = 1$.
 
 Just as point compression works by recording only the $x$-coordinate and
@@ -508,12 +506,41 @@ solutions of $a^2 - \alpha^2 b^2 = 1$ the $b$ takes.
 To invert a group element on an elliptic curve is to negate the $y$-coordinate.
 Similarly, we have $(a + \alpha b)^{-1} = a - \alpha b$ for pairing values.
 
-Furthermore, yet another similarity is that in some applications it may
+Furthermore, in some applications it may
 be possible to dispose of $b$ entirely and not bother recording which solution
-to take.
+to take. This is similar to the point reduction described earlier, and
+in fact, these two tricks work well in unison.
 
-The BLS signature scheme is a good example of when this is useful.
+The BLS signature scheme is a good example of this.
+Recall a signature is an $x$-coordinate of some point $P$ and we need to
+check if $e(P, Q)$ is a certain pairing value $v$,
+where $Q$ is a system parameter.
+Since we have discarded the $y$-coordinate, when guessing a value for $P$
+we may have in fact selected $-P$, in which case we will have computed
+$e(-P, Q)$ instead, and previously we recommended checking the other possible
+$y$-coordinate in event of a mismatch.
 
+But observe that $e(P,Q)$ and $e(-P,Q)$ will have the same $a$-value,
+and are the only pairing values that share this $a$-value.
+This suggests the following BLS signature verification procedure:
+
+\begin{enumerate}
+\item
+Given a signature $\sigma$, compute any point $P$ with $x$-coordinate $\sigma$.
+\item
+Compute the $a$-value of $e(P,Q)$, where $Q$ is the system parameter.
+Do not bother with the $b$-value.
+\item
+If this value matches the $a$-value of $v$ then the signature verifies.
+Otherwise it is rejected.
+\end{enumerate}
+
+\section {Multipairings}
+
+Because Miller's algorithm has features in common with an exponentation
+routine, when computing products or quotients of pairings,
+
+TODO: XTR equations for k=6
 TODO: alternative Tate pairing computation method
 TODO: ignoring last iteration
 TODO: sliding windows, NAF (why NAF can be used)

@@ -193,6 +193,14 @@ up to multiplication by a constant. We also build up the function by
 multiplying together equations of lines, but not just using
 vertical lines.
 
+In what follows,
+by abuse of notation we often refer to a single rational function
+$f$ when in fact we are considering a whole family of rational functions
+$c f$ for some nonzero constant $c$. To add to the confusion, having
+chosen a representative of a family, we will sometimes subsequently
+insist on using that same representative. The reasons for doing so
+will become clear.
+
 \section {Divisors}
 
 Divisors are the standard way
@@ -258,9 +266,10 @@ Earlier papers on pairing-based cryptosystems advocated the Weil pairing.
 We shall see that the related Tate pairing can be used instead.
 Nonetheless we first describe the Weil pairing (as used in cryptography)
 for historical reasons, and also because its simpler description
-serves well as an introduction. The inputs to the Tate pairing are come
+serves well as an introduction. The inputs to the Tate pairing come
 from different groups, and the definition involves quotient groups,
-which can obscure the basic idea.
+which can obscure the basic idea. However, the actual computation
+of the Tate pairing is simpler.
 
 Let $E$ be an elliptic curve containing $n$ points over a field $\mathbb{F}_q$.
 Let $G$ be a cyclic subgroup of $E(\mathbb{F}_q)$ of order $r$ with $r, q$
@@ -271,19 +280,36 @@ We define the Weil pairing
 $f:E[r] \times E[r] \rightarrow \Fqk$ as follows.
 
 For a pair of points $P, Q \in E[r]$,
-let $f_P$ be a rational function with divisor $(f_P) = (P)^r$,
-(In other words, we have $r$ zeroes at $P$ and $r$ poles at $O$.
-In standard notation this is $r\langle P\rangle  - r\langle O\rangle$.)
-and similarly let $f_Q$ be a rational function with divisor $(f_Q) = (Q)^r$.
+choose any $R, S \in E[\Fqk]$ such that $S \ne R, P+R, P+R - Q, R-Q$.
+Let $f_P$ be a rational function with divisor $(f_P) = (P+R)^r /(R)^r$,
+(In other words, we have $r$ zeroes at $P+R$ and $r$ poles at $R$.
+In standard notation this is $r\langle P+R\rangle  - r\langle R\rangle$.)
+and similarly let $f_Q$ be a rational function with divisor
+$(f_Q) = (Q+S)^r/(S)^r$.
 
-Choose any $R, S \in E(\Fqk)$ such that $R \ne -P, O$ and $S \ne -Q, O$.
 Define
-\[ f(P,Q) = \frac{f_P(P+R)/f_P(R)}{f_Q(Q+S)/f_Q(S)} \]
+\[ f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P+R)/f_Q(R)} \]
 
 Using Weil reciprocity it can be shown that this value is independent
-of the choices for $R$ and $S$.
+of the choices for $R, S$. The conditions for choosing $R, S$ ensure
+we never evaluate $f_P$ nor $f_Q$ at a zero or pole.
+Also both $f_P, f_Q$ are only unique up to a constant,
+but this has no effect on the final answer since quotients
+of these functions are computed and the constants cancel out.
 
-It is well-known that
+This is an example of the grey area mentioned earlier:
+at first we are free to choose
+any function as long as they have certain zeroes and poles, but we cannot
+alter it once we have made a choice.
+
+Finding explicit expressions for these functions is infeasible for
+cryptographically useful pairings. Instead, we will soon describe
+an algorithm, known as \emph{Miller's algorithm}
+that evaluate these functions in a lazy fashion at the required
+points. This algorithm resembles a typical exponentiation routine
+that performs repeating squaring.
+
+One can prove~\cite{silverman} that
 \begin{enumerate}
 \item
 $f(a P, b Q) = f(P,Q)^{a b}$ for all $P, Q \in E[r]$ and all integers $a, b$.
@@ -374,68 +400,142 @@ input $Q$ satisfies $r Q = O$.
 
 \section {Miller's Algorithm}
 
-We describe how to find a rational function $f_P$ with divisor
-$(P)^r$ \cite{miller} where $P$ has order $r$.
+For the Weil pairing we need to evaluate some rational function
+$f_P$ with divisor $(P+R)^r /(R)^r$.
+For the Tate pairing we need to evaluate some rational funciton
+$f_P$ with divisor $(P)^r$.
+In both cases, we can do this using Miller's algorithm~\cite{miller}.
 
-For an integer $k$,
-let $L_{kP}(X,Y)$ be an equation for a line through $P$ and $kP$,
-and let
-$V_{kP}(X,Y)$ be an equation for a vertical line through $kP$ (e.g.
-$X - a$, where $kP = (a, b)$).
-If there is no confusion we may drop the $P$ in $L_{kP}, V_{kP}$ and write
-$L_k, V_k$ instead.
+For any points $U, V$,
+let $L_{U,V}(X,Y)$ be an equation for a line through $U$ and $V$,
+let $T_{U}(X,Y)$ be an equation for the tangent through $U$.
+let
+$V_{U}(X,Y)$ be an equation for a vertical line through $U$ (e.g.
+$X - x$, where $U = (x, y)$).
 
-Notice we have
+Actually, $T_U$ and $V_U$ are unnecessary since
+$T_U = L_{U,U}$ and $V_U = L_{U,-U}$, but they are convenient notation.
+Also if $U = -U$ then $T_U$ is the same as $V_U$.
+
+\subsection {The Weil Pairing}
+
+Let us handle the Weil pairing first. For an integer $k$, let
+$f_k$ be a rational function with divisor
 \[
-\left (
-\frac{L_k}{V_{k+1}}
-\right )
-= \frac{(P)(kP)(-(k+1)P)}{((k+1)P)(-(k+1)P)}
-= \frac{(P)(kP)}{((k+1)P)}
+(f_k) = \frac{(P+R)^k}{(R)^k(kP)} .
 \]
-Define
-\[ f_n = \prod_{k=1}^{n-1} \frac{L_k}{V_{k+1}} \]
-Then
-\[ (f_n) =
+
+Observe $f_r = f_P$, since $rR = O$.
+It can be checked that
+\[
+{({
+f_a \cdot f_b \cdot \frac{L_{aP,bP}}{V_{(a+b)P}}
+})} = (f_{a+b})
+\]
+via a simple computation on the divisors:
+\[
+\frac{(P+R)^a}{(R)^a(aP)}
+\cdot
+\frac{(P+R)^b}{(R)^b(bP)}
+\cdot
+\frac{(aP)(bP)(-(a+b)P)}{(a+b)P(-(a+b)P)}
+=
+\frac{(P+R)^{a+b}}{(R)^{a+b}((a+b)P)} .
+\]
+This leads to the formula:
+\[
+{({
+f_k^2 \cdot \frac{T_{kP}}{V_{2kP}}
+})} = (f_{2k})
+\]
+
+A straightforward manipulation of divisors also shows
+$( V_{P+R} / L_{P,R}) = (f_1)$.
+
+Thus we may compute $f_P(Q) = f_r(Q)$ using the following algorithm:
+\begin{enumerate}
+\item
+Set $x_1 \leftarrow V_{P+R}(Q) / L_{P,R}(Q)$
+\item
+Set $x \leftarrow x_1, Z \leftarrow P$.
+Let the binary representation of $r$ be $b_t ... b_0$.
+\item
+For $i \leftarrow t-1, ..., 0$ do
+    \begin{enumerate}
+    \item
+    Set $x \leftarrow x^2 \cdot T_Z(Q) / V_{2Z}(Q)$
+    \item
+    Set $Z \leftarrow 2Z$
+    \item
+    If $b_i = 1$ then
+	\begin{enumerate}
+	\item
+	Set $x \leftarrow x \cdot x_1 \cdot L_{Z, P}(Q) / V_{Z+P}(Q)$
+	\item
+	Set $Z \leftarrow Z + P$
+	\end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+On termination, we have $x = f_P(Q)$ (and $Z = rP = O$).
+
+Throughout the algorithm we may multipy the equation of any line $L, T, V$
+by an arbitrary constant, thus more precisely, this algorithm
+really computes $f_P(Q)$ for one possible choice of $f_P$.
+In the Weil pairing,
+this causes no problems provided the same equations are chosen the second
+time this algorithm is run, so that the exact same $f_P$ is evaluated.
+
+Note that
+\[
+{({
+f_k \cdot \frac{L_{P+R,kP}}{L_{R,(k+1)P}}
+})} = (f_{k+1}) .
+\]
+thus could replace step 3(c)(i) with
+$x \leftarrow x \cdot L_{P+R, Z}(Q) / L_{R,Z+P}(Q)$
+and avoid computing and storing $x_1$, but unless
+$r$ has very low Hamming weight this is not a good trade
+because computing vertical lines is much cheaper than general lines.
+
+\subsection {The Tate Pairing}
+
+We now consider the Tate pairing. Recall we wish to compute
+$f_P(Q)$ where $f_P$ has divisor $(P)^r$.
+
+This time we define the intermediate functions $f_k$ by
+\[ (f_k) = (P)^k / (kP) . \]
+We have $(f_r) = (f_P)$.
+
+Notice
+\[ (f_k) = (\prod_{i=1}^{k-1} \frac{L_{iP}}{V_{(i+1)P}}) \]
+since
+\[ (f_k) =
 \frac{(P)(P)}{(2P)}
 \cdot
 \frac{(P)(2P)}{(3P)}
 \cdots
-\frac{(P)((n-1)P)}{(nP)}
+\frac{(P)((k-1)P)}{(kP)} .
 \]
-After cancellation we find $(f_n) = (P)^n / (nP)$. When $n = r$ this
-is simply $(f_r) = (P)^r$, hence $f_P = f_r$.
+This suggests how one could compute $f_r(Q)$ by calculating
+$f_k(Q)$ for $k=1,...,r$, but clearly this is impractical for large $r$.
 
-We describe a more efficient method of computing $f_P$.
-Observe $(f_k \cdot f_k) = {(P)^{2k}}/{(kP)^2}$
-almost looks like $(f_{2k}) = {(P)^{2k}}/{(2kP)}$.
-This suggests the following.
-
-Let $T_{kP}(X,Y)$ (which we also write as $T_k$)
-to be an equation for the tangent line at $kP$,
-we have
+We can show
 \[
-(f_k \cdot f_k \cdot T_k / V_{2k} ) = \frac{(P)^{2k}}{(kP)^2} \cdot
-\frac{(kP)^2 (-2kP)}{(2kP)(-2kP)} = \frac{(P)^{2k}}{(2kP)} = (f_{2k}) .
+(f_{2k}) = (f_k^2 T_{kP} / V_{2kP} )
 \]
-In short, we have
+through another simple computation:
 \[
-f_{2k} = f_k^2 T_k / V_{2k}
+\frac{(P)^{2k}}{(kP)^2} \cdot
+\frac{(kP)^2 (-2kP)}{(2kP)(-2kP)} = \frac{(P)^{2k}}{(2kP)}
 \]
-and from before
+and from above,
 \[
-f_{k+1} = f_k L_{k} / V_{k+1}
+(f_{k+1}) = (f_k L_{kP} / V_{(k+1)P}).
 \]
-thus to compute $f_r$ we can use an algorithm analogous to exponentiation via
-repeated squaring.
 
-For cryptographically useful curves the rational function $f_r$
-is too long to compute and store. Instead, the function is only ever
-evaluated when needed, and we evaluate as we perform the repeated
-squaring.
-
-The following algorithm, given points $P, Q$, computes
-$f_r(Q)$.
+leading to the following algorithm, that
+computes $f_P(Q)$ given points $P,Q$ (where $P$ has order $r$).
 
 \begin{enumerate}
 \item
@@ -452,23 +552,27 @@ For $i \leftarrow t-1, ..., 0$ do
     If $b_i = 1$ then
 	\begin{enumerate}
 	\item
-	Set $x \leftarrow x \cdot L_{Z}(Q) / V_{Z+P}(Q)$
+	Set $x \leftarrow x \cdot L_{Z,P}(Q) / V_{Z+P}(Q)$
 	\item
 	Set $Z \leftarrow Z + P$
 	\end{enumerate}
     \end{enumerate}
 \end{enumerate}
 
-After the algorithm terminates we have $x = f_r(Q)$ (and $Z = rP = O$).
+After the algorithm finishes we have $x = f_r(Q)$ (and $Z = rP = O$).
+
+\subsection {Intermediate Poles and Zeroes}
 
 There are complications however. The intermediate functions have zeroes
-and poles that eventually cancel out. If we could derive algebraic expressions
-for the rational function then we could manipulate them to remove these
-zeroes and poles. But since we are evaluating the function as we go,
-we cannot do this, and attempting to evaluate a function at a zero
+and poles that eventually cancel out. If we were dealing with algebraic
+expressions for the rational function then we could manipulate
+them to remove these zeroes and poles at some stage.
+But since we are evaluating the function as we go,
+this cannot be done, and attempting to evaluate an
+intermediate function at a zero
 or pole will cause problems.
 
-Recall in our defintion of the Tate pairing we get to pick a point $R$.
+Recall in our defintion of the Tate pairing we may freely select a point $R$.
 Then we choose $R$ so that $Q+R$ and $R$ are never zeroes or poles
 of the intermediate functions. One way to do this is to choose
 $R$ at random (since there are only $O(t)$ bad choices for $R$).
@@ -490,4 +594,161 @@ $y$-coordinate, then in fact we are computing a vertical line at $P$.
 The logic of the algorithm can be modified slightly to avoid checking
 for these special cases.
 
-TODO: example, say security will be detailed in next chapter
+TODO: say security will be detailed in next chapter
+
+\section {Worked Examples}
+
+Consider the curve $E : Y^2 = X^3 + X$ over $\F_{59}$.
+This has 60 points, and we work inside a the subgroup $G$ of size $r = 5$
+which can be generated by $P = (25, 30)$:
+\[ G =
+E(\F_{59})[5] =
+\{P = (25, 30), 2P = (35, 31), 3P = (35, 28), 4P = (25, 29), 5P = O \} \]
+
+It turns out $\F_{59^2} = \F_{59}[i]$ (where $i = \sqrt{-1}$) contains
+all 25 points of $E[5]$, and furthermore, the map given by
+$\phi(x,y) = (-x, i y)$ maps $G$ to another subgroup $G'$ in $E[r]$:
+
+\[ G' =
+\{Q = (-25, 30i), ..., 4Q = (-25, 29i), 5Q = O \} \]
+where $Q = \phi(P)$.
+Thus evey element of $E[5]$ can be written as a sum of an element in $G$
+and an element in $G'$
+
+\subsection {The Weil Pairing}
+
+Let us first consider the Weil pairing, which we denote by $f$.
+In practice we wrap the Weil pairing in another map $e$:
+\[ e(U, V) = f(U, \phi(V)) \].
+This is a nondegenerate bilinear map on $G \times G$.
+If we worked with the Weil pairing directly then each input group would be
+$E[5]$, which is not cyclic.
+We shall walk through the computation of $e(P, P) = f((25,30), (-25,30i))$.
+
+Computing $f(P, Q)$ entails evaluating several rational functions
+at various points that depend on two picked points $R$ and $S$.
+These points $R$ and $S$ must be selected so that we never encounter a
+zero or pole while evaluating these functions.
+
+In practice, the probability that randomly chosen $R, S$ are unsuitable
+is negligible. This is not the case for our toy example, but it turns
+out that choosing $R = (40,54)$ and $S = (48+55i,28+51i)$
+will work. Note that $R, S$ do not need to lie in $E[5]$.
+
+We describe in detail how Miller's algorithm arrives at $f_P(Q+S) = f_5(Q+S)$:
+\begin{enumerate}
+\item
+We compute $f_1 = V_{P+R} / L_{P,R}$.
+Using the point addition formulas we find $P+R = (6,24)$
+and $Q+S=(19+17i, 46+18i)$.
+Then
+from the explicit formulas given earlier we have
+\[ V_{P+R} : X + 53 \]
+\[ L_{P,R} : 35 X + 15 Y + 32 \]
+Evaluating both equations at $Q + S$ and taking their quotient
+gives $x_1 = f_1(Q+S) = 25 + 31i$.
+\item
+We now enter the main loop.
+Firstly, $f_2 = f_1^2 T_{P} / V_{2P}$ where
+\[ T_{P} : 12 X + Y + 24 \]
+\[ V_{2P} : X + 24 \].
+Then we assign $x \leftarrow x_1^2 T_{P}(Q+S) / V_{2P}(Q+S)$
+which turns out to be $(18 + 16i)(3+45i)/(43+17i) = 33 + 22i$.
+\item
+Since the second bit of $5 = 101_2$ is zero, the condition for the if statement
+is false and the next iteration begins. Now
+$f_4 = f_2^2 T_2 / V_4$, where
+\[ T_{2P} : 53 X + Y + 2 \]
+\[ V_{4P} : X + 34 \].
+and we compute $x \leftarrow x^2 T_{2P}(Q+S) / V_{4P}(Q+S)$.
+It can be checked $x = 58 + 23i$ now.
+\item
+The last bit is 1, so this time we do execute the contents of the if block,
+namely $x=\leftarrow x \cdot x_1 \cdot L_{4P,P}(Q+S)/V_{5P}(Q+S)$.
+Since $5P = O$ we discard the denominator in this case, and since $P = -4P$,
+$L_{4P, P} = V_P$ which is given by
+\[ V_P : X + 34 \] thus $x = (58+23i)(25+31i)(53+17i) = 18 + 2i$,
+and the algorithm stops as we have exhausted all the bits.
+\end{enumerate}
+
+Thus we have found that $f_P(Q+S) = 18+2i$, and yet we have not found
+an algebraic expression for the rational function $f_P$.
+
+We can repeat the above to find $f_P(S) = 10 + 30i$, but clearly a better way
+is to compute $f_P(S)$ concurrently to avoid repeating the same operations.
+In other words, we simultaneously calculate $f_P(Q+S)$ and $f_P(S)$, and
+as each equation for a certain line is found,
+we evaluate at $Q+S$ and also at $S$.
+
+The computation of $f_Q(P+R)$ and $f_Q(R)$ is similar (note since
+$Q$ does not lie in $\Fq$ the $L,T,V$ equations will involve imaginary
+numbers), and it can be verified that
+$f_Q(P+R) = 27+25i$ and $f_Q(R)=10+41i$.
+
+At last we have
+\[
+f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P+R)/f_Q(R)} = 46+56i .
+\] Thankfully $(46+56i)^5 = 1$ as expected.
+
+\subsection {The Tate Pairing}
+
+TODO: intro
+
+It turns out for our choice of curve, it suffices to compute
+$f_P(Q)$ and there is no need to choose an $R$ and 
+find $f_P(Q+R)$ and $f_P(R)$. Accordingly,
+we shall only calculate $f_P(Q)$.
+Nonetheless, calculating $f_P(Q+R)$ and $f_P(R)$ can be done in
+a similar fashion.
+
+\begin{enumerate}
+\item
+$f_2(Q) = f_1(Q)^2 T_P (Q) / V_{2P}(Q)$.
+Note $f_1 = 1$, unlike the Weil pairing.
+From the formulas given before we can find equations describing
+the tangent $T_P = 0$ at $P$ and the vertical line $V_{2P} = 0$ at $2P$:
+\[ T_1 : 12 X + Y + 24 \]
+\[ V_2 : X - 35 \]
+As stated before
+there are other choices for the equations.
+If we were computing $f_P(Q+R)$ and $f_P(R)$ we would need
+to use the same choices both times. However, for our current case it
+can be shown
+there are no restrictions save that the coefficients of the functions
+lie in $\Fq$.
+
+From
+$T_1(34, 30i) = 12 \times 34 + 30i + 24 = 19 + 30i$ and
+$V_2(34, 30i) = 34 - 35 = 58$
+we obtain $f_2(Q) = (19 + 30i) / 58 =  40 + 29i$.
+\item
+$f_4(Q) = f_2(Q) ^2 T_2 (Q) / V_4(Q)$ where
+\[ T_2 : 53 X + Y + 2 \]
+\[ V_4 : X - 25 \]
+We have
+$T_2(34,30i) = 53 \times 34 + 30i + 2 = 34 + 30i$ and
+$V_4(34,30i) = 34 - 25 = 9$ Thus
+$f_4 = (40 + 29i)^2 \times (34+30i) / 9 = 31 + 32i$.
+\item
+$f_5 = f_4 L_4(Q) / V_5(Q)$
+We discard $V_5$ since $5P = O$, and $L_4$, the line between $P$ and $4P = -P$
+is in fact a vertical line:
+\[ L_4: X - 25 \]
+Since
+$L_4(34, 30i) = 34 - 25 = 9$, we have
+$f_5 = 9(31 + 32i) = 43 + 52i$.
+
+In a larger example we would
+come across lines $L$ that are not vertical (nor tangents).
+\item
+$f_P(Q)$ can be considered the output of the Tate pairing,
+but it is a coset representative, and we can standardize the representative
+by raising it to the power of $(q^k - 1)/r$:
+\[ f_P(Q)^{(q^k-1)/r} = (43+52i)^{(59^1 - 1)/5} = 42+40i \]
+\end{enumerate}
+
+As expected, $(42 + 40i)^5 = 1$.
+
+It is not difficult to see that these
+degenerate cases always appear in the last iteration
+of the main loop whenever $r$ is odd.
