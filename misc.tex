@@ -11,12 +11,11 @@ hand-coded assembly should be used.
 Fortunately a lot of research has been conducted in this area,
 and many implementations exist, some of them freely available.
 \item
-Elliptic curve operations should also be fast. Though less studied,
-publications on this subject exist~\cite{bss}.
+Elliptic curve operations should also be fast. Though a newer area of research,
+numerous publications on this subject exist~\cite{bss}.
 \item
 Speeding up the pairing has only been a high priority relatively recently,
-and is one of the main focuses of this work. We have devoted an entire
-chapter to this topic.
+and is one of the main focuses of some of the previous chapters.
 \item
 Sometimes modifications to a scheme will garner savings by
 permitting larger amounts of precomputation, exploiting pairing
@@ -27,22 +26,26 @@ Needless to say, each of these classes of optimizations cannot be viewed
 in isolation. An optimization that may not usually help could be beneficial
 when the behaviour of the whole system is taken into account.
 Similarly, one optimization could adversely affect another.
-
-For one example, see the below
-discussion on Montgomery representation.
+For one example, see the discussion on Montgomery representation below.
 \end{enumerate}
 
-\section{Using Existing Libraries}
+\section{On Using Existing Libraries}
 
-In all the author's pairing implementations, to avoid loss of portability
-and assembly coding (as well as the need to learn platform-specific
-low-level tricks), pre-existing multiprecision arithmetic libraries
+In the author's pairing implementations, to avoid the drawbacks
+of assembly code (e.g. loss of portability, the need to learn platform-specific
+low-level tricks, frequent rewrites due to new hardware,
+fewer potential developers, increase in debugging difficulty, longer
+development time),
+pre-existing multiprecision arithmetic libraries
 were utilized.
 
-Unfortunately, there does not seem to be a freely available library for
-finite fields. Rather, libraries dealing with arbitrary-precision integers
-are popular. Although it is easy to graft finite field routines on top
-of any such library, there can be some losses.
+Obviously a library
+designed for maximum efficiency when using finite fields
+of cryptographically useful magnitude is most desirable.
+If no suitable library is available (perhaps due to reasons unrelated
+to performance such as lack of portability or licensing issues),
+one can easily graft finite field routines on top of
+any arbitrary-precision integer library, though doing so can cause losses.
 
 For example, the GMP library has a highly optimized modular exponentiation
 routine that uses Montgomery reduction (see below),
@@ -99,23 +102,69 @@ replaced by a few multiplications in any case.
 
 \section{Dedicated Squaring}
 
-For each field, ring or group, dedicated squaring or doubling routines
-can be helpful. The savings accrued during exponentiations can be significant.
+Though this observation is obvious and simple, we note that
+for each field, ring or group, the savings accrued from
+having dedicated squaring or doubling routines
+can be significant.
 
-\section{Field Extensions}
+\section{Cube Roots}
 
-When possible, a degree two field extension of a field $\mathbb{F}_q$
-should be implemented as $\mathbb{F}_q[i]$ where $i$ is a square root of $-1$.
-This can be done if and only if $q = 3 \pmod{4}$.
+When $q = 2 \pmod 3$, for any $x \in \Fq$ we have
+$(x^{-(q-2)/3})^3 = x^{1-(q-1)} = x / x^{q-1} = x$,
+thus cube roots can be quickly found via exponentiaton
+by $-(q-2)/3$. Observe this also means every element of $\Fq$ has
+a cube root, which implies cube roots are unique.
+
+Thus with curves of the form $Y^2 = X^3 + b$ over such fields,
+a better way of finding random points is to choose $Y$ randomly and
+solve for $X$, which involves taking a cube root. Additionally,
+point reduction and compression can be achieved by discarding the
+$x$-coordinate and only recording the $y$-coordinate. In particular,
+for point compression there is no need to store an extra bit and
+for point reduction no information is lost.
+
+\section{Quadratic Field Extensions}
+
+For primes $q=3\pmod 4$, a degree two field extension of $\Fq$
+should be implemented as $\Fq[i]$ where $i$ is a square root of $-1$.
 
 We have
 \[ (a + i b)^2 = (a - b)(a + b) + i (2 a b) \]
 and
 \[ (a + i b)(c + i d) = (ac - bd) + i[(a + b)(c + d) - ac - bd] \]
 
+As mentioned in the previous chapter, in $\Fq[i]$,
+exponentiation by $q$ can be performed by simply negating the imaginary part:
+\[ (a+ib)^q = a - ib \]
+which in turn implies computing expressions such as $x z - y z^q$ only
+costs four multiplications in $\Fq$, where $x,y,z \in \Fq[i]$.
+
+For primes $q=2\pmod 3$,
+the polynomial $X^2 + X + 1$ irreducible in $\Fq$, thus its roots
+form an optimal normal basis of $\F_{q^2}$
+allowing several shortcuts~\cite{xtr}.
+
+Thus if $q\ne 3\pmod 4$ (so we cannot extend by a square root of $-1$ since
+it already exists in $\Fq$), a good choice is to use the above basis.
+In other words, we compute in $\Fq[\alpha]_{\alpha^2+\alpha+1}$
+(viewing $\alpha$ as an indeterminate) and represent elements
+as tuples $(a,b) \in \Fq \times \Fq$ (which means $a \alpha + b \alpha^2$).
+Note $\alpha^3 = 1$ and $x\in\Fq$ may be written as $-x \alpha - x\alpha^2$.
+
+Then
+\[ (a \alpha + b \alpha^2)^2 = b(b-2a)\alpha + a(a-2b)\alpha^2 \]
+and
+\[ (a \alpha + b \alpha^2)(c \alpha + d \alpha^2) =
+(bd-ad-bc)\alpha + (ac-ad-bc)\alpha^2 \]
+
+We also have
+\[ (a\alpha + b\alpha^2)^q = b\alpha + a\alpha^2) \]
+which again implies computing expressions such as $x z - y z^q$ only
+costs four multiplications in $\Fq$, where $x,y,z \in \F_{q^2}$.
+
 More generally, for low degree extensions (e.g. 3, 6),
-hand-coded generalized Karatsuba multiplication algorithms \cite{wpkaratsuba}
-will improve running times.
+hand-coding generalized Karatsuba multiplication algorithms \cite{wpkaratsuba}
+is a relatively painless way to improve running times.
 
 \section{Last-Second Conversions}
 

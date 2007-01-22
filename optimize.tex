@@ -413,7 +413,7 @@ if we precompute and store $a, b, c$ for every line.
 
 \section {Lucas Sequences}
 
-We quote results without proof from a paper
+In the next few sections we quote without proof observations
 due to Scott and Barreto~\cite{compressedpairings}.
 
 We first examine the simplest case.
@@ -441,7 +441,7 @@ It turns out that $(a+\alpha b)^n = V_n / 2 + \alpha b U$,
 where $U = (P V_n - 2 V_{n-1}) / (P^2 - 4)
 = (2 V_{n+1} - P V_n) / (P^2 - 4)$.
 
-Consider the following \emph {laddering algorithm}.
+Consider the following laddering algorithm.
 Let $n_t ... n_0$ be the binary respresentation of $n$.
 
 \begin{enumerate}
@@ -491,7 +491,7 @@ This method applies to any curve of even embedding degree, but we shall
 find that for embedding degree $k = 6$ an even better algorithm exists.
 However, before describing it, we first discuss pairing compression.
 
-\section {Pairing Compression}
+\section {Pairing Compression For Even Embedding Degree}
 
 We have seen that the output of a pairing is some unitary element
 $a + \alpha b \in \F_{q^2}$.
@@ -534,6 +534,97 @@ Do not bother with the $b$-value.
 If this value matches the $a$-value of $v$ then the signature verifies.
 Otherwise it is rejected.
 \end{enumerate}
+
+\section {Pairing Compression For Embedding Degree Six}
+
+Now consider a curve $E(\Fq)$ with embedding degree $k=6$.
+Recall from the discussion of Tate exponentiation that
+$r \mid \Phi_6(q) = q^2 - q + 1$ (and $r$ does not divide any
+smaller cyclotomic polynomial).
+
+These are precisely the conditions
+that occur in the XTR cryptosystem~\cite{xtr}, the
+optimizations and algorithms of which we can use.
+
+Let $\tr$ denote the $\F_{q^2}$-trace in $\F_{q^6}$,
+that is
+\[ \tr(x) = x + x^{q^2} + x^{q^4}  \in \F_{q^2} .\]
+Let $x \in \F_{q^6}$ be an element of order $r$ (such as the output of
+a pairing).
+Define $c_k = \tr(x^k)$.
+It can be shown that
+\[ c_{u+v} = c_u c_v - c_v^q c_{u-v} + c_{u-2v} \]
+for all $u,v\in\mathbb{Z}$,
+which leads to the identities:
+\[ c_{n+2} = c_1 c_{n+1} - c_1^q c_n + c_{n-1} \]
+\[ c_{2n} = c_n^2 - 2c_n^q \]
+\[ c_{2n-1} = c_n c_{n-1} - c_1 c_n^q + c_{n+1}^q \]
+\[ c_{2n+1} = c_n c_{n+1} - c_1 c_n^q + c_{n-1}^q \]
+
+Then for any integer $n$,
+we can use a repeated-squaring-like algorithm
+to compute $\tr(x^n)$ from $\tr(x)$.
+
+We have $\tr (x^n) = (\tr(x^{-n}))^p$ so
+without loss of generality assume $n \ge 0$.
+Trivially $c_0 = 3, c_1 = \tr(x)$
+and $c_2, c_3, c_4$ can be computed easily
+using the above identities, e.g. $c_2 = c_1^2 - 2c_1^p$.
+Otherwise:
+
+\begin{enumerate}
+\item
+If $n$ is odd let $2m + 1 = n$, otherwise
+let $2m = n$, and let the binary representation of
+$m$ is $m_t ... m_0$.
+\item
+$k \leftarrow 1$.
+\item
+For $j \leftarrow t-1$ to $0$ do
+\begin{enumerate}
+\item
+If $m_j = 0$ then
+compute $c_{4k}, c_{4k+1}, c_{4k+2}$ from $c_{2k}, c_{2k+1}, c_{2k+2}$,
+using the above identities.
+\item
+Otherwise $m_j = 1$ and
+compute $c_{4k+2}, c_{4k+3}, c_{4k+4}$ from $c_{2k}, c_{2k+1}, c_{2k+2}$,
+using the above identities.
+\item
+$k \leftarrow 2 k + m_j$
+\end{enumerate}
+\item
+We have now computed $c_{2m}, c_{2m+1}, c_{2m+2}$. (If $n$ is odd
+$c_n = c_{2m+1}$ otherwise $c_n = c_{2m}$.)
+\end{enumerate}
+
+Thus we can compress the output $x$ of a pairing by a factor of three by
+using $\tr(x)$ instead of $x$, and the above shows how to find
+$\tr(x^n)$ for any integer $n$,
+a feature often required by pairing-based cryptosystems.
+(In general $\tr(x)^n \ne \tr(x^n)$ so we cannot use a standard
+exponentiation algorithm.)
+Of course, in doing so we lose some information: $x, x^{q^2}, x^{q^4}$
+all have the same trace, but this is tolerable in most cases.
+
+If $q = 2 \pmod 3$ or $q = 3 \pmod 4$ then with a suitable constructed
+field extension $\F_{q^2}$, for $x, y, z \in \F_{q^2}$:
+\begin{enumerate}
+\item
+computing $x^q$ is free
+\item
+computing $x^2$ costs 2 multiplications in $\Fq$
+\item
+computing $x y$ costs 3 multiplications in $\Fq$
+\item
+computing $x z - y z^q$ costs 4 multiplications in $\Fq$
+\end{enumerate}
+where we assume the time taken by a few
+additions and subtractions is negligible. The details are given in the
+next chapter. Since these are the operations aside from addition and
+subtraction involved in the above identities,
+exponentiating compressed pairings is
+significantly faster for carefully constructed field extensions.
 
 \section {Multipairings}
 
