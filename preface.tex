@@ -21,7 +21,19 @@ traditional cryptosystems.
 
 It is hoped that this work will be useful guide to implementing pairing-based
 cryptography to a programmer who has experience with conventional
-cryptosystems. Some background is required by the reader as
+cryptosystems. While not comprehensive (notably absent are in-depth
+discussion of the characteristic 3 case, pairings where
+the subgroup size is necessarily significantly smaller than the field size,
+and hyperelliptic curves),
+the information contained herein should be enough to allow one to build
+practical pairing-based applications from scratch.
+
+Some background is required by the reader as
 we do not review basic abstract algebra.
-On the other hand, we review enough elliptic curve theory for
+On the other hand, we introduce enough elliptic curve theory for
 cryptographic purposes.
+
+Most of the described algorithms and optimizations
+appear in the PBC (Pairing-Based Cryptography) library, maintained by the
+author, and available under the GNU Public License at 
+http://crypto.stanford.edu/ibe/

@@ -517,8 +517,8 @@ since
 \cdots
 \frac{(P)((k-1)P)}{(kP)} .
 \]
-This suggests how one could compute $f_r(Q)$ by calculating
-$f_k(Q)$ for $k=1,...,r$, but clearly this is impractical for large $r$.
+We could compute $f_r(Q)$ using this formula,
+but this is clearly impractical for large $r$.
 
 We can show
 \[
@@ -526,15 +526,15 @@ We can show
 \]
 through another simple computation:
 \[
+\frac{(P)^{2k}}{(2kP)} =
 \frac{(P)^{2k}}{(kP)^2} \cdot
-\frac{(kP)^2 (-2kP)}{(2kP)(-2kP)} = \frac{(P)^{2k}}{(2kP)}
+\frac{(kP)^2 (-2kP)}{(2kP)(-2kP)}
 \]
 and from above,
 \[
 (f_{k+1}) = (f_k L_{kP} / V_{(k+1)P}).
 \]
-
-leading to the following algorithm, that
+leading to the following algorithm that
 computes $f_P(Q)$ given points $P,Q$ (where $P$ has order $r$).
 
 \begin{enumerate}
@@ -572,29 +572,23 @@ this cannot be done, and attempting to evaluate an
 intermediate function at a zero
 or pole will cause problems.
 
-Recall in our defintion of the Tate pairing we may freely select a point $R$.
-Then we choose $R$ so that $Q+R$ and $R$ are never zeroes or poles
+Recall we have an almost unrestricted choice for the points $R, S$ in
+the Weil pairing and also for the point $R$
+in the Tate pairing. To use Miller's algorithm, we choose them
+to avoid the zeroes or poles
 of the intermediate functions. One way to do this is to choose
-$R$ at random (since there are only $O(t)$ bad choices for $R$).
+these points at random (since there are only $O(t)$ bad choices).
 
-Alternatively we may ensure the coordinates of $R$ do not lie in the
+Alternatively we may ensure their coordinates do not lie in the
 field that the functions are defined in, but rather in some field
-extension, so that
-$R$ cannot possibly be a zero or pole and neither can $Q + R$ (since the
-zeroes and poles must be multiples of the point $P$).
+extension, so that in the case of a Weil pairing, $P+R$, $R$, $Q+S$, $S$
+cannot possibly be a zero or pole in the intermediate functions
+(though we must still avoid choices such as $R = S$),
+and in the case of a Tate pairing, neither $R$ nor $Q + R$
+can be a zero or pole.
 
-Under some conditions there is a much simpler solution which we shall
-discuss later.
-
-Note also that care must be taken on the last iteration of the algorithm,
-as there are degenerate cases. A vertical line at $O$ is simply a constant,
-so does not needed to be computed. A line through $P$ and $-P$ is a vertical
-line at $P$. If we ever need to compute a tangent at a point $P$ with a zero
-$y$-coordinate, then in fact we are computing a vertical line at $P$.
-The logic of the algorithm can be modified slightly to avoid checking
-for these special cases.
-
-TODO: say security will be detailed in next chapter
+We shall see that under some conditions there is a much simpler solution
+for the Tate pairing.
 
 \section {Worked Examples}
 
@@ -624,7 +618,7 @@ $e : G\times G \rightarrow \F_{q^2}$:
 This is a nondegenerate bilinear map with cyclic input groups.
 If we worked with the Weil pairing directly then both input groups would be
 $E[5]$, which is not cyclic.
-We shall walk through the computation of $e(P, P) = f((25,30), (-25,30i))$.
+We walk through the computation of $e(P, P) = f((25,30), (-25,30i))$.
 
 Computing $f(P, Q)$ entails evaluating several rational functions
 at various points that depend on two picked points $R$ and $S$.
@@ -697,7 +691,7 @@ Let $f$ denote the Tate pairing.
 Like the Weil pairing, with our choice of curve we can wrap the Tate pairing
 in another map
 $e : G\times G \rightarrow \F_{q^2}$:
-\[ e(U, V) = f(U, \phi(V)) \].
+\[ e(U, V) = f(U, \phi(V) + rG) \].
 Again, $e$ is a nondegenerate bilinear map with cyclic input groups.
 We shall walk through the computation of $e(P, P) = f((25,30), (-25,30i))$.
 
@@ -775,6 +769,169 @@ example, the result is an element of $\Fq$. This fact will be exploited
 later for certain pairings.
 
 The Weil pairing requires Miller's algorithm to be run twice, once for
-$f_P(Q+S) / f_P(S)$ and once for $f_Q(P+R)/f_Q(R)$. The Tate pairing
-needs but one call to Miller's algorithm, but requires an exponentiation
-by $(q^k - 1)/r$.
+$f_P(Q+S) / f_P(S)$ and once for $f_Q(P+R)/f_Q(R)$. In the computation
+of $f_P$ every line equation has coefficients lying in $\Fq$, where
+as to compute the equations of the lines, tangents and verticals of $f_Q$
+we had to perform arithmetic in the larger field $\Fq[i]$.
+
+The Tate pairing needs but one call to Miller's algorithm,
+but requires an exponentiation by $(q^k - 1)/r$. Like the computation
+of $f_P$ in the Weil pairing, to determine the equations of the lines,
+tangents and verticals during Miller's algorithm only requires arithmetic
+in the base field $\Fq$.
+
+\section {The Shipsey-Stange Algorithm}
+There is another procedure for computing Tate pairings that takes a completely
+different approach. We quote the algorithm as described by Stange~\cite{stange}
+but omit explanations of the mathematical underpinnings.
+
+Let $E:Y^2 = X^3 + aX + b$ be an elliptic curve over a field $K$.
+Let $P=(x, y) \in E(K)[r]$, $Q=(x_2, y_2) \in E(K)$ ($Q$ represents a
+coset).
+Define constants
+\[
+    C = (2 y)^{-1}
+\]
+\[
+    A = (x - x^2)^{-1}, B = {({(2x + x_2)(x - x_2)^2 - (y + y_2)^2})}^{-1},
+\]
+Define the sequence $c_k$ by
+\[
+    c_{-2} = -2y,
+    c_{-1} = -1,
+    c_0 = 0,
+    c_1 = 1,
+    c_2 = 2 y,
+\]
+\[
+\begin{array}{lcl}
+    c_3 &=& 3 x^4 + 6ax^2 + 12bx - a^2, \\
+    c_4 &=& 4y(x^6+5ax^4+20bx^3-5a^2x^2-4abx-8b^2 -a^2), \\
+    c_{2k-1} &=& c_{k+1} c_{k-1}^3 - c_{k-2} c_k^3, \\
+    c_{2k} &=& C(c_k c_{k+2} c_{k-1}^2 - c_k c_{k-2} c_{k+1}^2).
+\end{array}
+\]
+and the sequence $d_k$ by
+\[
+    d_{-1} = x-x_2,
+    d_0 = 1,
+    d_1 = 1,
+\]
+\[
+\begin{array}{lcrlcll}
+    d_{2k-1} &=& & d_{k+1} d_{k-1} c_{k-1}^2 &-& d_k^2 c_{k-2} c_{k}& \\ 
+    d_{2k} &=& & d_{k+1} d_{k-1} c_{k}^2 &-& d_k^2 c_{k-1} c_{k+1}& \\
+    d_{2k+1} &=& A(& d_{k+1} d_{k-1} c_{k+1}^2 &-& d_k^2 c_{k} c_{k+2}&) \\
+    d_{2k+2} &=& B(& d_{k+1} d_{k-1} c_{k+2}^2 &-& d_k^2 c_{k+1} c_{k+3}&) \\
+\end{array}
+\]
+Then it can be shown that the Tate pairing
+\[
+e : E[r] \cap E(K) \times
+E(K) / r E(K) \rightarrow
+K^* / K^{*r}
+\]
+can be defined as
+\[
+e(P,Q) = d_{r+1}/c_{r+1}.
+\]
+We describe a repeated-squaring-style algorithm that uses these sequences
+to compute the Tate pairing:
+\begin{enumerate}
+\item
+Let $r_t ... r_0$ be the binary representation of $r$.
+Assign $k \leftarrow 1$.
+\item
+Compute the constants $A, B, C$ and the start of the sequences:
+$c_{-2}, ..., c_{5}$ and $d_{-1}, d_0, d_1$.
+\item
+For $j = t-1$ to $0$ do
+\begin{enumerate}
+\item
+If $r_j = 0$ then
+\begin{enumerate}
+\item
+(Double)
+With the above recurrence relations,
+use $c_{k-3}, ..., c_{k+4}$ to compute $c_{2k-3},...,c_{2k+4}$,
+and $d_{k-1}, d_k, d_{k+1}$ to compute $d_{2k-1}, d_{2k}, d_{2k+1}$.
+\item
+$k \leftarrow 2k$
+\end{enumerate}
+\item
+otherwise $r_j = 1$ in which case
+\begin{enumerate}
+\item
+(Double and add)
+With the above recurrence relations,
+use $c_{k-3}, ..., c_{k+4}$ to compute $c_{2k-2},...,c_{2k+5}$.
+and $d_{k-1}, d_k, d_{k+1}$ to compute $d_{2k}, d_{2k+1}, d_{2k+2}$.
+\item
+$k \leftarrow 2k + 1$
+\end{enumerate}
+\end{enumerate}
+\item
+Return $d_{r+1}/c_{r+1}$.
+\end{enumerate}
+\subsection {Example}
+We take the same curve and points from the other worked examples, that is
+$E : Y^2 = X^3 + X$ over $\F_{59}$, $r = 5$,
+$P = (25, 30)$, $Q = (-25, 30i)$.
+
+\begin{enumerate}
+\item
+We find the constants are $A = 13, B = 25+55i, C = 1$,
+start of the sequence $c_{-2}, ..., c_5 = 
+56, 58, 0, 1, 3, 31, 37, 0$ and also $d_0, d_1, d_2 = 1, 1, 43+31i$.
+We have $k = 1$.
+\item
+We enter the main loop. As the second bit of the binary representation is
+zero, we use the recurrence relations to find
+$c_{-1}, ..., c_6$. As this is one of the first few iterations,
+there is much overlap (which could be optimized away
+in a real application), and the only new value is $c_6 = 53$. Similarly
+we compute $d_1,d_2,d_3$ and the only new value is $d_3 = 2+43i$.
+We have $k = 2$.
+\item
+The last bit is one, hence this time we find
+$c_2, ..., c_9$. Once again there is overlap and the only new values
+are $c_7 = 32, c_8 = 37, c_9 = 11$.
+We also compute $d_4, d_5, d_6$ which turns out to be $55+13i, 51+26i, 26+4i$.
+We exit the loop with $k = 5 = r$.
+\item
+The algorithm returns $d_6/c_6 = 37+42i$.
+\end{enumerate}
+
+In practice we power the result by
+$(p^2 - 1)/r = 696$ (to standardize the coset representative),
+giving the final answer of $42 + 40i$.
+
+This example is artificially small, and we do not in fact need to bother
+computing $c_7, c_8, c_9$, and many sequence values
+are calculated more than once. For realistic sizes, this only happens in the
+first few iterations, and the time taken by unnecssary computations
+is a small fraction of the total running time. Nonetheless, checks to avoid
+superfluous operations can be easily implemented for a slight efficiency gain.
+
+There are many common subexpressions in the above formulas which
+should be exploited in an implementation. For example,
+setting
+\[
+S_k = c_k^2, T_k = c_{k-1} c_{k+1}, U_k = d_k^2, V_k = d_{k-1}d_{k+1}
+\]
+yields
+\[
+\begin{array}{lcl}
+    c_{2k-1} &=& T_k S_{k-1} - T_{k-1} S_k, \\
+    c_{2k} &=& C(T_{k+1} S_{k-1} - T_{k-1} S_{k+1}) \\
+    d_{2k-1} &=& V_k S_{k-1} - U_k T_{k-1} \\ 
+    d_{2k} &=& V_k S_{k} - U_k T_k \\
+    d_{2k+1} &=& A(V_k S_{k+1} - U_k T_{k+1}) \\
+    d_{2k+2} &=& B(V_k S_{k+2} - U_k T_{k+2}) \\
+\end{array}
+\]
+though we note sometimes it is better to compute $c_{2k}$ via
+\[
+    c_{2k} = C c_k (c_{k+2} c_{k-1}^2 - c_{k-2} c_{k+1}^2).
+\]
+as in some cases, certain $T_k$ subexpressions are only used once.

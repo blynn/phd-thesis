@@ -6,9 +6,9 @@ and counting the size of the resulting group,
 we will cover enough theory to replace finite fields with
 elliptic curves in cryptosystems based on cyclic groups.
 
-We discuss pairings in the following chapter, and describe algorithms
-to find pairing-friendly curves in the chapter after that. We will not
-discuss curve-finding and point-counting algorithms that are geared
+We discuss pairings and algorithms to find pairing-friendly curves
+in future chapters. We will not
+discuss curve-finding and point-counting algorithms geared
 towards standard elliptic curve cryptography (which necessarily requires
 curves that are not pairing-friendly), but instead direct
 the interested reader to the references~\cite{bss}.
@@ -29,7 +29,7 @@ and then translate $C$ to
 obtain $C'$ then a correspondence exists between
 the solutions to $C = 0$ and the solutions to $C' = 0$. Knowing
 the solutions of one allows us to easily compute the solutions of the other,
-For this reason we consider $C$ and $C'$ to be equivalent.
+For this reason we consider such curves $C$ and $C'$ to be equivalent.
 
 If every term in $C$ has combined degree of at most 1, that is,
 if $C = a X + b Y + c$ then $C$ describes a line. The geometry of lines
@@ -49,12 +49,12 @@ and similarly opposite ends of hyperbolas connect at infinite points.
 
 TODO: diagram?
 
-Thus to study degree 2 curves is to study lines or circles, whose geometry
-is again is too simple for our purposes.
+Thus to study degree 2 curves is essentially to study the unit circle,
+whose geometry is again is too simple for our purposes.
 
 However, degree 3 curves, called elliptic curves,
-are quite nontrivial (for starters, unlike the previous two
-cases cannot transform any (irreducible) elliptic curve into
+are quite nontrivial (for instance, unlike the previous two
+cases we cannot transform any elliptic curve into
 any other)
 and have a rich structure well-suited for cryptography.
 
@@ -67,7 +67,7 @@ Transforming $C$ so
 that no points are infinite is
 possible but leads to more complicated
 equations. Using an equation that has
-exactly one point at infinity simplifies some of the resulting equations.
+exactly one point at infinity simplifies some of the expressions.
 
 For example, the Fermat curve $X^3 + Y^3 = 1$ becomes
 ?!? after a suitable affine transformation.
@@ -92,7 +92,7 @@ and \emph{nonsingular} otherwise (the cubic has distinct roots).
 
 Unless otherwise stated we always consider nonsingular elliptic curves.
 (Later we will encounter \emph{supersingular} curves, a particular
-flavour of nonsingular curves and are \emph{not} singular despite their
+flavour of nonsingular curves and are not singular despite their
 name.
 The antonym of supersingular is \emph{ordinary} or \emph{nonsupersingular}.)
 
@@ -260,11 +260,17 @@ and $(0, 5) + (2, 15) = (4, 13)$.
 
 \section {Elliptic Curve Cryptography}
 
-Having described an Abelian group operation on points on an elliptic curve,
-we can almost see how elliptic curves may be used in cryptography.
+We now posess enough theory to show how elliptic curves may be used
+in cryptography.
+The group operation described above means that every point on an elliptic curve
+generates a cyclic group, the structure required by many cryptosystems.
+Then we can use such a group provided that the basic operations are
+fast within this group, that the group order is known and prime,
+and that problems such as discrete log are difficult.
+
 Let $E$ be an elliptic curve over a field $K$.
 
-Firstly, we can generate random points on $E$:
+Firstly, note we can generate random points on $E$:
 after generating a random $x \in K$, we can attempt to solve $E$ for $y$ by
 using any finite field square root algorithm which we discuss below.
 If no solution exists, simply pick a new random $x$.
@@ -401,14 +407,14 @@ in finite fields.
 \section {Generating Random Points}
 
 Let $E$ be an elliptic curve over a field $K$.
-To generate a random point, first generate $x \in K$ randomly.
-Next, we solve $E : Y^2 = X^3 + a X + b$ for $Y$.
+To generate a random point, we generate $x \in K$ randomly and
+then solve $E : Y^2 = X^3 + a X + b$ for $Y$.
 Let $g(X) = x^3 + a X + b$. Then
 we must find a square root of $g(x)$.
 
 For a field of prime order one can use the Tonelli-Shanks algorithm
 to compute square roots~\cite{bss, handbook},
-which we quote here for handy reference.
+which we quote here.
 
 Suppose we wish to compute $b = \sqrt{a}$ in
 a field $\Fq$ for some prime $q$. (These paragraphs should be viewed
@@ -591,6 +597,9 @@ sliding window techniques.
 One drawback is the amount of precomputation needed,
 which worsens as $t$ increases, and also as the size of the sliding window
 is increased in which case one must store $m P + n Q$ for several $m, n$.
+
+Note the Tonelli-Shanks algorithm contains a multiexponentiation
+that benefits from this optimization.
 
 Cite Lange Sica Quisquater
 

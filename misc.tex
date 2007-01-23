@@ -100,13 +100,6 @@ Division is slower using Montgomery representation, but this drawback is
 of no concern if projective coordinates are used, where each division is
 replaced by a few multiplications in any case.
 
-\section{Dedicated Squaring}
-
-Though this observation is obvious and simple, we note that
-for each field, ring or group, the savings accrued from
-having dedicated squaring or doubling routines
-can be significant.
-
 \section{Cube Roots}
 
 When $q = 2 \pmod 3$, for any $x \in \Fq$ we have
@@ -122,6 +115,19 @@ point reduction and compression can be achieved by discarding the
 $x$-coordinate and only recording the $y$-coordinate. In particular,
 for point compression there is no need to store an extra bit and
 for point reduction no information is lost.
+
+\section{Dedicated Squaring}
+
+A relatively painless way to improve running times
+is to implement squaring routines for every field, ring or group.
+
+In the next section we describe squaring tricks
+for $\F_{q^2}$ when $q$ is a prime satisfying $q = 2 \pmod 3$
+or $q = 3 \pmod 4$.
+
+More generally, for low degree extensions (e.g. 3, 6),
+hand-coding generalized Karatsuba squaring and
+multiplication algorithms \cite{wpkaratsuba}.
 
 \section{Quadratic Field Extensions}
 
@@ -158,13 +164,9 @@ and
 (bd-ad-bc)\alpha + (ac-ad-bc)\alpha^2 \]
 
 We also have
-\[ (a\alpha + b\alpha^2)^q = b\alpha + a\alpha^2) \]
+\[ (a\alpha + b\alpha^2)^q = b\alpha + a\alpha^2 \]
 which again implies computing expressions such as $x z - y z^q$ only
 costs four multiplications in $\Fq$, where $x,y,z \in \F_{q^2}$.
-
-More generally, for low degree extensions (e.g. 3, 6),
-hand-coding generalized Karatsuba multiplication algorithms \cite{wpkaratsuba}
-is a relatively painless way to improve running times.
 
 \section{Last-Second Conversions}
 
@@ -227,3 +229,16 @@ goto step 2.
 \item
 Goto step 3.
 \end{enumerate}
+
+\section{Preprocessing}
+
+We previously discussed preprocessing for pairings,
+but other opportunities for
+calculating and storing results ahead of time often exist.
+
+For example, in some schemes, we must exponentiate the some group element $g$
+of some group $G$ by various powers. Then TODO
+
+One trivial application of this principle
+is that the random points needed for certain pairing
+computations can be chosen and stored long before they are needed.

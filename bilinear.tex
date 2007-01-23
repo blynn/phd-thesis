@@ -133,8 +133,12 @@ are similarly constructed and are omitted here.
 Of course, there is always another requirement for cyclic groups
 used in cryptography.
 Multiplying group elements, inverting group elements,
-choosing group elements at random and hashing to a group
-element must all be efficient, and in practice, ``efficient''
+and hashing to a group
+element must all be efficient.
+(Choosing a random element should be efficient as well, but this is
+implied by fast multiplication: one can simply choose
+a random integer and exponentiate a generator by this power.)
+In practice, ``efficient''
 means fast enough so that on the platform that the system is deployed
 the user will not notice any slowdown. With pairing-based cryptography,
 the bilinear map must also be efficient.
@@ -460,8 +464,19 @@ There is only one known setting for cryptographically useful bilinear maps,
 namely elliptic curves with an efficiently computable
 Tate (or similar) pairing.
 
-In practical terms, this means $G$, or $G_1$ and $G_2$ are groups of points on
-an elliptic curve, and that $G_T$ is a subgroup of a multiplicative group
+Strictly speaking, one can use hyperelliptic
+curves where much of theory can be generalized, but this is beyond
+our scope. To the author's knowledge, there are no implementations
+of pairing-based cryptosystems constructed using hyperelliptic curves.
+Additionally, at present only \emph{supersingular} hyperelliptic
+curves~\cite{galbraith,silverberg} can be used but there is no compelling
+reason to do so.
+Hyperelliptic equivalents of other elliptic curve families
+used for pairing-based cryptography have yet to be discovered.
+
+In practical terms, this means $G$, or $G_1$ and $G_2$ are always
+groups of points on
+an elliptic curve, and that $G_T$ is always a subgroup of a multiplicative group
 of a finite field.
 
 Mathematicians have traditionally employed additive notation for the
