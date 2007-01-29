@@ -5,7 +5,7 @@ Let $P \in E(K)$ be a point of prime order $r$. Let $G = \langle P \rangle$.
 
 We intend to build cryptosystems that operate in $G$. Hence
 we perform field arithemtic in $K$ during cryptographic operations,
-while the security of the resulting systems depends on the size of $r$.
+while the security of the resulting systems partly depends on the size of $r$.
 Recall the size of $K$ is roughly the size of $\#E(K)$,
 thus we desire $r$ to be as close to $\#E(K)$ as possible. Ideally,
 $r$ and $\#E(K)$ are the same size, both being say $l$-bit numbers,
@@ -638,7 +638,7 @@ provided that one can tolerate a subgroup order $r$ that is
 in general significantly smaller than the field order $q$.
 
 Freeman unified many of the approaches in a single
-framework\cite{freeman}, and also showed how to construct curves with
+framework\cite{freeman06}, and also showed how to construct curves with
 embedding degree 10, with $r$ and $q$ around the same size.
 Freeman also notes that it seems unlikely that curves
 with embedding degrees other than the ones described in this chapter

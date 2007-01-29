@@ -1,6 +1,6 @@
 \chapter{Miscellaneous Optimizations}
 
-Optimizing a pairing-based cryptosystem can be quite involved:
+Improving the efficiency of a pairing-based cryptosystem can be quite involved:
 
 \begin{enumerate}
 \item
@@ -9,7 +9,7 @@ integer and finite field arithmetic operations, as they are present
 in large amounts at the lowest level. For best results, platform-dependent
 hand-coded assembly should be used.
 Fortunately a lot of research has been conducted in this area,
-and many implementations exist, some of them freely available.
+and numerous implementations exist, many of them freely available.
 \item
 Elliptic curve operations should also be fast. Though a newer area of research,
 numerous publications on this subject exist~\cite{bss}.
@@ -17,17 +17,59 @@ numerous publications on this subject exist~\cite{bss}.
 Speeding up the pairing has only been a high priority relatively recently,
 and is one of the main focuses of some of the previous chapters.
 \item
-Sometimes modifications to a scheme will garner savings by
-permitting larger amounts of precomputation, exploiting pairing
-properties, moving exponentiations to cheaper groups, compressing points or
-pairings, and so on.
+Sometimes high-level modifications to a scheme (such as allowing one or
+two bits of error, choosing a different group to contain a key, etc.)
+will garner savings by
+permitting one to
+exploit other pairing properties,
+move exponentiations or multiplications to cheaper groups,
+precompute more elements,
+compress or reduce points or pairings, and so on.
 \item
 Needless to say, each of these classes of optimizations cannot be viewed
 in isolation. An optimization that may not usually help could be beneficial
 when the behaviour of the whole system is taken into account.
-Similarly, one optimization could adversely affect another.
 For one example, see the discussion on Montgomery representation below.
+Similarly, one optimization could adversely affect another.
 \end{enumerate}
+
+We have concentrated optimizations from all aspects of
+a pairing-based cryptosystem into a couple of chapters,
+rather than introduce each technique along with the algorithm that it
+affects. We prefer presenting shortcuts in one go as a big bag of tricks to
+sprinkling them throughout the text.
+The last item of the above list relates one reason.
+
+Secondly, an optimization buried in the middle of a section on another topic
+may be overlooked or forgotten. This may be less likely when it is found in
+a section dedicated to optimizations.
+
+Also, optimizations from different areas can have much in common. For example,
+sliding windows and multiexponentiation apply to every repeated-squaring-like
+algorithm. Seeing all variants at once can provide a deeper understanding of
+a principle, and may even inspire one to apply the same principle to a
+different situation.
+
+Lastly, the organization of these chapters reflects good software
+engineering practices. When developing a pairing-based cryptography
+library from scratch,
+the initial goal should be to write finite field arithmetic
+routines, including
+quadratic extensions. The next
+step is to implement elliptic curve groups.
+Once the code for this has been tested satisfactorily, a simple
+pairing algorithm should be built.
+Only when the pairing is correctly functioning
+should one at last even consider efficiency improvements.
+
+The slowest parts of the system should be attacked first.
+Educated guessing can meet with some success, but
+ideally profiling should be employed to identify the
+bottlenecks.
+
+(On the other hand, interspersing descriptions of optimizations
+among the whole work may be better in other circumstances, such as
+when efficiency is not one of the main focuses.)
 
 \section{On Using Existing Libraries}
 
@@ -39,10 +81,10 @@ development time),
 pre-existing multiprecision arithmetic libraries
 were utilized.
 
-Obviously a library
-designed for maximum efficiency when using finite fields
-of cryptographically useful magnitude is most desirable.
-If no suitable library is available (perhaps due to reasons unrelated
+Obviously, the ideal choice is
+a library designed for maximum efficiency when using finite
+fields sizes typically found in cryptography.
+But if no suitable library is available (perhaps due to reasons unrelated
 to performance such as lack of portability or licensing issues),
 one can easily graft finite field routines on top of
 any arbitrary-precision integer library, though doing so can cause losses.
@@ -81,6 +123,9 @@ contribute to the result.
 
 In some cases it may help to test for one as well.
 
+Of course, one could rewrite higher level algorithms to avoid these cases
+but this can be tedious and may only be negligibly better.
+
 \section{Montgomery Reduction}
 
 For RSA or a discrete-log system in a finite field, it is recommended
@@ -115,6 +160,43 @@ point reduction and compression can be achieved by discarding the
 $x$-coordinate and only recording the $y$-coordinate. In particular,
 for point compression there is no need to store an extra bit and
 for point reduction no information is lost.
+
+\section{Random Points}
+
+Let $E : Y^2 = X^3 + a X + b$ be an elliptic curve and suppose we
+are working within a cyclic subgroup $G$ of order $r$
+of the points of $E$.
+
+To find a random point in $G$, one can randomly choose an $x$-coordinate and
+attempt to solve the equation $E$ for the $y$-coordinate, which involves
+a finite-field square root algorithm. If no solution exists, more
+$x$-coordinates are chosen until a solution for $y$ can be found.
+
+As soon as valid coordinates are obtained,
+point multiplication by an appropriate
+factor ensures the resulting point $P$ lies in $G$.
+
+In certain curves noted above, there are advantages to choosing $y$ and
+solving for $x$ instead.
+
+In either case,
+once such a point is found, future random points can be generated by
+picking a random $k \in \{0,...,r-1\}$ and returning $kP$. This
+can be faster in some curves, though it is an inferior method on others.
+
+To ensure that the point is uniformly chosen from $G$, the point
+$P$ must have order $r$, though in most cases (i.e. when $r$ is a large prime
+or a product of large primes) this happens with high probability.
+
+When $G$ is not cyclic, but each point has order dividing $r$,
+we may of course extend this technique by finding a linearly independent
+basis of $G$ and form some linear combination using them,
+where the coefficients are chosen randomly.
+
+However, in this case,
+many pairing-based cryptosystems still function even if random
+points are picked from a cyclic subgroup of $G$ only, and we merely need
+one point of $G$ of order $r$.
 
 \section{Dedicated Squaring}
 
@@ -168,40 +250,6 @@ We also have
 which again implies computing expressions such as $x z - y z^q$ only
 costs four multiplications in $\Fq$, where $x,y,z \in \F_{q^2}$.
 
-\section{Last-Second Conversions}
-
-One easy optimization is also easy to overlook as it is hidden by
-notation.
-
-Consider a type A pairing $e : E(\mathbb{F}_q) \times E(\mathbb{F}_q)
-\rightarrow \mathbb{F}_{q^2}$, and suppose we have chosen to
-use $\mathbb{F}_q [i]$ to represent $\mathbb{F}_{q^2}$.
-
-During the computation of the pairing,
-we evaluate $g(Q')$ where $g = aX + bY + c$ is an equation of some line and
-$Q' = \phi(Q)$, where $\phi$ is defined by  $(X,Y) \rightarrow (-X, iY)$
-and $Q$ is some point $(x,y)$ in $E(\mathbb{F}_q)$.
-
-If we follow the notation blindly, we would first compute the point
-$Q'$ which takes twice as much storage as $Q$ (as the field it lies over is
-twice as big), and computing $g(Q')$ involves
-operations on elements of $\mathbb{F}_q[i]$.
-
-Instead, it is wiser to never explicitly compute $Q'$, and instead
-performs the following:
-
-\begin{enumerate}
-\item
-$Re(R) = c - a x$
-\item
-$Im(R) = b y$
-\end{enumerate}
-
-Now $R = g(Q')$, and we have only computed in $\mathbb{F}_q$.
-
-Similar statements can be made for other pairing types, with greater
-savings in some cases.
-
 \section{Finding a Root of a Polynomial}
 
 When computing parameters for curves using the CM method, we
@@ -242,3 +290,10 @@ of some group $G$ by various powers. Then TODO
 One trivial application of this principle
 is that the random points needed for certain pairing
 computations can be chosen and stored long before they are needed.
+Another is the caching of quadratic nonresidues that are key
+ingredients in a number of algorithms.
+
+\section{Multiexponentiation}
+
+TODO: move ecc opts here, mention low hamming field bad, low hamming
+order not so bad

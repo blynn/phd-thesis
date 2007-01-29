@@ -1,6 +1,9 @@
-\chapter{Optimizing the Pairing}
+\chapter{Faster Pairings}
 
+TODO: swap chapter order?
+TODO: powered Weil denom elim
 TODO: move to a good spot
+TODO: preprocessing for elliptic nets method
 \section {Twisting Curves}
 
 Let $E$ be an elliptic curve $Y^2 = X^3 + a X + b$ in $\Fq$ where
@@ -87,6 +90,8 @@ For faster pairings, it is desirable to choose $r$ so that repeated squaring
 algorithms can be optimized: e.g. choose $r$ to have a low Hamming weight,
 or to be a Solinas number (i.e. $r$ has the form $2^a \pm 2^b \pm 1$).
 
+\section {Simplified Tate Pairing}
+
 We find when the embedding degree is greater than $1$ we may simplify
 the Tate pairing as follows \cite{barreto, barreto2}.
 \begin{theorem}
@@ -139,6 +144,31 @@ since rational function agrees at $R, -R$. Then we have $f(x) / u(X)$
 which splits in some extension of $K$ and
 has divisor of the form $(\prod (P_i)(-P_i) / (Q_i)(-Q_i)$ which can
 never be $(P)^n$.
+
+\section {Simplified Weil Pairing}
+
+We may also simplify the Weil pairing in a similar fashion.
+Recall that two points $R, S$ are needed in addition to the input points
+$P,Q$. We show that we can pick $R = O$ and compute the Weil pairing as
+\[ f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P)} \]
+where as before $f_Q$ is a rational function with divisor
+$(f_Q) = (Q+S)^r /(S)^r$, and $f_P$ is a rational function
+satisfying $(f_P) = (P)^r$ (reminiscent of a rational function defined
+for the Tate pairing), but $f_Q$ is chosen carefully:
+
+In Miller's algorithm each iteration consists of finding an equation of
+a line and evaluting it at a certain point before multiplying it to the
+running product. We compute $f_Q(P)$ in the same way, except we ensure
+the lines, tangents and verticals have a particular form. For lines and
+tangents, the coefficient of $Y$ must be unity. For verticals, the
+coefficient of $X$ must be unity.
+
+For these choices it can be shown that $f_Q(O) = 1$, which explains how
+the simplification works.
+
+We can instead choose $S = O$ and compute
+\[ f(P,Q) = \frac{f_P(Q)}{f_Q(P+R)/f_Q(R)} \]
+with similarly defined $f_P, f_Q$.
 
 \section {Twist Curves and the Trace-Zero Group}
 
@@ -631,8 +661,40 @@ significantly faster for carefully constructed field extensions.
 Because Miller's algorithm has features in common with an exponentation
 routine, when computing products or quotients of pairings,
 
-TODO: XTR equations for k=6
-TODO: alternative Tate pairing computation method
 TODO: ignoring last iteration
 TODO: sliding windows, NAF (why NAF can be used)
-TODO: char 3 optimizations
+TODO: char 3 optimizations?
+
+\section{Last-Second Conversions}
+
+One easy optimization is also easy to overlook as it is hidden by
+notation.
+
+Consider a type A pairing $e : E(\mathbb{F}_q) \times E(\mathbb{F}_q)
+\rightarrow \mathbb{F}_{q^2}$, and suppose we have chosen to
+use $\mathbb{F}_q [i]$ to represent $\mathbb{F}_{q^2}$.
+
+During the computation of the pairing,
+we evaluate $g(Q')$ where $g = aX + bY + c$ is an equation of some line and
+$Q' = \phi(Q)$, where $\phi$ is defined by  $(X,Y) \rightarrow (-X, iY)$
+and $Q$ is some point $(x,y)$ in $E(\mathbb{F}_q)$.
+
+If we follow the notation blindly, we would first compute the point
+$Q'$ which takes twice as much storage as $Q$ (as the field it lies over is
+twice as big), and computing $g(Q')$ involves
+operations on elements of $\mathbb{F}_q[i]$.
+
+Instead, it is wiser to never explicitly compute $Q'$, and instead
+performs the following:
+
+\begin{enumerate}
+\item
+$Re(R) = c - a x$
+\item
+$Im(R) = b y$
+\end{enumerate}
+
+Now $R = g(Q')$, and we have only computed in $\mathbb{F}_q$.
+
+Similar statements can be made for other pairing types, with greater
+savings in some cases.

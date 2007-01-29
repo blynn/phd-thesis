@@ -428,9 +428,9 @@ $f_k$ be a rational function with divisor
 Observe $f_r = f_P$, since $rR = O$.
 It can be checked that
 \[
-{({
+\left(
 f_a \cdot f_b \cdot \frac{L_{aP,bP}}{V_{(a+b)P}}
-})} = (f_{a+b})
+\right) = (f_{a+b})
 \]
 via a simple computation on the divisors:
 \[
@@ -444,9 +444,9 @@ via a simple computation on the divisors:
 \]
 This leads to the formula:
 \[
-{({
+\left(
 f_k^2 \cdot \frac{T_{kP}}{V_{2kP}}
-})} = (f_{2k})
+\right) = (f_{2k})
 \]
 
 A straightforward manipulation of divisors also shows
@@ -488,9 +488,9 @@ time this algorithm is run, so that the exact same $f_P$ is evaluated.
 
 Note that
 \[
-{({
+\left(
 f_k \cdot \frac{L_{P+R,kP}}{L_{R,(k+1)P}}
-})} = (f_{k+1}) .
+\right) = (f_{k+1}) .
 \]
 thus could replace step 3(c)(i) with
 $x \leftarrow x \cdot L_{P+R, Z}(Q) / L_{R,Z+P}(Q)$
@@ -786,14 +786,13 @@ different approach. We quote the algorithm as described by Stange~\cite{stange}
 but omit explanations of the mathematical underpinnings.
 
 Let $E:Y^2 = X^3 + aX + b$ be an elliptic curve over a field $K$.
-Let $P=(x, y) \in E(K)[r]$, $Q=(x_2, y_2) \in E(K)$ ($Q$ represents a
-coset).
+Let $P=(x, y) \in E(K)[r]$, $Q=(x_2, y_2) \in E(K)$ ($Q$ represents the
+coset $Q + rE(K)$).
 Define constants
 \[
+    A = (x - x_2)^{-1},
+    B = \left((2x + x_2)(x - x_2)^2 - (y + y_2)^2\right)^{-1},
     C = (2 y)^{-1}
-\]
-\[
-    A = (x - x^2)^{-1}, B = {({(2x + x_2)(x - x_2)^2 - (y + y_2)^2})}^{-1},
 \]
 Define the sequence $c_k$ by
 \[
@@ -813,9 +812,9 @@ Define the sequence $c_k$ by
 \]
 and the sequence $d_k$ by
 \[
-    d_{-1} = x-x_2,
     d_0 = 1,
     d_1 = 1,
+    d_2 = (2x+x_2) - \left( \frac{y_2-y}{x_2-x} \right) ^2
 \]
 \[
 \begin{array}{lcrlcll}
@@ -825,25 +824,26 @@ and the sequence $d_k$ by
     d_{2k+2} &=& B(& d_{k+1} d_{k-1} c_{k+2}^2 &-& d_k^2 c_{k+1} c_{k+3}&) \\
 \end{array}
 \]
-Then it can be shown that the Tate pairing
-\[
+Then the Tate pairing
+$
 e : E[r] \cap E(K) \times
 E(K) / r E(K) \rightarrow
 K^* / K^{*r}
-\]
-can be defined as
+$
+is given by
 \[
 e(P,Q) = d_{r+1}/c_{r+1}.
 \]
-We describe a repeated-squaring-style algorithm that uses these sequences
+We describe a repeated-squaring-like algorithm that uses these sequences
 to compute the Tate pairing:
 \begin{enumerate}
 \item
 Let $r_t ... r_0$ be the binary representation of $r$.
 Assign $k \leftarrow 1$.
 \item
-Compute the constants $A, B, C$ and the start of the sequences:
-$c_{-2}, ..., c_{5}$ and $d_{-1}, d_0, d_1$.
+Compute the constants $A, B, C$ and the start of the sequences
+$c_{k-3},...,c_{k+4}$ and $d_{k-1}, d_k, d_{k+1}$, that is,
+$c_{-2}, ..., c_{5}$ and $ d_0, d_1, d_2$.
 \item
 For $j = t-1$ to $0$ do
 \begin{enumerate}
@@ -883,7 +883,8 @@ $P = (25, 30)$, $Q = (-25, 30i)$.
 We find the constants are $A = 13, B = 25+55i, C = 1$,
 start of the sequence $c_{-2}, ..., c_5 = 
 56, 58, 0, 1, 3, 31, 37, 0$ and also $d_0, d_1, d_2 = 1, 1, 43+31i$.
-We have $k = 1$.
+We have $k = 1$. Note $c_5$ was computed using
+$c_5 = c_2^3 c_4 - c_3^3$.
 \item
 We enter the main loop. As the second bit of the binary representation is
 zero, we use the recurrence relations to find
@@ -906,16 +907,18 @@ In practice we power the result by
 $(p^2 - 1)/r = 696$ (to standardize the coset representative),
 giving the final answer of $42 + 40i$.
 
-This example is artificially small, and we do not in fact need to bother
-computing $c_7, c_8, c_9$, and many sequence values
+\subsection {Remarks}
+
+The above example is artificially small, and we do not in fact need to bother
+computing $c_7, c_8, c_9$. Also, many sequence values
 are calculated more than once. For realistic sizes, this only happens in the
 first few iterations, and the time taken by unnecssary computations
 is a small fraction of the total running time. Nonetheless, checks to avoid
 superfluous operations can be easily implemented for a slight efficiency gain.
 
 There are many common subexpressions in the above formulas which
-should be exploited in an implementation. For example,
-setting
+would be exploited in an implementation but were omitted above
+for clarity. Setting
 \[
 S_k = c_k^2, T_k = c_{k-1} c_{k+1}, U_k = d_k^2, V_k = d_{k-1}d_{k+1}
 \]
