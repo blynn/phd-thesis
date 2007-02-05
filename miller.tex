@@ -21,8 +21,8 @@ For the curves we shall consider,
 $n$ and $q$ are always coprime thus $r$ is also coprime to $q$
 (since $r \mid n$).
 The case when $r$ is not coprime
-to $q$ leads to \emph{anomalous curves},
-which are unsuitable for cryptography TODO: cite.
+to $q$ leads to \emph{the anomalous attack}~\cite[Section V.3]{bss}
+which breaks discrete log in linear time.
 
 It can be proved~\cite{silverman} that for some integer $k \ge 1$,
 $E(\Fqk)[r]$ contains exactly $r^2$ points and is isomorphic to
@@ -452,30 +452,22 @@ f_k^2 \cdot \frac{T_{kP}}{V_{2kP}}
 A straightforward manipulation of divisors also shows
 $( V_{P+R} / L_{P,R}) = (f_1)$.
 
-Thus we may compute $f_P(Q) = f_r(Q)$ using the following algorithm:
-\begin{enumerate}
-\item
-Set $x_1 \leftarrow V_{P+R}(Q) / L_{P,R}(Q)$
-\item
-Set $x \leftarrow x_1, Z \leftarrow P$.
-Let the binary representation of $r$ be $b_t ... b_0$.
-\item
-For $i \leftarrow t-1, ..., 0$ do
-    \begin{enumerate}
-    \item
-    Set $x \leftarrow x^2 \cdot T_Z(Q) / V_{2Z}(Q)$
-    \item
-    Set $Z \leftarrow 2Z$
-    \item
-    If $b_i = 1$ then
-	\begin{enumerate}
-	\item
-	Set $x \leftarrow x \cdot x_1 \cdot L_{Z, P}(Q) / V_{Z+P}(Q)$
-	\item
-	Set $Z \leftarrow Z + P$
-	\end{enumerate}
-    \end{enumerate}
-\end{enumerate}
+Thus we may compute $f_P(Q) = f_r(Q)$ using the following algorithm,
+where the binary representation of $r$ be $r_t ... r_0$.
+
+\begin{algorithmic}[1]
+\STATE $x_1 \gets V_{P+R}(Q) / L_{P,R}(Q)$
+\STATE $x \gets x_1$
+\STATE $Z \gets P$
+\FOR {$i \gets t-1, ..., 0$}
+    \STATE $x \gets x^2 \cdot T_Z(Q) / V_{2Z}(Q)$
+    \STATE $Z \gets 2Z$
+    \IF {$r_i = 1$}
+	\STATE $x \gets x \cdot x_1 \cdot L_{Z, P}(Q) / V_{Z+P}(Q)$
+	\STATE $Z \gets Z + P$
+    \ENDIF
+\ENDFOR
+\end{algorithmic}
 
 On termination, we have $x = f_P(Q)$ (and $Z = rP = O$).
 
@@ -503,13 +495,17 @@ because computing vertical lines is much cheaper than general lines.
 We now consider the Tate pairing. Recall we wish to compute
 $f_P(Q)$ where $f_P$ has divisor $(P)^r$.
 
-This time we define the intermediate functions $f_k$ by
+We can view our current situation as a special case of the above
+with $R = O$.
+Thus define the intermediate functions $f_k$ by
 \[ (f_k) = (P)^k / (kP) . \]
 We have $(f_r) = (f_P)$.
+The following identities can be obtained by simplifying
+earlier formulas using $R=O$, but it is easy enough to check them directly.
 
-Notice
-\[ (f_k) = (\prod_{i=1}^{k-1} \frac{L_{iP}}{V_{(i+1)P}}) \]
-since
+For example, we can show
+\[ (f_k) = \left(\prod_{i=1}^{k-1} \frac{L_{iP}}{V_{(i+1)P}}\right) \]
+via
 \[ (f_k) =
 \frac{(P)(P)}{(2P)}
 \cdot
@@ -520,46 +516,39 @@ since
 We could compute $f_r(Q)$ using this formula,
 but this is clearly impractical for large $r$.
 
-We can show
+We find
 \[
 (f_{2k}) = (f_k^2 T_{kP} / V_{2kP} )
 \]
-through another simple computation:
+which can be shown with direct calculation:
 \[
 \frac{(P)^{2k}}{(2kP)} =
 \frac{(P)^{2k}}{(kP)^2} \cdot
 \frac{(kP)^2 (-2kP)}{(2kP)(-2kP)}
 \]
-and from above,
+and similarly we can show
 \[
 (f_{k+1}) = (f_k L_{kP} / V_{(k+1)P}).
 \]
 leading to the following algorithm that
 computes $f_P(Q)$ given points $P,Q$ (where $P$ has order $r$).
+Let the binary representation of $r$ be $r_t ... r_0$.
 
-\begin{enumerate}
-\item
-Set $x \leftarrow 1, Z \leftarrow P$.
-Let the binary representation of $r$ be $b_t ... b_0$.
-\item
-For $i \leftarrow t-1, ..., 0$ do
-    \begin{enumerate}
-    \item
-    Set $x \leftarrow x^2 \cdot T_Z(Q) / V_{2Z}(Q)$
-    \item
-    Set $Z \leftarrow 2Z$
-    \item
-    If $b_i = 1$ then
-	\begin{enumerate}
-	\item
-	Set $x \leftarrow x \cdot L_{Z,P}(Q) / V_{Z+P}(Q)$
-	\item
-	Set $Z \leftarrow Z + P$
-	\end{enumerate}
-    \end{enumerate}
-\end{enumerate}
+\begin{algorithmic}[1]
+\STATE $x \gets 1$
+\STATE $Z \gets P$
+\FOR {$i \gets t-1, ..., 0$}
+    \STATE $x \leftarrow x^2 \cdot T_Z(Q) / V_{2Z}(Q)$
+    \STATE $Z \leftarrow 2Z$
+    \IF {$r_i = 1$}
+	\STATE $x \leftarrow x \cdot L_{Z,P}(Q) / V_{Z+P}(Q)$
+	\STATE $Z \leftarrow Z + P$
+    \ENDIF
+\ENDFOR
+\end{algorithmic}
 
-After the algorithm finishes we have $x = f_r(Q)$ (and $Z = rP = O$).
+When the algorithm finishes we have $x = f_r(Q)$ (and $Z = rP = O$).
+Note this algorithm can be viewed as the previous algorithm with $x_1 = 1$.
 
 \subsection {Intermediate Poles and Zeroes}
 
@@ -805,7 +794,7 @@ Define the sequence $c_k$ by
 \[
 \begin{array}{lcl}
     c_3 &=& 3 x^4 + 6ax^2 + 12bx - a^2, \\
-    c_4 &=& 4y(x^6+5ax^4+20bx^3-5a^2x^2-4abx-8b^2 -a^2), \\
+    c_4 &=& 4y(x^6+5ax^4+20bx^3-5a^2x^2-4abx-8b^2-a^3), \\
     c_{2k-1} &=& c_{k+1} c_{k-1}^3 - c_{k-2} c_k^3, \\
     c_{2k} &=& C(c_k c_{k+2} c_{k-1}^2 - c_k c_{k-2} c_{k+1}^2).
 \end{array}
@@ -835,44 +824,34 @@ is given by
 e(P,Q) = d_{r+1}/c_{r+1}.
 \]
 We describe a repeated-squaring-like algorithm that uses these sequences
-to compute the Tate pairing:
-\begin{enumerate}
-\item
+to compute the Tate pairing.
 Let $r_t ... r_0$ be the binary representation of $r$.
-Assign $k \leftarrow 1$.
-\item
-Compute the constants $A, B, C$ and the start of the sequences
-$c_{k-3},...,c_{k+4}$ and $d_{k-1}, d_k, d_{k+1}$, that is,
-$c_{-2}, ..., c_{5}$ and $ d_0, d_1, d_2$.
-\item
-For $j = t-1$ to $0$ do
-\begin{enumerate}
-\item
-If $r_j = 0$ then
-\begin{enumerate}
-\item
-(Double)
-With the above recurrence relations,
-use $c_{k-3}, ..., c_{k+4}$ to compute $c_{2k-3},...,c_{2k+4}$,
-and $d_{k-1}, d_k, d_{k+1}$ to compute $d_{2k-1}, d_{2k}, d_{2k+1}$.
-\item
-$k \leftarrow 2k$
-\end{enumerate}
-\item
-otherwise $r_j = 1$ in which case
-\begin{enumerate}
-\item
-(Double and add)
-With the above recurrence relations,
-use $c_{k-3}, ..., c_{k+4}$ to compute $c_{2k-2},...,c_{2k+5}$.
-and $d_{k-1}, d_k, d_{k+1}$ to compute $d_{2k}, d_{2k+1}, d_{2k+2}$.
-\item
-$k \leftarrow 2k + 1$
-\end{enumerate}
-\end{enumerate}
-\item
-Return $d_{r+1}/c_{r+1}$.
-\end{enumerate}
+
+\begin{algorithmic}[1]
+\STATE $k \gets 1$
+\STATE
+Compute $A, B, C$ and $c_{k-3},...,c_{k+4}$ and $d_{k-1}, d_k, d_{k+1}$
+($c_{-2}, ..., c_{5}$ and $ d_0, d_1, d_2$).
+\FOR {$j = t-1$ to $0$}
+    \IF {$r_j = 0$}
+    \STATE (Double)
+%use $c_{k-3}, ..., c_{k+4}$ to compute $c_{2k-3},...,c_{2k+4}$,
+%and $d_{k-1}, d_k, d_{k+1}$ to compute $d_{2k-1}, d_{2k}, d_{2k+1}$.
+Compute $c_{2k-3},...,c_{2k+4}$, and $d_{2k-1}, d_{2k}, d_{2k+1}$
+(using the above recurrence relations)
+    \STATE $k \gets 2k$
+    \ELSE[$r_j = 1$]
+    \STATE (Double and add)
+%use $c_{k-3}, ..., c_{k+4}$ to compute $c_{2k-2},...,c_{2k+5}$.
+%and $d_{k-1}, d_k, d_{k+1}$ to compute $d_{2k}, d_{2k+1}, d_{2k+2}$.
+Compute $c_{2k-2},...,c_{2k+5}$ and  $d_{2k}, d_{2k+1}, d_{2k+2}$
+(using the above recurrence relations)
+\STATE $k \gets 2k + 1$
+    \ENDIF
+\ENDFOR
+\STATE return $d_{r+1}/c_{r+1}$
+\end{algorithmic}
+
 \subsection {Example}
 We take the same curve and points from the other worked examples, that is
 $E : Y^2 = X^3 + X$ over $\F_{59}$, $r = 5$,

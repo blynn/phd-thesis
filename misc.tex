@@ -1,4 +1,4 @@
-\chapter{Miscellaneous Optimizations}
+\chapter{Optimizating Cryptosystems}
 
 Improving the efficiency of a pairing-based cryptosystem can be quite involved:
 
@@ -8,14 +8,14 @@ Much effort must be devoted to speeding up
 integer and finite field arithmetic operations, as they are present
 in large amounts at the lowest level. For best results, platform-dependent
 hand-coded assembly should be used.
-Fortunately a lot of research has been conducted in this area,
-and numerous implementations exist, many of them freely available.
+Fortunately a lot of research has been conducted in this area~\cite{taocp2},
+and numerous implementations exist, many of them freely available~\cite{gmp, miracl}.
 \item
 Elliptic curve operations should also be fast. Though a newer area of research,
 numerous publications on this subject exist~\cite{bss}.
 \item
 Speeding up the pairing has only been a high priority relatively recently,
-and is one of the main focuses of some of the previous chapters.
+and is the main topic of the next chapter.
 \item
 Sometimes high-level modifications to a scheme (such as allowing one or
 two bits of error, choosing a different group to contain a key, etc.)
@@ -66,10 +66,6 @@ The slowest parts of the system should be attacked first.
 Educated guessing can meet with some success, but
 ideally profiling should be employed to identify the
 bottlenecks.
-
-(On the other hand, interspersing descriptions of optimizations
-among the whole work may be better in other circumstances, such as
-when efficiency is not one of the main focuses.)
 
 \section{On Using Existing Libraries}
 
@@ -198,6 +194,13 @@ many pairing-based cryptosystems still function even if random
 points are picked from a cyclic subgroup of $G$ only, and we merely need
 one point of $G$ of order $r$.
 
+One could consider a hashing to a group by
+hashing to an integer $k$ in $\{0,...,r-1\}$ and returning $kP$
+for some fixed point $P$, but for most cryptosystems this cannot be done.
+In many applications, security is compromised if the discrete log of
+the outputs of a hash function with respect to some fixed base are always
+known.
+
 \section{Dedicated Squaring}
 
 A relatively painless way to improve running times
@@ -214,7 +217,7 @@ multiplication algorithms \cite{wpkaratsuba}.
 \section{Quadratic Field Extensions}
 
 For primes $q=3\pmod 4$, a degree two field extension of $\Fq$
-should be implemented as $\Fq[i]$ where $i$ is a square root of $-1$.
+can be implemented as $\Fq[i]$ where $i$ is a square root of $-1$.
 
 We have
 \[ (a + i b)^2 = (a - b)(a + b) + i (2 a b) \]
@@ -232,8 +235,6 @@ the polynomial $X^2 + X + 1$ irreducible in $\Fq$, thus its roots
 form an optimal normal basis of $\F_{q^2}$
 allowing several shortcuts~\cite{xtr}.
 
-Thus if $q\ne 3\pmod 4$ (so we cannot extend by a square root of $-1$ since
-it already exists in $\Fq$), a good choice is to use the above basis.
 In other words, we compute in $\Fq[\alpha]_{\alpha^2+\alpha+1}$
 (viewing $\alpha$ as an indeterminate) and represent elements
 as tuples $(a,b) \in \Fq \times \Fq$ (which means $a \alpha + b \alpha^2$).
@@ -297,3 +298,149 @@ ingredients in a number of algorithms.
 
 TODO: move ecc opts here, mention low hamming field bad, low hamming
 order not so bad
+
+\section {Projective Coordinates}
+
+Instead of using a pair of numbers to represent a point,
+we can use Jacobian projective coordinates: the triplet
+$(x,y,z)$ represents the point $(x/z^2, y/z^3)$.
+
+Then to double the point $(x,y,z)$, we compute $(x_3, y_3, z_3)$ by:
+
+\[
+\begin{array}{rcl}
+\lambda_1 & \leftarrow & 3x^2 + a z^4 \\
+z_3 & \leftarrow & 2yz \\
+\lambda_2 & \leftarrow & 4xy^2 \\
+x_3 & \leftarrow & \lambda_2^2 - 2 \lambda_2 \\
+\lambda_3 & \leftarrow & 8 y^4 \\
+y_3 & \leftarrow & \lambda_1(\lambda_2 - x_3) - \lambda_3
+\end{array}
+\]
+
+We see the computation of $3x^2 + a z^4$ in general costs $3S + 1M$
+where $M$ and $S$ denote the time required for a multiplication and
+a squaring respectively. (We consider multiplication by
+a small constant to be negligible.)
+
+For $a=0$ the cost is only $1S$.
+
+For small $a$ or fairly small $a$ with low Hamming weight the cost is $3S$.
+
+For $a=-3$ we may compute $\lambda_1 = 3(x+z^2)(x-z^2)$ which costs
+$1M + 1S$.
+
+For $a = -3 d^2$ where $d$ is small or fairly small with low Hamming weight,
+we may compute $\lambda_1 = 3(x+dz^2)(x-dz^2)$ which also costs $1M + 1S$.
+By transforming the curve (see section ?!?)
+we can obtain an $a$ that is faster than the general case.
+
+TODO: quote them instead for handy reference:
+We omit the formulas for projective point addition, and for adding
+an affine point to a projective point, referring the reader instead
+to Blake et al. or Cohen et al. \cite{stuff}.
+
+The latter investigate other kinds of projective coordinates, where point
+doubling or multiplication is even faster.
+
+TODO: how extensively should one use projective coordinates
+
+\section {Point Multiplication}
+
+TODO: mention optimizations later, present basic method here
+
+Point multiplication is the elliptic curve equivalent of modular
+exponentiation, thus optimizations that apply to one often apply to the other.
+
+One difference is that group inversion is much cheaper in elliptic curves:
+one simply negates the $y$-coordinate, an operation that is essentially free,
+whereas in finite fields one must spend time running the extended
+Euclidean algorithm.
+
+This allows one to use non-adjacent forms (or signed windows), which
+TODO: refer to bss, handbook
+Sliding Windows.
+
+If it is known in advance that a particular point $P$ will feature in
+several point mulitplications, preprocessing can be employed, namely
+multiples of $P$ used often in the exponentiation routine
+are computed and stored.
+
+When computing expressions
+of the form $a P + b Q$ (the equivalent of $g^x h^y$ in
+finite fields), rather than computing $a P$ and $b Q$ separately
+and adding the results, one can use
+a multiexponentiation trick to roughly halve the number of point doublings
+(if $a$ and $b$ are about the same length).
+In its simplest form, $P + Q$ is precomputed and stored,
+then a double-and-add algorithm is used to compute the
+final result. Instead of describing the algorithm in full, we present
+an example:
+
+To compute $12 P + 7 Q$ one precomputes $P + Q$, then:
+
+\begin{enumerate}
+\item
+$R \leftarrow P$
+\item
+$R \leftarrow 2R$
+\item
+$R \leftarrow R + (P + Q)$
+\item
+$R \leftarrow 2R$
+\item
+$R \leftarrow R + Q$
+\item
+$R \leftarrow 2R$
+\item
+$R \leftarrow R + Q$
+\end{enumerate}
+
+Multiexponentiation can
+be generalized to computing any expression of the form
+$a_1 P_1 + ... + a_t P_t$. Multiexponentiation can also be combined with
+sliding window techniques.
+One drawback is the amount of precomputation needed,
+which worsens as $t$ increases, and also as the size of the sliding window
+is increased in which case one must store $m P + n Q$ for several $m, n$.
+
+Note the Tonelli-Shanks algorithm contains a multiexponentiation
+that benefits from this optimization.
+
+Cite Lange Sica Quisquater
+
+Cohen Miyaji Ono
+
+\section{Floating-Point Complex Numbers}
+
+Though not part of any cryptosystem, ideally code that finds suitable
+curves should also be fast. For type D and G curves, we must
+find Hilbert polynomials. This requires high precision
+floating point complex arithmetic.
+
+Packages that provide arbitrary precision floating point numbers
+may not include routines for complex arithmetic. When implementing
+complex numbers using such a library, a couple of issues must be
+dealt with.
+
+Multiplication should use the
+tricks for quadratic field extensions described earlier.
+
+To minimize underflow, overflow or precision loss~\cite{numericalrecipes},
+one should compute the norm as
+\[
+|a+ib| = \left\{
+\begin{array}{ll}
+|a|\sqrt{|1+(b/a)^2|} & \mbox{if $|a| \ge |b|$} \\
+|b|\sqrt{|1+(a/b)^2|} & \mbox{if $|a| < |b|$}
+\end{array}
+\right.
+\]
+and divide using
+\[
+\frac{a+ib}{c+id} =
+\left\{\begin{array}{ll}
+\frac{(a+b(d/c))+i(b-a(d/c))}{d+d(d/c)} & \mbox{if $|c|\ge|d|$} \\
+\frac{(a(c/d) + b)+i(b(c/d)-a)}{c(c/d)+d} & \mbox{if $|c|<|d|$} \\
+\end{array}\right.
+\]

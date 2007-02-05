@@ -78,7 +78,7 @@ $q$-eigenspace of $\Phi$ and hence
 \[
 \Phi^k(Q) = q^k Q = Q
 \]
-since $r | q^k - 1$. Thus $T$, like $E(\mathbb{F}_q)$ is fixed under
+since $r \mid q^k - 1$. Thus $T$, like $E(\mathbb{F}_q)$ is fixed under
 $\Phi^k$, and since these groups are linearly independent they generate all
 of $E[r]$, implying that all of $E[r]$ is fixed under $\Phi^k$. Hence
 $E[r] \subset E(\mathbb{F}_{q^k})$.
@@ -86,7 +86,7 @@ $E[r] \subset E(\mathbb{F}_{q^k})$.
 
 \begin{definition}
 Let $E$ be an elliptic curve defined over $K = \mathbb{F}_q$.
-Let $k$ be the smallest positive integer such that $\#E(\Fq) | q^k - 1$.
+Let $k$ be the smallest positive integer such that $\#E(\Fq) \mid q^k - 1$.
 Then we say that the embedding degree of the curve $E$ is $k$.
 \end{definition}
 
@@ -94,7 +94,7 @@ Let $P \in E(K)$ be a point of order $r$.
 Let $G = \langle P \rangle$.
 If $r$ is a proper factor $\#E(\Fq)$,
 then it could be that for some $j < k$, although $\#E(\Fq)$ does not
-divide $q^j - 1$, we have $r | q^j - 1$, that is,
+divide $q^j - 1$, we have $r \mid q^j - 1$, that is,
 $\mathbb{F}_{q^j}$ contains all the $r$th roots of unity and this
 subfield of $\mathbb{F}_{q^k}$ suffices for
 the Tate pairing computation on $G$.
@@ -122,7 +122,7 @@ $\#E(\Fq)$ so that $k$ is also the smallest integer such that $r \mid q^k - 1$
 with overwhelming probability.
 
 However, for very small toy examples, after computing the embedding degree
-$k$ one should manually check if $r | q^j - 1$ for some $j < k$.
+$k$ one should manually check if $r \mid q^j - 1$ for some $j < k$.
 
 At this point, our goal seems to be minimizing this embedding degree,
 so that $L$ is as close as possible to $K$, and if possible,
@@ -415,16 +415,18 @@ by
 
 gives a bilinear nondegenerate map.
 
-As mentioned before, cube roots are easy to find since $q = 2 \pmod{3}$.
-For this particular curve, it means we may easily generate points from
-a $y$-coordinate: given any $y$, simply take $x = (y^2-1)^{-(q-2)/3}$.
-This simplifies routines such as random point generation. Additionally,
+We shall see cube roots are easy to find since $q = 2 \pmod{3}$.
+For this particular curve, this means we may quickly generate points from
+a $y$-coordinate, yielding simple and efficient random point generation and
+hashing-to-point routines.
+Additionally,
 points can be represented by their $y$-coordinate alone since there is
 a unique $x$ for each value of $y$.
 
-We may also ensure $-1$ is a quadratic nonresidue in $\Fq$ by
-choosing $q = 3\pmod{4}$. This allows us to implement $\mathbb{F}_{q^2}$
-as $\Fq[i]$, as above.
+They do have one drawback however. Unlike the previous type,
+there is a certain optimization that
+only applies if we forgo symmetry of the pairing. One must choose between
+symmetry and efficiency in this case.
 
 \section {Type C Curves}
 
@@ -516,7 +518,7 @@ The embedding degree three and four cases may also be useful in special
 circumstances and we briefly describe them.
 
 Consider the polynomials $q = x^2 + 1, t = \pm x + 1$.
-It turns out that $q(x) + 1 - t(x) | q(x)^6 - 1$.
+It turns out that $q(x) + 1 - t(x) \mid q(x)^6 - 1$.
 
 The CM equation becomes $D V^2 = 3 x^2 \pm 2 x + 3$. If we make
 the substitution $U = 3x \pm 1$ then we have the generalized Pell equation
@@ -524,13 +526,14 @@ the substitution $U = 3x \pm 1$ then we have the generalized Pell equation
 U^2 - 3DV^2 = -8
 \]
 
-This suggests the following algorithm.
+Thus:
 
 \begin{enumerate}
 \item
-Choose $D$ and solve the Diophantine equation
-\[ D V^2 = 3 x^2 \pm 2 x + 3 \]
-for $V, x$ by solving a Pell-type equation.
+Choose $D$ and solve the Pell-type equation
+\[ U^2 - 3DV^2 = -8 \]
+\item
+We have $U = \pm 1 \pmod 3$. Set $x = (-1 \pm U) / 3$
 \item
 Check that $q = x^2 + 1$ is prime
 \item
@@ -555,7 +558,7 @@ Then the order $n$ of the resulting
 curve $E$ is $n = \Phi_6(x)$, thus
 \[ q^6 - 1 = x^6 - 1 \bmod n \]
 
-Recall $\Phi_6(x) | x^6 - 1$, hence $n$ must also divide $q^6 - 1$
+Recall $\Phi_6(x) \mid x^6 - 1$, hence $n$ must also divide $q^6 - 1$
 giving an embedding degree of 6.
 
 Now suppose $t = -x + 1$.
@@ -563,8 +566,8 @@ Recall $\Phi_3(x) = x^2 + x + 1$, thus
 $q = -x + \Phi_3(x)$.
 The order $n$ of $E$ is $n = \Phi_3(x)$, hence
 \[ q^6 - 1 = (-x)^6 - 1 = x^6 - 1 \bmod n \]
-Since $\Phi_3(x) | x^6 - 1$ the embedding degree of $E$ is 6.
-Of course $\Phi_3(x) | x^3 - 1$ but $x^3 \ne (-x)^3$ in general
+Since $\Phi_3(x) \mid x^6 - 1$ the embedding degree of $E$ is 6.
+Of course $\Phi_3(x) \mid x^3 - 1$ but $x^3 \ne (-x)^3$ in general
 thus the embedding degree is not 3 (with high probability).
 
 For an embedding degree of 4, we may also use cyclotomic polynomials.
@@ -610,7 +613,7 @@ degree 12 curves.
 Let $q(x) = 36x^4 + 36x^3 + 24x^2 + 6x + 1$. Let $t(x) = 6x^2 + 1$.
 Then if $D = 3$, the CM equation always has the solution
 $V = 6x^2 + 4x + 1$. Furthermore,
-it turns out $q(x) + 1 - t(x) | q(x)^{12} - 1$.
+it turns out $q(x) + 1 - t(x) \mid q(x)^{12} - 1$.
 This suggests the following algorithm to generate curves:
 
 \begin{enumerate}
@@ -655,8 +658,8 @@ Choose $D$ such that $D$ is squarefree and $D = 43, 67 \bmod 120$.
 \item
 Find solutions $(u,v)$ to the equation $u^2 - 15 Dv^2 = -20$.
 \item
-Check $u = \pm 5 \bmod 15$,
-and set $x = (-5 \pm u)/15$.
+We have $u = \pm 5 \bmod 15$.
+Set $x = (-5 \pm u)/15$.
 \item
 Check $q(x)$ is prime.
 \item
@@ -667,7 +670,171 @@ Construct the corresponding curve $E$ using the CM method.
 %Multiply $u+v\sqrt{15 D}$ by a norm-one element of $\mathbb{Q}(\sqrt{15D})$
 %and get next candidate
 
-It can be shown that $n | q^{10} - 1$ thus the resulting curve has
+It can be shown that $n \mid q^{10} - 1$ thus the resulting curve has
 embedding degree 10.
 
 TODO: comparison table: symmetric? group sizes? embedding degree? ordinary?
+
+\section {Generalized Pell Equations}
+
+Consider the \emph{Pell equation}
+\[ x^2 - D y^2 = 1 \]
+where $D$ is not a square, $x, y$ are integers.
+We solve such an equation using the
+continued fraction expansion of $\sqrt{D}$:
+\[
+\begin{array}{rcl}
+P_0 &=& 0 \\
+Q_0 &=& 1 \\
+a_0 &=& \left\lfloor{\sqrt{D}}\right\rfloor \\
+P_1 &=& a_0 \\
+Q_1 &=& D-a_0^2 \\
+a_n &=& \left\lfloor { \frac {a_0 + P_n}{Q_n} } \right\rfloor \\
+P_n &=& a_{n-1} Q_{n-1} - P_{n-1} \\
+Q_n &=& \frac{D - P_n^2}{Q_{n-1}}
+\end{array}
+\]
+
+One can show for some $k$ we must have $a_{k+1} = 2 a_0$, and after
+this point the $a_n$ sequence begins repeating. That is
+$\sqrt{D} = [a_0, a_1, ..., a_{k+1}, a_1, ..., a_{k+1}, ... ]$.
+
+The convergents are given by
+\[ p_0 = a_0, p_1 = a_0 a_1 + 1, p_n = a_n p_{n-1} + p_{n-2} \]
+and
+\[ q_0 = 1, q_1 = a_1, q_n = a_n q_{n-1} + q_{n-2} .\]
+These satisfy
+\[ p_n^2 - D q_n^2 = (-1)^{n+1} Q_{n+1} . \]
+
+It turns out that $(x, y) = (p_k, q_k)$ is the smallest positive
+integer equation
+of the Pell equation for odd $k$, and $(x, y) = (p_{2k+1}, q_{2k+1}$ is for
+even $k$. Denote this minimal positive solution by $(t, u)$.
+Then all positive solutions $(x, y)$ to the Pell equation can be found via
+\[ x + y\sqrt{D} = (t+u\sqrt{D})^n\]
+(for all positive integers $n$). The negative solutions (which we
+never need) in this case are trivial to find from the positive solutions.
+
+\subsection {Generalized Pell Equations}
+
+Now suppose we are to solve the \emph{generalized Pell equation}
+\[ x^2 - D y^2 = N \]
+where $D$ is not a square, $x, y$ are integers.
+
+When $N^2 < D$ we first solve the Pell equation
+\[ x^2 - D y^2 = 1 \]
+using the above method, that is, computing convergents $p_n, q_n$
+until the minimal positive solution is found. However,
+while doing so, we check if $p_n^2 - D q_n^2 = N / f^2$ for
+some positive integer $f$. If so, then we append $(f p_n, f q_n)$ to
+the list of solutions of the generalized Pell equation.
+
+If no such convergents are found by the time we have reached the minimal
+positive solution for the Pell equation, then the generalized Pell
+equation has no solution.
+
+Otherwise let $(t, u)$ be the minimal positive solution of the above
+Pell equation.
+Then for each $(r,s)$ on the list of solutions we have a family of
+solutions $(x,y)$ given by
+\[ (x+y\sqrt{D}) = (r+s\sqrt{D})(t+u\sqrt{D})^n \]
+(for all positive integers $n$). These families account for all positive
+integer solutions to the generalized Pell equation.
+
+When $N^2 \ge D$ there are possibly other fundamental solutions
+to the generalized Pell equation we must add to the list before generating
+families of solutions.
+We can use brute force to find them if the numbers are small enough.
+
+For positive $N$ set $L_1=0, L_2 =\sqrt{N(t-1)/2D}$. For negative $N$
+set $L_1 = \sqrt{-N/D}, L_2=\sqrt{-N(t+1)/2D)}$. For all integers $y$
+satisfying $L_1\le y \le L_2$ check if there exists any integer $x$ such that
+$x^2 - Dy^2 = N$.
+Append any solutions $(x,y)$ to our list. Also append $(x,-y)$ if
+it does not appear in the family of solutions generated by $(x, y)$.
+
+\section {Hilbert Polynomials}
+
+We quote an algorithm to compute Hilbert class
+polynomials as described by Cohen~\cite[section 7.6.2]{1993-cohen}.
+
+Let $\tau \in \mathbb{C}$ lie in the upper complex plane.
+Set $q = e^{2 i \pi \tau}$. Define
+\[
+\Delta(\tau) = q\left(1+\sum_{n\ge1}(-1)^n
+\left({q^{n(3n-2)/2} + q^{n(3n+1)/2}}\right)\right)^{24}
+\]
+and
+\[
+f(\tau) = \frac{\Delta(2\tau)}{\Delta(\tau)}
+\]
+and finally
+\[
+j(\tau) = \frac{(256 f(\tau) + 1)^3}{f(\tau)}
+\]
+Then the Hilbert class polynomial for the discriminant $-D$ is
+given by
+\[ H_D(x) = \prod (X - j(\alpha) \]
+where $\alpha$ runs over all complex numbers such that
+\[ \alpha = \frac{-b+\sqrt{-D}}{2a} \]
+where $ax^2 + bxy + cy^2$ is a \emph{primitive reduced positive definite
+binary quadratic form} of discriminant $-D$, or in other words,
+$b^2 - 4ac = -D$, $|b| \le a \le \sqrt{|D|/3}$, $\gcd(a,b,c)=1$ and
+if $|b| = a$ or $a=c$ then $b\ge0$.
+
+Hence the following algorithm computes Hilbert class polynomials.
+Here, $P$ is a polynomial variable, and $D = 0, -1 \pmod 4$.
+
+\begin{algorithmic}[1]
+\STATE $P\gets 1$
+\STATE $b\gets D \pmod 2$
+\STATE $B\gets \left\lfloor\sqrt{|D|/3}\right\rfloor$
+\REPEAT
+    \STATE $b\gets b+2$
+    \STATE $t\gets (b^2+D)/4$
+    \STATE $a\gets \max(b,1)$
+    \REPEAT
+	\IF {$a^2 \mid t$}
+	    \STATE $u\gets j((-b+\sqrt{D})/(2a))$
+	    \IF {$a = b$ or $a^2 = t$ or $b=0$}
+		\STATE $P \gets P(X-u)$
+	    \ELSE
+		\STATE $P \gets P(X^2 - 2\Re(u)X+|u|^2)$
+	    \ENDIF
+	\ENDIF
+	\STATE $a=a+1$
+    \UNTIL $a^2>t$
+    \STATE $b=b+2$
+\UNTIL $b>B$
+\STATE round coeffcients of $P$ to nearest integer
+\STATE return $P$
+
+\end{algorithmic}
+
+It remains to specify the precision of the floating point operations.
+Cohen recommends using at least $k + 10$ significant digits where
+\[ k = \pi \frac{\sqrt{|D|}} {\ln 10} \sum \frac{1}{a} \]
+the sum running over all reduced forms $(a,b,c)$ of discriminant $D$,
+which can be computed using the following algorithm~\cite[Algorithm 5.3.5]{1993-cohen}:
+
+\begin{algorithmic}[1]
+\STATE $s\gets 1$, $b\gets D \pmod 2$, $B\gets \left\lfloor \sqrt{|D|/3}
+\right\rfloor$.
+\REPEAT
+    \REPEAT
+	\STATE $q\gets (b^2 - D)/4$, $a\gets b$
+	\IF {$a\le 1$}
+	    \STATE $a\gets 1$
+	\ELSIF {$a\mid q$}
+	    \IF {$a=b$ or $a^2=q$ or $b=0$}
+		\STATE $s=s+1/a$
+	    \ELSE
+		\STATE $s=s+2/a$
+	    \ENDIF
+	\ENDIF
+	\STATE $a\gets a+1$
+    \UNTIL $a^2>q$
+    \STATE $b\gets b+2$
+\UNTIL $b>B$
+\STATE Output $s$
+\end{algorithmic}

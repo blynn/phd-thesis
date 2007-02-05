@@ -92,7 +92,7 @@ is nonnegligible.
 
 Let $\mathcal G = \{G_1, G_2, ... \}$ be a family of cyclic groups
 where the order of $G_i$ is an $i$-bit number.
-For a probabilistic expected polynomial-time algorithms $A$
+For an algorithm $A$
 define the \emph{advantage} of $A$ to be
 \[
 Adv_A(t) = \Pr [ A(g, g^x) = x ]
@@ -102,7 +102,8 @@ where $g$ is randomly chosen (uniformly) from $G_t$ and $x$ from
 $[0, |G_t|-1]$.
 
 Then we say that
-the discrete log problem is hard in $\mathcal G$ if $Adv_A$ is negligible.
+the discrete log problem is hard in $\mathcal G$ if $Adv_A$ is negligible
+for all probabilistic expected polynomial-time algorithms $A$.
 
 Decisional variants of problems must be handled differently.
 For example, we say the decisional Diffie-Hellman problem is hard if
@@ -132,12 +133,14 @@ are similarly constructed and are omitted here.
 
 Of course, there is always another requirement for cyclic groups
 used in cryptography.
-Multiplying group elements, inverting group elements,
-and hashing to a group
-element must all be efficient.
-(Choosing a random element should be efficient as well, but this is
-implied by fast multiplication: one can simply choose
-a random integer and exponentiate a generator by this power.)
+Efficient algorithms for multiplying group elements, inverting group elements,
+and hashing to a group element must exist.
+Exponentiating and choosing a random element should be efficient as well,
+but this is implied by fast multiplication: exponentiation by
+repeated squaring is efficient, and for random element generation
+one can simply choose
+a random integer and raise a generator by this power.
+
 In practice, ``efficient''
 means fast enough so that on the platform that the system is deployed
 the user will not notice any slowdown. With pairing-based cryptography,

@@ -69,9 +69,6 @@ possible but leads to more complicated
 equations. Using an equation that has
 exactly one point at infinity simplifies some of the expressions.
 
-For example, the Fermat curve $X^3 + Y^3 = 1$ becomes
-?!? after a suitable affine transformation.
-
 \section {Points on Elliptic Curves}
 
 Let $\Fq$ be a field for some prime $q > 3$.
@@ -110,7 +107,7 @@ infinite solution to the equation. Intuitively,
 the point $O$ can be thought of as the point where all lines
 parallel to the Y-axis meet.
 
-We quote two well-known theorems from the theory of elliptic curves.
+We quote two well-known theorems.
 
 \begin{theorem}
 [Hasse] Let $t = q^k + 1 - \#E(\Fqk)$.
@@ -155,6 +152,146 @@ Over $\F_{{19}^2}$, we have
 where $t_2 = 2\cdot 2 - 19 \cdot 2 = -34$, thus
 $\#E(\F_{{19}^2}) = 396$.
 
+\section {Finding Points}
+
+Let $E : Y^2 = X^3 + a X + b$
+be an elliptic curve over a field $K$.
+We describe a simple method for finding finite points on $E$.
+(The point at infinity $O$ is always the unique infinite solution.)
+
+For any $x \in K$, we may attempt to
+solve $Y^2 = x^3 + a x + b$ for $Y$ by finding a square root
+of the right-hand side. We momentarily postpone describing the
+details of square root algorithms.
+
+Sometimes no square root exists, though when solutions for $Y$ exist,
+we have found exactly two points, one for each square root. (Except
+in the rare case when the point lies on the $X$-axis, which happens at
+most three times on any curve.)
+
+Also, recall from an above theorem that the size of $K$ is roughly the same
+as the number of points on $E(K)$.
+
+Combining these two facts shows that
+for approximately half of the choices for $x \in K$,
+a square root exists and we can solve $E$ to
+find a point. Thus we have a fast method of finding random points on
+$E$:
+
+\begin{enumerate}
+\item
+Choose $x \in K$ at random.
+\item
+Solve $Y^2 = x^3 + a x + b$ for $Y$. If there are no solutions
+then go to the previous step.
+\item
+Flip a coin to decide which solution of $Y$ to use.
+\end{enumerate}
+
+Of course, it is impossible to choose the point at infinity with this method,
+and points that lie on the $X$-axis have a slightly higher probability of
+been picked than other points. For cryptography this is of no concern
+since the point of infinity is usually unwanted, and the probability
+of finishing with a point with zero $Y$-coordinate is negligible since there
+are at most three of them. Moreover, it is often unimportant which
+square root is chosen.
+
+If one insists on choosing all points of $E(K)$ uniformly, one could simply
+add a step before choosing $x$: with $1/n$ (where
+$n = \#E(K)$) probability each,
+choose $O$ or one of the points lying
+on the $X$-axis, otherwise proceed with the above algorithm, except
+in the second step, we also return to the first step if the only solution
+is $Y = 0$.
+
+Note before attempting to find a square root of a given element $x \in K$,
+we can check that one actually exists first.
+When $K$ has prime order,
+one can compute the Legendre symbol before attempting to square root $x$.
+More generally it can be checked that $X^2 - x$ is reducible.
+
+Alternatively,
+one can omit the check, proceed with a square root algorithm,
+and compare the square of the output with $x$: if there is a mismatch
+then $x$ is not a square after all.
+
+It remains to describe how to take square roots.
+For a field of prime order one can use the Tonelli-Shanks algorithm
+to compute square roots~\cite{bss, handbook}, which we quote below.
+
+For a general finite field,
+one must use a more complex algorithm. Perhaps the simplest of these
+Legendre's method which can be viewed as a special
+case of the Cantor-Zassenhaus algorithm for factoring polynomials that
+will be described in a later chapter.
+Faster algorithms exist, though sometimes require precomputation~\cite{djb}.
+
+\subsection {Tonelli-Shanks Algorithm}
+
+Suppose we wish to compute $b = \sqrt{a}$ in
+a field $\Fq$ for some prime $q$. (These paragraphs should be viewed
+as self-contained; the notation from earlier paragraphs does not apply here.)
+
+\begin{enumerate}
+\item
+Find an element $g \in \Fq$ that is not a square. This can be done
+by choosing a random element $g$ until $g^{(q-1)/2} = -1$. 
+Clearly this $g$ can be stored for use in later square root computations.
+\item
+Since $q$ is odd (unless $q = 2$ in which case square roots are trivial),
+we may write $q - 1 = 2^s t$ for some odd $t$.
+\item
+$e \leftarrow 0$
+\item
+for $i \leftarrow 2$ to $s$ do
+\begin{enumerate}
+\item
+if $(ag^{-e})^{(q-1)/2^i} \ne 1$ then $e \leftarrow 2^{i-1} + e$.
+\end{enumerate}
+\item
+$h \leftarrow ag^{-e}$
+\item
+$b \leftarrow g^{e/2} h^{(t+1)/2}$
+\item
+Return $b$
+\end{enumerate}
+
+We can briefly explain the Tonelli-Shanks algorithm as follows.
+Observe square roots in a cyclic group of order $t$ where $t$ is odd can be
+computed by exponentiating by $(t+1)/2$.
+Then using $\Fq^* \cong \mathbb{Z}_{2^s}^+
+\times \mathbb{Z}_t^+$ for some odd $t$ leads to the above.
+
+\subsection {Hashing to Points}
+
+Finding points by choosing an $X$-coordinate and solving for $Y$
+suggests an efficient algorithm for hashing to a point in $E$.
+The input is hashed to some $x \in K$, and then a corresponding $y$ is sought.
+On failure, a new $x$-coordinate is deterministically generated from $x$,
+and again we attempt to solve $E$ for $y$. Repeating this process as many
+times as
+necessary eventually yields a valid point $(x,y) \in E(K)$.
+
+\section {Point Compression and Reduction}
+
+Another implication of taking square roots to find a $Y$ corresponding to
+a particular $X$ value is that
+a point $(x,y)$ can be represented by $x$ along with a single bit indicating
+which solution of $y$ to take. This technique is known as \emph{point
+compression}.
+
+Alternatively, for some cases we can simply use $x$ alone, which
+is sometimes called \emph{point reduction}. For example,
+suppose Alice needs to send Bob a point in some cryptosystem. She sends
+Bob $x$, who guesses the solution $y$. Bob attempts to proceed normally.
+If the protocol fails (e.g. the signature does not verify) then Bob tries
+$-y$ and tries again. This does not cost much more since the solutions are
+related by negation, and we will see that in some pairing-based systems
+one can check both possibilities at the same time.
+
+(Of course we can take this principle further. Alice can
+omit $k$ bits of $x$, and leave Bob to try all $2^k$ possibilities.)
+
 \section {The Chord-Tangent Law of Composition}
 
 TODO: pictures
@@ -180,8 +317,13 @@ This operation turns $E(\Fqk)$ into a group.
 The point $O$ is the identity, and the inverse
 of a point $P = (x,y)$ is the point $-P = (x,-y)$.
 
-As usual, for an integer $n$ define $0 P = O$, $1 P = P$,
-$n P = (n-1)P + P$ for $n > 1$ and $n P = -(-n)P$ for $n < 0$.
+As usual, define $0 P = O$, $1 P = P$,
+$n P = (n-1)P + P$ for integers $n > 1$ and $n P = -(-n)P$ for integers
+$n < 0$.
+This operation is termed \emph{point multiplication}.
+Point multiplication can be performed efficiently via carefully
+chosen point additions, in a process that mirrors the repeated
+squaring technique for exponentiation in finite fields.
 
 Recall the previous chapter used mulitplicative group notation to emphasize
 the connection
@@ -261,59 +403,45 @@ and $(0, 5) + (2, 15) = (4, 13)$.
 
 We now posess enough theory to show how elliptic curves may be used
 in cryptography.
-The group operation described above means that every point on an elliptic curve
-generates a cyclic group, the structure required by many cryptosystems.
-Then we can use such a group provided that the basic operations are
-fast within this group, that the group order is known and prime,
+Let $E$ be an elliptic curve over a field $K$.
+The group operation described above means that every point on $E$.
+generates a cyclic group $G$.
+Then we can use $G$ for cyclic group cryptography
+provided that the basic operations (group operation, inversion, hashing) are
+fast, that the group order is prime,
 and that problems such as discrete log are difficult.
 
-Let $E$ be an elliptic curve over a field $K$.
+The formulas above show that only a few operations in $K$ are required for
+point addition and negation.
+We previously saw how to hash to points in $E(K)$.
+Thus it seems elliptic curve cryptography can replace
+cryptography in finite fields by using
+points in $E(K)$ instead of elements of some $F^*$ (where $F$ is a
+finite field), and the group oeprations is
+point addition instead of modular multiplication. (Hence
+exponentiation becomes point multiplication.)
+The only obstacle is ensuring that randomly chosen points and hashed points
+lie in $G$, and not all of $E(K)$.
 
-Firstly, note we can generate random points on $E$:
-after generating a random $x \in K$, we can attempt to solve $E$ for $y$ by
-using any finite field square root algorithm which we discuss below.
-If no solution exists, simply pick a new random $x$.
-
-Hashing to a point in $E$ is similar. The input is hashed to some
-$x \in K$, and then a corresponding $y$ is sought. On failure,
-a new $x$-coordinate is deterministically generated from $x$, and again
-we attempt to solve $E$ for $y$. Repeating this process as many times as
-necessary eventually yields a valid point $(x,y) \in E(K)$.
-
-Let $F$ be a finite field.
-The above formulas describe how to compute inverses and sums of
-points. Thus it seems natural to replace elements of $F^*$
-with elements of $E(K)$, and perform
-point addition instead of modular multiplication.
-
-The elliptic curve
-equivalent of exponentiation is called
-\emph{point multiplication}: $a P$ represents
-adding $P$ to itself $a$ times just as $g^a$ represents $g$ multiplied
-by itself $a$ times in finite fields.
-Point multiplication can be performed efficiently via carefully
-chosen point
-additions, in a process that mirrors the repeated squaring technique
-for exponentiation in finite fields.
-
-Recall that cryptographic schemes in $F^*$ often operate
-within a subgroup $G$ of a particular order $r$,
+Recall that cryptographic schemes in $F^*$ for some finite field $F$
+often operate within a subgroup $G$ of a particular order $r$,
 so elements chosen at random and hashed to must have
 order $r$, or a factor of $r$. But an element of $F^*$
-in general does not have the desired order.
-Thus after choosing or hashing to some element $x \in F^*$,
+in general does not have such an order.
+Thus after using some algorithm to
+choose or hash to some element $x \in F^*$,
 to obtain an element of a suitable order one simply exponentiates $x$
 by $n / r$ where $n = \#F^*$.
 
-Similarly, the construction a point of order $r$ (or a factor of $r$)
-from some given point $P \in E(K)$ is accomplished by multiplying $P$ by
+On elliptic curves, the construction a point of order $r$ (or a factor of $r$)
+from some given point $P \in E(K)$ can be accomplished similarly
+by multiplying $P$ by
 $n / r$ where $n = \#E(K)$.
 
-Assume for now that we know $n = \#E(K)$. Then from group theory (a
-Sylow theorem), for any prime $r$ dividing $n$,
+Let $n = \#E(K)$. Then from Abelian group theory
+for any prime $r$ dividing $n$,
 there exists a point $P \in E(K)$ of order $r$.
-
-Then if $r^2$ does not divide $n$ then there is exactly one
+and furthermore, if $r^2$ does not divide $n$ then there is exactly one
 subgroup $G$ of $E(K)$ of order $r$.
 
 This suggests the following procedure for implementing any cryptographic
@@ -338,6 +466,25 @@ of a group element, we negate the $y$-coordinate of a point. When
 an exponentiation is called for we carry out a point multiplication
 \end{enumerate}
 
+This easily generalizes to squarefree $r$.
+
+In some applications it does not matter if the group is not
+cylic. For example, many cryptosystems function equally well
+in a group isomorphic to $\mathbb{Z}_{r}^+ \times \mathbb{Z}_{r}^+$.
+In these cases we allow $r^2$ to divide $n$.
+
+We quote another well-known theorem which implies that we
+never have more than two copies of $\mathbb{Z}_r^+$ in
+$E(K)$, though we shall never use this fact and prefer to
+keep our definitions more general. In other words, we permit groups
+with at least three copies of a cyclic group in our definitions,
+even though they will never occur with elliptic curves.
+
+\begin{theorem}
+\[ E(K) = \mathbb{Z}_r^+ \times \mathbb{Z}_s^+ \]
+for some integers $r,s$ with $r \mid s$.
+\end{theorem}
+
 TODO: table? diagram?
 
 In the running example, $E : Y^2 = X^3 + X + 6$ over $\F_{19}$,
@@ -348,8 +495,8 @@ for cryptography on a cyclic group of order $r = 3$. However, in general,
 if $r^2 | n$ there may be more than one subgroup of order $r$ and the
 above procedure cannot be followed.
 
-But how do we compute $\#E(K)$ for a given curve?
-As mentioned earlier, fast algorithms exist for this~\cite{bss}
+We have yet to describe how to compute $\#E(K)$ for a given curve.
+Fast algorithms exist for this~\cite{bss}
 but it turns out that if a pairing is desired, we must seek out
 elliptic curves whose orders satisfy various conditions.
 As a result,
@@ -402,209 +549,6 @@ their remarks by making exceptions for singular curves!
 We note that if an efficiently bilinear nondegenerate pairing could be found
 for singular curves then the Decisional Diffie-Hellman problem could be broken
 in finite fields.
-
-\section {Generating Random Points}
-
-Let $E$ be an elliptic curve over a field $K$.
-To generate a random point, we generate $x \in K$ randomly and
-then solve $E : Y^2 = X^3 + a X + b$ for $Y$.
-Let $g(X) = x^3 + a X + b$. Then
-we must find a square root of $g(x)$.
-
-For a field of prime order one can use the Tonelli-Shanks algorithm
-to compute square roots~\cite{bss, handbook},
-which we quote here.
-
-Suppose we wish to compute $b = \sqrt{a}$ in
-a field $\Fq$ for some prime $q$. (These paragraphs should be viewed
-as self-contained; the notation from earlier paragraphs does not apply here.)
-
-\begin{enumerate}
-\item
-Find an element $g \in \Fq$ that is not a square. This can be done
-by choosing a random element $g$ until $g^{(q-1)/2} = -1$. 
-Clearly this $g$ can be stored for use in later square root computations.
-\item
-Since $q$ is odd (unless $q = 2$ in which case square roots are trivial),
-we may write $q - 1 = 2^s t$ for some odd $t$.
-\item
-$e \leftarrow 0$
-\item
-for $i \leftarrow 2$ to $s$ do
-\begin{enumerate}
-\item
-if $(ag^{-e})^{(q-1)/2^i} \ne 1$ then $e \leftarrow 2^{i-1} + e$.
-\end{enumerate}
-\item
-$h \leftarrow ag^{-e}$
-\item
-$b \leftarrow g^{e/2} h^{(t+1)/2}$
-\item
-Return $b$
-\end{enumerate}
-
-We can briefly explain the Tonelli-Shanks algorithm as follows.
-Square roots in a cyclic group of order $t$ where $t$ is odd can be
-computed by exponentiating by $(t+1)/2$.
-The fact that $\Fq^* \cong \mathbb{Z}_{2^s}^+
-\times \mathbb{Z}_t^+$ leads to the above.
-
-For a general finite field,
-one must use a more complex algorithm. Perhaps the simplest of these
-Legendre's method which can be viewed as a special
-case of the Cantor-Zassenhaus algorithm for factoring polynomials that
-will be described in a later chapter.
-Faster algorithms exist, though sometimes require precomputation~\cite{djb}.
-
-Approximately half the time no square root exists.
-In the case that $K$ has prime order,
-one can compute the Legendre symbol before attempting to square root $g(x)$.
-More generally it can be checked that $X^2 - g(x)$ is reducible. Alternatively,
-one can proceed with a square root algorithm and square the result and
-compare with $g(x)$.
-
-In any event, if $g(x)$ is not a square then simply start again and
-chose another random $x \in K$. Eventually a suitable $x$ will be found.
-Once found, a coin is flipped that decides which of the square roots will
-be the $y$-coordinate.
-
-It is impossible to choose the point at infinity with this method,
-which is usually desirable. Clearly, if one wishes to be able to pick
-the point at infinity, one could simply add a step before choosing $x$:
-with $1/n$ probability choose $O$ otherwise proceed normally, where
-$n = \#E(K)$.
-
-\section {Representing Points}
-
-Instead of using a pair of numbers to represent a point,
-we can use Jacobian projective coordinates: the triplet
-$(x,y,z)$ represents the point $(x/z^2, y/z^3)$.
-
-Then to double the point $(x,y,z)$, we compute $(x_3, y_3, z_3)$ by:
-
-\[
-\begin{array}{rcl}
-\lambda_1 & \leftarrow & 3x^2 + a z^4 \\
-z_3 & \leftarrow & 2yz \\
-\lambda_2 & \leftarrow & 4xy^2 \\
-x_3 & \leftarrow & \lambda_2^2 - 2 \lambda_2 \\
-\lambda_3 & \leftarrow & 8 y^4 \\
-y_3 & \leftarrow & \lambda_1(\lambda_2 - x_3) - \lambda_3
-\end{array}
-\]
-
-We see the computation of $3x^2 + a z^4$ in general costs $3S + 1M$
-where $M$ and $S$ denote the time required for a multiplication and
-a squaring respectively. (We consider multiplication by
-a small constant to be negligible.)
-
-For $a=0$ the cost is only $1S$.
-
-For small $a$ or fairly small $a$ with low Hamming weight the cost is $3S$.
-
-For $a=-3$ we may compute $\lambda_1 = 3(x+z^2)(x-z^2)$ which costs
-$1M + 1S$.
-
-For $a = -3 d^2$ where $d$ is small or fairly small with low Hamming weight,
-we may compute $\lambda_1 = 3(x+dz^2)(x-dz^2)$ which also costs $1M + 1S$.
-By transforming the curve (see section ?!?)
-we can obtain an $a$ that is faster than the general case.
-
-TODO: quote them instead for handy reference:
-We omit the formulas for projective point addition, and for adding
-an affine point to a projective point, referring the reader instead
-to Blake et al. or Cohen et al. \cite{stuff}.
-
-The latter investigate other kinds of projective coordinates, where point
-doubling or multiplication is even faster.
-
-\section {Point Compression and Reduction}
-
-We can optimize point representations for space instead of time,
-useful for transmission and storage.
-Given $x$, we can solve $Y^2 = x^3 + ax + b$ for $Y$, thus
-a point $(x,y)$ can be represented by $x$ along with a single bit indicating
-which solution of $y$ to take. This technique is known as \emph{point
-compression}.
-We discuss how to find square roots later.
-
-Alternatively, for some cases we can simply use $x$ alone, which
-is sometimes called \emph{point reduction}. For example,
-suppose Alice needs to send Bob a point in some cryptosystem. She sends
-Bob $x$, who guesses the solution $y$. Bob attempts to proceed normally.
-If the protocol fails (e.g. the signature does not verify) then Bob tries
-$-y$ and tries again. This does not cost much more since the solutions are
-related by negation, and we will see that in some pairing-based systems
-one can check both possibilities at the same time.
-
-(Of course we can take this principle further. Alice can
-omit $k$ bits of $x$, and leave Bob to try all $2^k$ possibilities.)
-
-\section {Point Multiplication}
-
-TODO: mention optimizations later, present basic method here
-
-Point multiplication is the elliptic curve equivalent of modular
-exponentiation, thus optimizations that apply to one often apply to the other.
-
-One difference is that group inversion is much cheaper in elliptic curves:
-one simply negates the $y$-coordinate, an operation that is essentially free,
-whereas in finite fields one must spend time running the extended
-Euclidean algorithm.
-
-This allows one to use non-adjacent forms (or signed windows), which
-TODO: refer to bss, handbook
-Sliding Windows.
-
-If it is known in advance that a particular point $P$ will feature in
-several point mulitplications, preprocessing can be employed, namely
-multiples of $P$ used often in the exponentiation routine
-are computed and stored.
-
-When computing expressions
-of the form $a P + b Q$ (the equivalent of $g^x h^y$ in
-finite fields), rather than computing $a P$ and $b Q$ separately
-and adding the results, one can use
-a multiexponentiation trick to roughly halve the number of point doublings
-(if $a$ and $b$ are about the same length).
-In its simplest form, $P + Q$ is precomputed and stored,
-then a double-and-add algorithm is used to compute the
-final result. Instead of describing the algorithm in full, we present
-an example:
-
-To compute $12 P + 7 Q$ one precomputes $P + Q$, then:
-
-\begin{enumerate}
-\item
-$R \leftarrow P$
-\item
-$R \leftarrow 2R$
-\item
-$R \leftarrow R + (P + Q)$
-\item
-$R \leftarrow 2R$
-\item
-$R \leftarrow R + Q$
-\item
-$R \leftarrow 2R$
-\item
-$R \leftarrow R + Q$
-\end{enumerate}
-
-Multiexponentiation can
-be generalized to computing any expression of the form
-$a_1 P_1 + ... + a_t P_t$. Multiexponentiation can also be combined with
-sliding window techniques.
-One drawback is the amount of precomputation needed,
-which worsens as $t$ increases, and also as the size of the sliding window
-is increased in which case one must store $m P + n Q$ for several $m, n$.
-
-Note the Tonelli-Shanks algorithm contains a multiexponentiation
-that benefits from this optimization.
-
-Cite Lange Sica Quisquater
-
-Cohen Miyaji Ono
 
 \section {Security}
 
