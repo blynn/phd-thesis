@@ -28,6 +28,20 @@ and hyperelliptic curves),
 the information contained herein should be enough to allow one to build
 practical pairing-based applications from scratch.
 
+This text is intended to be self-contained. Aside from
+arithmetic at the lowest level, algorithms not likely to
+be found in a basic course in number theory or cryptography are quoted here,
+enabling the reader to implement pairings without referring to any other
+sources.
+
+When first starting, one should implement a type A
+pairing with no optimizations. Once functional, other pairing types
+and optimizations can be attempted.
+
+In some sense a type E pairing is easier to implement as it does not
+require any field extensions, but unfortunately there is no reason to
+use these pairings.
+
 Some background is required by the reader as
 we do not review basic abstract algebra.
 On the other hand, we introduce enough elliptic curve theory for

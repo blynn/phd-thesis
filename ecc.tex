@@ -232,29 +232,28 @@ Suppose we wish to compute $b = \sqrt{a}$ in
 a field $\Fq$ for some prime $q$. (These paragraphs should be viewed
 as self-contained; the notation from earlier paragraphs does not apply here.)
 
-\begin{enumerate}
-\item
-Find an element $g \in \Fq$ that is not a square. This can be done
-by choosing a random element $g$ until $g^{(q-1)/2} = -1$. 
-Clearly this $g$ can be stored for use in later square root computations.
-\item
-Since $q$ is odd (unless $q = 2$ in which case square roots are trivial),
+\begin{algorithm}
+\caption{(Tonelli-Shanks) Find $b =\sqrt{a}$ in a prime field}
+\begin{algorithmic}[1]
+\STATE Find an element $g \in \Fq$ that is not a square.
+\STATE Since $q$ is odd (unless $q = 2$ in which case square roots are trivial),
 we may write $q - 1 = 2^s t$ for some odd $t$.
-\item
-$e \leftarrow 0$
-\item
-for $i \leftarrow 2$ to $s$ do
-\begin{enumerate}
-\item
-if $(ag^{-e})^{(q-1)/2^i} \ne 1$ then $e \leftarrow 2^{i-1} + e$.
-\end{enumerate}
-\item
-$h \leftarrow ag^{-e}$
-\item
-$b \leftarrow g^{e/2} h^{(t+1)/2}$
-\item
-Return $b$
-\end{enumerate}
+\STATE $e \gets 0$
+\FOR {$i \gets 2$ to $s$}
+\IF {$(ag^{-e})^{(q-1)/2^i} \ne 1$}
+\STATE $e \gets 2^{i-1} + e$
+\ENDIF
+\ENDFOR
+\STATE $h \gets ag^{-e}$
+\STATE $b \gets g^{e/2} h^{(t+1)/2}$
+\STATE Return $b$
+\end{algorithmic}
+\end{algorithm}
+
+The first step can be accomplished
+by choosing random elements $g \in\Fq$ until $g^{(q-1)/2} = -1$. 
+Clearly this $g$ can be stored for use in future square root computations
+in the same field.
 
 We can briefly explain the Tonelli-Shanks algorithm as follows.
 Observe square roots in a cyclic group of order $t$ where $t$ is odd can be

@@ -12,10 +12,11 @@ $r$ and $\#E(K)$ are the same size, both being say $l$-bit numbers,
 meaning we have $l$-bit security
 in $G$ and the running times depend on operations on $l$-bit numbers.
 
-We focus on the case where $r$ and $\#E(K)$ take roughly the same number of
-bits (that is, they differ by some small constant), but we note
-that relaxing this condition
-allows us to use a wider variety of pairings.
+We focus on this case, namely when
+$r$ and $\#E(K)$ take roughly the same number of
+bits. Relaxing this condition
+allows us to use a wider variety of pairings, and we discuss one
+such case later.
 
 If $L$ is a field extension of $K$
 that contains the $r$th roots of unity (so $r$ divides $|L| - 1$),
@@ -39,8 +40,8 @@ how much larger $L$ or $L'$ is compared to the field $K$.
 
 It turns out that such a field $L'$ will always contain the $n$th
 roots of unity, thus we always have $L \subseteq L'$.
-The converse is not true. It is possible for the subset inclusion to be strict,
-or in other words, for a field $L$ to contain the $r$th roots of unity but
+The converse is not true: it is possible for the subset inclusion to be strict.
+In other words, for a field $L$ to contain the $r$th roots of unity but
 at the same time have part of $E[r]$ lying outside $E(L)$.
 
 However, the converse is almost true:
@@ -49,7 +50,7 @@ However, the converse is almost true:
 
 \begin{theorem} \cite{bk}
 Let $E$ be an elliptic curve defined over $\mathbb{F}_q$.
-Let $r$ be a prime dividing $N = \#(\mathbb{F}_q$) with
+Let $G$ be a subgroup of $E(\Fq)$ of order $r$ with
 $r \nmid q-1$.
 Then for any positive integer $k$,
 $E(\mathbb{F}_{q^k})$ contains all $r^2$
@@ -86,43 +87,49 @@ $E[r] \subset E(\mathbb{F}_{q^k})$.
 
 \begin{definition}
 Let $E$ be an elliptic curve defined over $K = \mathbb{F}_q$.
-Let $k$ be the smallest positive integer such that $\#E(\Fq) \mid q^k - 1$.
-Then we say that the embedding degree of the curve $E$ is $k$.
+Let $G \subseteq E(\Fq)$ be a cyclic group of order $r$.
+Let $k$ be the smallest positive integer such that $r \mid q^k - 1$.
+Then we say that the embedding degree of $G$ is $k$.
 \end{definition}
 
+As already mentioned, we mostly focus on curves where
+$r$ and $\#E(K)$ are as close as possible.
+For this case, we can abuse the terminology a little
+when talking about embedding degrees: when we speak of an embedding degree
+of a curve $E(\Fq)$, we mean the embedding degree of the subgroup of
+$E(\Fq)$ of order $r$ where $r$ is the largest prime dividing $\#E(\Fq)$
+(or in some applications, the largest factor of $\#E(\Fq)$ that cannot be
+efficiently factored).
+
+There is a related subtlety we must mention.
 Let $P \in E(K)$ be a point of order $r$.
 Let $G = \langle P \rangle$.
-If $r$ is a proper factor $\#E(\Fq)$,
-then it could be that for some $j < k$, although $\#E(\Fq)$ does not
-divide $q^j - 1$, we have $r \mid q^j - 1$, that is,
+Let $n = \#E(\Fq)$.
+We shall often determine the embedding degree of $G$
+by finding the smallest integer $k$ such that $n \mid q^k - 1$
+(a process that does not involve $r$ is any way).
+If $r$ is a proper factor of $n$,
+then it could be that for some $j < k$, although $n \nmid q^j - 1$,
+we have $r \mid q^j - 1$, that is,
 $\mathbb{F}_{q^j}$ contains all the $r$th roots of unity and this
 subfield of $\mathbb{F}_{q^k}$ suffices for
 the Tate pairing computation on $G$.
 
-However, in practice, when we do use such a group $G$,
-$r$ is a large prime factor of $\#E(\Fq)$ and with overwhelming probability
+However, in practice, when we do use such a group $G$ and
+$r$ is a large prime factor of $\#E(\Fq)$ it is almost always the case that
 $\mathbb{F}_{q^k}$ is the smallest field extension that allows the computation
 of the pairing.
 
 In other words, in general, for a cyclic subgroup $G \subset \#E(\Fq)$
 the embedding degree $k$ of $E(\Fq)$
 may not be the smallest positive integer such that $r \mid q^k - 1$ but
-in practice, $r$ is a large prime factor of $\#E(\Fq)$ the probability that
-$k$ is not the integer we seek is negligible.
-
-If we insist on precision, we could revise our definition of the embedding
-degree to take the cyclic subgroup $G$ into account, but for cryptographically
-useful groups this subtlety may be ignored. Below, we shall make statements
-about embedding degrees ignoring the negligible probability that the
+in practice, when $r$ is a large prime factor of $\#E(\Fq)$,
+the probability that $k$ is not the integer we seek is negligible.
+Below, we shall make statements
+about embedding degrees ignoring the unlikely event that the
 real embedding degree could be smaller.
-
-Thus in practice, we construct a curve $E(\Fq)$ with some embedding degree
-$k$. Then $r$ is chosen to be a large prime factor of
-$\#E(\Fq)$ so that $k$ is also the smallest integer such that $r \mid q^k - 1$
-with overwhelming probability.
-
-However, for very small toy examples, after computing the embedding degree
-$k$ one should manually check if $r \mid q^j - 1$ for some $j < k$.
+(Note for small toy examples it is more likely that there exists
+some $j < k$ with $r \mid q^j - 1$.)
 
 At this point, our goal seems to be minimizing this embedding degree,
 so that $L$ is as close as possible to $K$, and if possible,
@@ -174,7 +181,7 @@ so the point $P = 6R = (12,13)$ generates a cyclic group of order 3.
 
 We see $E[3]$ cannot be contained in $\langle R \rangle = E(\mathbb{F}_{19})$
 since $E[3]$ is not cyclic, thus the Weil pairing cannot be computed.
-(It turns out we must move to $\mathbb{F}_{19^3}$ to do so.)
+(In fact, we must move to $\mathbb{F}_{19^3}$ to do so.)
 
 In contrast, $3 \mid 19-1$ hence the Tate pairing can be
 computed in $\mathbb{F}_{19}$. In fact, we find $e(P, R + 3G) = 11$, where
@@ -210,10 +217,14 @@ embedding degree $k$.
 We mentioned earlier that with pairings,
 we can solve the discrete log problem in
 $E(\Fq)$ by first solving the discrete log problem in $E(\Fqk)$.
-We now give the details for this attack~\cite{mov,fr}.
-This attack was the first application of pairings in cryptography
-to appear in the literature, predating all publications describing
+Interesting, this attack was the first application of pairings
+in cryptography to appear in the literature,
+predating all publications describing
 constructive uses of the pairing.
+(The newfound utility
+of pairings has meant that instead of shunning curves with efficiently
+computable pairings, we active seek them out.)
+We now give the details for this attack~\cite{mov,fr}.
 
 Let $P \in E(\Fq)$ be a point of prime order $r$.
 Let $G = \langle P \rangle$.
@@ -437,7 +448,7 @@ Unlike all the other curves we consider,
 we are working in a low characteristic field, and furthermore this
 field does not have prime order.
 
-It turns out
+One can show
 \[
 \#E^+(\F_{3^l}) = \left \{ \begin{array}{rcl}
 3^l + 1 + 3^{(l+1)/2} \mbox { when } l = \pm 1 \bmod 12 \\
@@ -518,7 +529,7 @@ The embedding degree three and four cases may also be useful in special
 circumstances and we briefly describe them.
 
 Consider the polynomials $q = x^2 + 1, t = \pm x + 1$.
-It turns out that $q(x) + 1 - t(x) \mid q(x)^6 - 1$.
+It can be checked that $q(x) + 1 - t(x) \mid q(x)^6 - 1$.
 
 The CM equation becomes $D V^2 = 3 x^2 \pm 2 x + 3$. If we make
 the substitution $U = 3x \pm 1$ then we have the generalized Pell equation
@@ -550,7 +561,8 @@ Use the CM method to construct a curve $E$ with order $q \mp x$.
 
 The resulting curve $E$ will have embedding degree 6.
 
-We explain this method via the cyclotomic polynomials $\Phi_k(x)$.
+Though this was not how the method was discovered.
+we can explain the MNT algorithm via cyclotomic polynomials $\Phi_k(x)$.
 Suppose $t = x + 1$.
 Recall $\Phi_6(x) = x^2 - x + 1$, thus
 $q = x + \Phi_6(x)$.
@@ -838,3 +850,127 @@ which can be computed using the following algorithm~\cite[Algorithm 5.3.5]{1993-
 \UNTIL $b>B$
 \STATE Output $s$
 \end{algorithmic}
+
+\section {Arbitrary Embedding Degree}
+
+What if other embedding degrees are desired? It turns out that given any
+positive integer $k$ we can in fact construct pairings with embedding degee $k$,
+but the subgroup size $r$ will have far fewer bits than $q$,
+the size of the field.
+
+We define $\rho = \lg q / \lg r$. This $\rho$ is in some sense
+a measure of inefficiency: although we only have $r$-bit (generic group)
+discrete log security, we must perform our computations on $\rho r$-bit numbers.
+
+Our main focus is $\rho \approx 1$ pairings, but we now take a small detour
+and describe an algorithm to find
+pairings with any given embedding degree $k$ due to Barreto, Lynn and Scott~\cite{bals}.
+
+\begin{lemma}
+Let $E(\Fq)$ be an elliptic curve and suppose it has
+$n = q - t + 1$ points, where $t$ is the trace of Frobenius.
+Let $n = h r$ where $r$ is prime.
+Then the embedding degree (of the subgroup of order $r$) of $E(\Fq)$ is $k$.
+if and only if
+$r \mid \Phi_k(t-1)$ and $r \nmid \Phi_i(t-1)$ for all $1 \le i < k$,
+where $\Phi_i$ denotes the $i$th cyclotomic polynomial.
+\end{lemma}
+
+\begin{proof}
+Then $q = t - 1 \pmod r$. Given any integer $i$, exponentiating both sides
+and subtracting 1 gives
+\[ q^i - 1 = (t-1)^i -1 \pmod r \]
+hence if $E$ has embedding degree $k$ for the subgroup of $E(\Fq)$ of order $r$
+then $r \mid (t-1)^k - 1$ and $r \nmid (t-1)^i - 1$ for $1 \le i < k$.
+
+Thus $r \nmid \Phi_i(t-1)$ for $1 \le i < k$ otherwise the embedding degree
+would be strictly less than $k$. Since $r$ is prime we must have
+$r \mid \Phi_k(t-1)$.
+\end{proof}
+
+This suggests the following general strategy to finding a curve with
+a subgroup of order $r$ with given embedding degree $k$:
+
+\begin{theorem}
+Choose an integer $x$ with $|x| > 1$ and any factor $r$ of
+$\Phi_k(x)$.
+Choose an integer $d$.
+Choose any positive integer $h$. Let $n = hr$, $q = n + x^d, t = x^d + 1$
+(thus $n = q - t + 1$).
+Suppose $r \nmid \Phi_i(x^d)$ for $1 \le i < k$.
+
+Then if $q$ is prime and $E(\Fq)$ is a (nonsingular)
+elliptic curve of order $n$, then
+any cyclic subgroup of $E(\Fq)$ of order dividing
+$r$ has embedding degree $k$.
+\end{theorem}
+
+\begin{proof}
+By construction, $t-1 = x^d$, hence $\Phi_i(t-1) \mid x^{id} - 1$ for
+any positive integer $i$.
+By choice of $r$
+$r \mid \Phi_k(x)$ thus $r \mid x^k - 1 \mid x^{kd} - 1$ and
+$r \nmid \Phi_i(t-1)$.
+
+Applying the previous lemma completes the proof.
+\end{proof}
+
+Alternative parametrizations are possible. For example, when $k$ is twice
+an odd number, and $d$ is even, we may use $t = -x^d + 1, q = n - x^d$.
+
+An obvious generalization for the $t = x^d + 1$ case is
+$q = n + \Phi_k(x)g(x) + x^d$ for any polynomial $g(x)$, though care must
+be taken to stay within the Hasse bound: we require $x^d$ to cancel out the
+term of highest degree in $\Phi_k(x)g(x)$ and that the remaining terms have
+sufficiently low degree. For example, for $k=9$ we can pick $g(x)$ to obtain
+$q = n - x^3 - 1$.
+
+In practice we choose $d$ satisfying $1 \le d \le \deg \Phi_k /2$,
+otherwise the Hasse bound is broken so such a curve $E(\Fq)$ cannot exist and
+the theorem becomes an empty statement.
+Also $r$ is usually taken to be the largest prime dividing $\Phi_k(x)$,
+which almost never divides $\Phi_i(x^d)$ for $1 \le i < k$.
+
+It remains to show how to construct a curve given these parameters. We shall
+employ the CM method. Recall $n = hr$ and $r \mid \Phi_k(x)$, so write
+$n = m \Phi_k(x)$. The CM equation becomes
+
+\[ D V^2 = 4m\Phi_k(x)-(x^d-1)^2 . \]
+
+If $k=3,4,6$ then $\deg \Phi_k = 2$. Picking some small value for $m$
+and fixing $D$ yields
+a Diophantine equation that can be transformed into a Pell-type equation,
+which can be solved to find $x$ and $V$. With luck, $\Phi_k(x)$ will be
+prime or a small number times a prime, giving a $\rho \approx 1$ pairing.
+When $m=1$ we have the equivalent of the MNT method.
+
+Fixing $m$ and $D$ for higher degree cyclotomic polynomials
+$\Phi_k$ result in higher degree Diophantine equations which are not easily
+solved.
+
+Instead, if $D$ is now viewed as a variable and $x$ if fixed,
+(and $m$ is still fixed) we can find integer solutions for $D$ and $V$
+easily. Unfortunately, for cryptographically-useful choices of $x$,
+the integer $D$ is too large to allow the Hilbert class field polynomial $H_D$
+to be computed.
+However, by using small $x$ we can exhibit toy examples of high
+embedding degree curves with $\rho \approx 1$.
+
+Now consider fixing $D$ and $x$. In particular, $D$ is small enough so
+that $H_D$ can be computed and $x$ is large enough to be cryptographically
+useful.This gives a Diophantine
+equation of the form
+\[ D V^2 = Am - B \]
+where $D, A, B$ are integer constants. We can solve for $V$ and $m$ and
+obtain a curve containing a cyclic subgroup of order $r$
+with embedding degree $k$. There is a drawback however: $m$ tends to be close
+in size to $r$, giving $\rho \approx 2$.
+
+In a comprehensive survey paper,
+Freeman, Scott and Teske~\cite{fst} note this approach is a special case of a
+construction by Brezing and Weng~\cite{bw}, which in turn can be thought of as a
+variation of a method due to Cocks and Pinch~\cite{cp}.
+
+Other methods to construct pairings of arbitrary embedding degree,
+some of which with $\rho$ substantially less than 2, are beyond our scope.
+For details, refer to Freeman, Scott and Teske~\cite{fst}.

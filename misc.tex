@@ -67,7 +67,7 @@ Educated guessing can meet with some success, but
 ideally profiling should be employed to identify the
 bottlenecks.
 
-\section{On Using Existing Libraries}
+\section{Using Existing Libraries}
 
 In the author's pairing implementations, to avoid the drawbacks
 of assembly code (e.g. loss of portability, the need to learn platform-specific
@@ -138,8 +138,67 @@ there are many finite field operations but never a need to convert the
 coordinates back to its normal representation.
 
 Division is slower using Montgomery representation, but this drawback is
-of no concern if projective coordinates are used, where each division is
-replaced by a few multiplications in any case.
+of no concern if projective coordinates are used (see below),
+where each division is replaced by a few multiplications in any case.
+
+The following algorithms can be found in several textbooks in the
+field~\cite{bss, handbook}.
+
+Suppose we are implementing the finite field $\F_p$ for some prime $p$.
+Let $b$ be the word size of the machine. Let $R = b^t$ be the smallest
+power of $b$ greater than $p$. Let $p' = -p^{-1} \pmod b$.
+
+We note since $b$ is a power of 2, one can use a specialized procedure
+to find $p'$~\cite[Algorithm II.5]{bss}. However this is usually unimportant
+because $p'$ can be precomputed.
+
+Expressions modulo $b$ should obviously be implemented as
+operations on machine words. Similarly, multiplications and divisions
+involving $R$ and $b$ are simply bit shifts.
+
+Then we represent an element $x\in\F_p$ as $xR$. We only convert back
+for input/output operations.
+
+The first algorithm allows us to convert quickly from Montgomery
+representation. It applies to any nonnegative integer $y < pR$.
+The $i$th most significant machine word of $y$ is
+denoted by $y_i$.
+
+\begin{algorithm}
+\caption {Montgomery Reduction: $z \gets yR^{-1}$}
+\begin{algorithmic}[1]
+\FOR {$i=0$ to $t-1$}
+\STATE $u\gets y_i p' \pmod b$
+\STATE $y\gets y + upb^i$
+\ENDFOR
+\STATE $z\gets y/R$
+\IF {$z\ge p$}
+\STATE $z\gets z-p$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+The next algorithm shows why multiplication is faster. Note
+there is only one step requiring the product of a multiprecision integer
+and a single word: the other multiplications are single precision.
+
+\begin{algorithm}
+\caption {Montgomery Multiplication: $Z = X Y R^{-1} \pmod p$}
+\begin{algorithmic}[1]
+\STATE $Z\gets 0$
+\FOR {$i=0$ to $t-1$}
+\STATE $u\gets (z_0 + s_i y_0) p' \pmod b$
+\STATE $Z\gets (Z+x_i y + u p)/b$
+\ENDFOR
+\IF {$Z\ge p$}
+\STATE $Z\gets Z-p$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+Inversion is slower: given $xR$, we use a standard inversion algorithm
+to find $x^{-1}R^{-1}$. Then performing a Montgomery multiplication with
+$R^3 \pmod p$ (which has been precomputed) yields $x^{-1}R$.
 
 \section{Cube Roots}
 
@@ -305,43 +364,64 @@ Instead of using a pair of numbers to represent a point,
 we can use Jacobian projective coordinates: the triplet
 $(x,y,z)$ represents the point $(x/z^2, y/z^3)$.
 
-Then to double the point $(x,y,z)$, we compute $(x_3, y_3, z_3)$ by:
+We quote algorithms for point addition and doubling using projective
+coordinates from Blake, Seroussi and Smart~\cite{bss}:
 
-\[
-\begin{array}{rcl}
-\lambda_1 & \leftarrow & 3x^2 + a z^4 \\
-z_3 & \leftarrow & 2yz \\
-\lambda_2 & \leftarrow & 4xy^2 \\
-x_3 & \leftarrow & \lambda_2^2 - 2 \lambda_2 \\
-\lambda_3 & \leftarrow & 8 y^4 \\
-y_3 & \leftarrow & \lambda_1(\lambda_2 - x_3) - \lambda_3
-\end{array}
-\]
+\begin{algorithm}
+\caption{Projective Point Addition, $(x_3, y_3, z_3) = (x_1, y_1, z_1) +
+(x_2, y_2, z_2)$}
+\begin{algorithmic}[1]
+\STATE $\lambda_1 \gets x_1 z_2^2$
+\STATE $\lambda_2 \gets x_2 z_1^2$
+\STATE $\lambda_3 \gets \lambda_1 - \lambda_2$
+\STATE $\lambda_4 \gets y_1 z_2^3$
+\STATE $\lambda_5 \gets y_2 z_1^3$
+\STATE $\lambda_6 \gets \lambda_4 - \lambda_5$
+\STATE $\lambda_7 \gets \lambda_1 + \lambda_2$
+\STATE $\lambda_8 \gets \lambda_4 + \lambda_5$
+\STATE $z_3 \gets z_1 z_2 \lambda_3$
+\STATE $x_3 \gets \lambda_6^2 - \lambda_7 \lambda_3^2$
+\STATE $\lambda_9 \gets \lambda_7 \lambda_3^2 - 2x_3$
+\STATE $y_3 \gets (\lambda_9 \lambda_6 - \lambda_8\lambda_3^3)/2$
+\end{algorithmic}
+\end{algorithm}
 
-We see the computation of $3x^2 + a z^4$ in general costs $3S + 1M$
-where $M$ and $S$ denote the time required for a multiplication and
-a squaring respectively. (We consider multiplication by
+Note when one input is projective and the other affine fewer multiplications
+are required. This is called \emph{mixed} addition.
+
+\begin{algorithm}
+\caption{Projective Point Doubling, $(x_3, y_3, z_3) = 2(x_1, y_1, z_1)$}
+\begin{algorithmic}[1]
+\STATE $\lambda_1 \gets 3x_1^2 +a z_1^4$
+\STATE $z_3 \gets 2 y_1 z_1$
+\STATE $\lambda_2 \gets 4x_1 y_1^2$
+\STATE $x_3 \gets \lambda_1^2 - 2\lambda_2$
+\STATE $\lambda_3 \gets 8y_1^4$
+\STATE $y_3 \gets \lambda_1(\lambda_2 - x_3)-\lambda_3$
+\end{algorithmic}
+\end{algorithm}
+
+We see the computation of $3x^2 + a z^4$ in general requires three
+squarings and one multiplication. (We consider multiplication by
 a small constant to be negligible.)
 
-For $a=0$ the cost is only $1S$.
+For $a=0$ the only one squaring is required.
 
-For small $a$ or fairly small $a$ with low Hamming weight the cost is $3S$.
+For small $a$ or fairly small $a$ with low Hamming weight we can ignore
+the cost of the multiplication.
 
-For $a=-3$ we may compute $\lambda_1 = 3(x+z^2)(x-z^2)$ which costs
-$1M + 1S$.
+For $a=-3$ we may compute $\lambda_1 = 3(x+z^2)(x-z^2)$ which requires
+one multiplication and one squaring.
 
 For $a = -3 d^2$ where $d$ is small or fairly small with low Hamming weight,
-we may compute $\lambda_1 = 3(x+dz^2)(x-dz^2)$ which also costs $1M + 1S$.
-By transforming the curve (see section ?!?)
-we can obtain an $a$ that is faster than the general case.
+we may compute $\lambda_1 = 3(x+dz^2)(x-dz^2)$ which has almost the same cost.
 
-TODO: quote them instead for handy reference:
-We omit the formulas for projective point addition, and for adding
-an affine point to a projective point, referring the reader instead
-to Blake et al. or Cohen et al. \cite{stuff}.
+In the following chapter, we shall learn how to
+transform a given curve. Doing so allows us
+to obtain an $a$ that is faster than the general case.
 
-The latter investigate other kinds of projective coordinates, where point
-doubling or multiplication is even faster.
+Cohen, Miyaji and Ono~\cite{cmo} investigate other variants of projective
+coordinates, where point doubling or multiplication can be even faster.
 
 TODO: how extensively should one use projective coordinates
 
@@ -362,7 +442,7 @@ TODO: refer to bss, handbook
 Sliding Windows.
 
 If it is known in advance that a particular point $P$ will feature in
-several point mulitplications, preprocessing can be employed, namely
+several point multiplications, preprocessing can be employed, namely
 multiples of $P$ used often in the exponentiation routine
 are computed and stored.
 

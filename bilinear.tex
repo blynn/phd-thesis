@@ -25,7 +25,7 @@ but it was later found that they could also be exploited to build cryptosystems.
 Rather than avoiding pairings, one can seek them out to construct new
 schemes. Thus pairing-based cryptography came into being.
 
-Boneh and Franklin's identity-based encryption scheme \cite{bf} was perhaps
+Boneh and Franklin's identity-based encryption scheme \cite{bf} is perhaps
 the most famous early example of what could be achieved using
 bilinear maps, though not the first \cite{sok, j}.
 First proposed in 1984 \cite{shamir1984},
@@ -352,7 +352,7 @@ we use the following definition.
 
 Let $r$ be a prime.
 Let $G_1, G_T$ be cyclic groups of order $r$.
-Let $G_2$ be a group where each element except the identity has order $r$.
+Let $G_2$ be a group where each element has order dividing $r$.
 In particular $G_2$ is not necessarily cyclic.
 Again we use multiplicative group notation.
 A bilinear pairing $e$ is an efficiently computable function
@@ -376,9 +376,9 @@ In this setting the hardness assumptions must be altered further.
 Depending on the scheme, we may have to assume certain problems are hard in
 both $G_1$ and $G_2$, or a combination of the two. For example, we may
 need to assume that given $g_1, g_1^x \in G_1$ and $g_2 \in G_2$,
-there is no efficient algorithm to compute $g_2^x$. This particular
+there is no efficient algorithm to compute $g_2^x$. (This particular
 example is sometimes referred to as
-the co-Computational Diffie-Hellman assumption.
+the co-Computational Diffie-Hellman assumption~\cite{bls}.)
 
 We have not required $r$ to be prime. A composite group
 order is useful for some cryptosystems\cite{bgn},

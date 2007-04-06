@@ -1,9 +1,32 @@
 \chapter{Faster Pairings}
 
-TODO: powered Weil denom elim
 TODO: preprocessing for elliptic nets method
 
 We now focus on optimizing pairings.
+Firstly, one can improve the running time of the rational function computation
+by a factor of 2 by
+applying a theorem due to Barreto, Kim, Lynn and Scott~\cite{bkls}.
+This running time can be halved again by using a method
+described by Barreto, Lynn and Scott~\cite{bals2}.
+
+Optimizations mentioned by Barreto, Kim, Lynn and Scott~\cite{bkls}
+can be applied to the
+final powering. The efficiency gain depends on the embedding degree,
+but for $k=2$ curves we halve the running time and for $k=6$ the final
+powering is three times as fast.
+(Recall the output of the Tate pairing is a coset representative and we
+need the final powering to standardize it.)
+
+Because Miller's algorithm has features in common with an exponentation
+routine, optimizations that improve powering routines can often be tailored to
+improve pairings.
+
+We mention other optimizations such as preprocessing and
+pairing compression, though most of these techniques
+either depend on certain properties of the cryptosystem,
+or require it to be modified.
+
+TODO: mention caveats: no longer symmetric etc.
 
 \section {Twist Curves}
 
@@ -93,8 +116,10 @@ or to be a Solinas number (i.e. $r$ has the form $2^a \pm 2^b \pm 1$).
 
 \section {Simplified Tate Pairing}
 
-We find when the embedding degree is greater than $1$ we may simplify
-the Tate pairing as follows \cite{barreto, barreto2}.
+It was found by Barreto, Kim, Lynn and Scott that
+when the embedding degree is greater than $1$ we may simplify
+the Tate pairing as follows \cite{bakls, bals2}.
+
 \begin{theorem}
 Let $E$ be an elliptic curve over $\F_q$.
 Let $P \in E(\F_q)$ be a point of prime order $r$.
@@ -139,7 +164,7 @@ Hence
 \end{proof}
 
 TODO:
-(The proof of the above theorem is unclear in \cite{barreto}.
+(The proof of the above theorem is unclear in \cite{bakls}.
 It can be salvaged: $f(X) + Y g(x) / u(X) + Y v(X)$, must have $g = v = 0$
 since rational function agrees at $R, -R$. Then we have $f(x) / u(X)$
 which splits in some extension of $K$ and
@@ -149,6 +174,7 @@ never be $(P)^n$.
 \section {Simplified Weil Pairing}
 
 We may also simplify the Weil pairing in a similar fashion.
+TODO: cite someone
 Recall that two points $R, S$ are needed in addition to the input points
 $P,Q$. We show that we can pick $R = O$ and compute the Weil pairing as
 \[ f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P)} \]
@@ -182,7 +208,7 @@ so that $\F_{q^k} = \F_{q^d}[\sqrt{v}]$.
 Let $E'$ be the twist of $E$ hence
 $E' : y^2 = x^3 + v^2 a x + v^3 b$.
 
-Define the map $\Psi:E'\rightarrow E(\F_q^k)$ by
+Define the map $\Psi:E'\rightarrow E(\F_{q^k})$ by
 \[ \Psi(x,y) = (v^{-1}x, v^{-3/2}y) . \]
 
 \begin{theorem}
@@ -237,7 +263,7 @@ quadratic nonresidue $v$. We could work on these two curves but now
 the pairing is no longer symmetric. On the other hand, if we insist on
 a symmetric pairing, then although most computations can still be done
 in $\Fq$, we cannot employ the optimization of the next section. For
-many applications symmetry is not important, and efficiency is more important.
+many applications symmetry is not needed, and type B curves may be beneficial.
 
 We can say more about this particular group selection.
 
@@ -247,7 +273,7 @@ and $P$ be a point of prime order $r$.
 Suppose the embedding degree $k$ of $G = \langle P \rangle$ is even.
 Then write $d = k / 2$. Let $v$ be a quadratic nonresidue in $\F_{q^d}$,
 Let $E'$ be given by $y^2 = x^3 + v^2 a x + v^3 b$.
-Define the map $\Psi:E'\rightarrow E(\F_q^k)$ by
+Define the map $\Psi:E'\rightarrow E(\F_{q^k})$ by
 \[ \Psi(x,y) = (v^{-1}x, v^{-3/2}y) . \]
 
 Then $\Psi(E'(\F_{q^d})[r])$ is precisely the subgroup of trace zero points
@@ -259,10 +285,10 @@ Given $Q' = (X,Y) \in E'(\F_{q^d})$ we have $\Psi(Q') = (a, b)$
 where $a \in \F_{q^d}$, and $b$ has the form $b = c \sqrt{v}$ for some
 $c \in \F_{q^d}$.
 
-Now $\Phi_d(\sqrt{v}) = -\sqrt{v}$ (by direct verification and using
+Now $\Phi^d(\sqrt{v}) = -\sqrt{v}$ (by direct verification and using
 $v^{(q^d - 1)/2} = -1$ since $v$ is a quadratic nonresidue, or
 from Galois theory: $\sqrt{v}$ must
-be mapped to some other root of its minimal polynomial as $\Phi_d$ fixes
+be mapped to some other root of its minimal polynomial as $\Phi^d$ fixes
 $\F_{q^d}$ but not $\F_{q^k}$).
 Thus $\Phi^d(a) = a$ and $\Phi^d(b) = -b$, whence
 
@@ -310,6 +336,9 @@ of a bilinear pairing.
 TODO: Mike's even degree polynomial recommendation?
 
 \section {Denominator Elimination}
+
+When using twist curves, we can halve the running time of a pairing by applying
+a technique due to Barreto, Lynn and Scott~\cite{bals2}.
 
 We use the same notation and assumptions as the previous section.
 In other words, again let $E : y^2 = x^3 + a x + b$ be an elliptic curve
@@ -413,6 +442,88 @@ by $(q^2 - q + 1)/r$ using a standard algorithm.
 In this case we have shrunk the exponent to roughly one third its original
 size.
 
+The $k=12$ case (which occurs for the type F pairing) is similar.
+We need to compute $a^{(q^12-1)/r}$ for some $a \in \F_{q^{12}}$
+for some prime $q$ and group order $r$.
+This is best done by computing $b=a^{q^8 +q^6 -q^2 -1}$ followed by
+exponentiating $b$ by $\Phi_{12}(q)/r = (q^4 - q^2 + 1)/r$.
+
+Suppose $k$ is even but not divisible by four.
+Let $k = 2 d$ where $d$ is odd. Suppose
+$\Fqd$ has been implemented as $\Fq[\alpha]$, and $\Fqk$ as
+$\Fqd[\beta] = \Fq[\alpha, \beta]$.
+where $\beta$ is some quadratic nonresidue in $\Fq$.
+
+Then every element $a\in \Fqk$ can be written in the form
+\[ a = (u_0 + v_0 \beta)
++ (u_1 + v_1 \beta) \alpha
++ ... + (u_{d-1} + v_{d-1} \beta) \alpha^{d-1} \]
+
+Note $\beta^q = -\beta$.
+Thus for even $m$ we have
+\[ a^{q^{d + m}} = (u_0 - v_0 \beta)
++ (u_1 - v_1 \beta) \alpha^q
++ ... + (u_{d-1} - v_{d-1} \beta) \alpha^{q^{m-1}} \]
+and for odd $m$ we have
+\[ a^{q^{d + m}} = (u_0 + v_0 \beta)
++ (u_1 + v_1 \beta) \alpha^q
++ ... + (u_{d-1} + v_{d-1} \beta) \alpha^{q^{m-1}} \]
+allowing the following simplifications.
+
+When $k=6$ then any $a \in \Fqk$ can be written in the form
+\[ a = (u_0 + v_0 \beta)
++ (u_1 + v_1 \beta) \alpha
++ (u_2 + v_2 \beta) \alpha^2 . \]
+Then $b = a^{q^4 + q^3 - q - 1}$
+can be computed via
+\[
+\frac
+{
+\left(
+(u_0 + v_0 \beta)
++ (u_1 + v_1 \beta) \alpha^q
++ (u_2 + v_2 \beta) \alpha^{2q}
+\right)
+\left(
+(u_0 - v_0 \beta)
++ (u_1 - v_1 \beta) \alpha
++ (u_2 - v_2 \beta) \alpha^2
+\right)
+}
+{
+\left(
+(u_0 - v_0 \beta)
++ (u_1 - v_1 \beta) \alpha^q
++ (u_2 - v_2 \beta) \alpha^{2q}
+\right)
+\left(
+(u_0 + v_0 \beta)
++ (u_1 + v_1 \beta) \alpha
++ (u_2 + v_2 \beta) \alpha^2
+\right)
+}
+\]
+
+A similar formula applies when $k=10$ (type G pairings).
+In this case we compute $b = a^{q^6 + q^5 - q - 1}$, before
+exponentiating by $\Phi_5(q) / r = (q^4 - q^3 + q^2 - q + 1)/r$.
+
+\section {Weil Denominator Elimination}
+
+Let $f$ be a Weil pairing
+\[ f:E[r] \times E[r] \rightarrow \Fqk \]
+for some curve $E$ over $\Fq$ with embedding degree $k > 1$, and for some
+$r$.
+
+For pairing-based cryptography, any nondegenerate bilinear map can be used.
+Thus we may replace $f$ by $f^n$ where $f$ is prime to $r$.
+The map $f^n$ is still nondegenerate and bilinear; it merely differs from the
+Weil pairing by a constant factor.
+
+In particular, if we choose $n = q - 1$ then denominator elimination
+also applies to the Weil pairing. Additionally, the above powering trick
+means the exponentiation is cheap.
+
 \section {Collating Inversions}
 
 Recall the computation of a pairing involves several iterations
@@ -425,7 +536,7 @@ the cost of an extra variable.
 In other words, compute $(g_1(Q) ... g_m(Q)) / (h_1(Q) ... h_m(Q)$ instead
 of $(g_1(Q) / h_1(Q)) ... (g_m(Q) / h_m(Q)$.
 
-\section {Precomputation of Lines}
+\section {Preprocessing}
 
 In many pairing-based cryptosystems, a group element such as a system parameter
 or a key that rarely changes is fed to the pairing over and over again in
@@ -436,11 +547,20 @@ signer's public key are given to the pairing during verification, thus
 an application that verifies many BLS signatures from the same sender will be a
 good candidate for this optimization.
 
-Recall during a pairing computation, the coefficients in equations of the form
+\subsection {Precomputation of Lines}
+
+During Miller's algorithm, the coefficients in equations of the form
 $aX + bY + c$ are calculated. These lines
 are derived entirely from one of the input points,
 hence much time can be saved every time the same input point is encountered
 if we precompute and store $a, b, c$ for every line.
+
+\subsection {Elliptic Net Precomputation}
+
+One of the two sequences in the Shipsey-Stange algorithm, which
+we denoted by $c_k$ is completely determined by the first input.
+Thus caching $c_k^2$ and $c_{k-1}c_{k+1}$ for later pairings
+will improve the running time substantially.
 
 \section {Lucas Sequences}
 
@@ -657,14 +777,25 @@ subtraction involved in the above identities,
 exponentiating compressed pairings is
 significantly faster for carefully constructed field extensions.
 
-\section {Multipairings}
+\section {Powered Pairings}
 
+As noted by Scott, in many cryptosystems the result of a pairing is
+raised to some power at some stage. In some cases the output of a pairing
+is not used until after it has been exponentiated.
+Thus when designing a pairing library, one should make
+a powered pairing function available to the user, to take full advantage
+of the above optimizations that allow faster exponentiation of pairing outputs.
+
+\section {Exponentiation Tricks}
+
+Multipairings:
 Because Miller's algorithm has features in common with an exponentation
 routine, when computing products or quotients of pairings,
 
 TODO: ignoring last iteration
 TODO: sliding windows, NAF (why NAF can be used)
 TODO: char 3 optimizations?
+TODO: low hamming weight
 
 \section{Last-Second Conversions}
 
@@ -699,3 +830,5 @@ Now $R = g(Q')$, and we have only computed in $\mathbb{F}_q$.
 
 Similar statements can be made for other pairing types, with greater
 savings in some cases.
+
+TODO: sextic twists for k=12, p=1mod6
