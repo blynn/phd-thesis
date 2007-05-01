@@ -11,7 +11,7 @@ in future chapters. We will not
 discuss curve-finding and point-counting algorithms geared
 towards standard elliptic curve cryptography (which necessarily requires
 curves that are not pairing-friendly), but instead direct
-the interested reader to the references~\cite{bss}.
+the interested reader to Blake, Seroussi and Smart~\cite{bss}.
 
 \section {Informal Overview of Elliptic Curves}
 
@@ -47,13 +47,11 @@ can be thought of as meeting
 at a point at infinity, forming a circle,
 and similarly opposite ends of hyperbolas connect at infinite points.
 
-TODO: diagram?
-
 Thus to study degree 2 curves is essentially to study the unit circle,
 whose geometry is again is too simple for our purposes.
 
 However, degree 3 curves, called elliptic curves,
-are quite nontrivial (for instance, unlike the previous two
+are nontrivial (for instance, unlike the previous two
 cases we cannot transform any elliptic curve into
 any other)
 and have a rich structure well-suited for cryptography.
@@ -293,8 +291,6 @@ omit $k$ bits of $x$, and leave Bob to try all $2^k$ possibilities.)
 
 \section {The Chord-Tangent Law of Composition}
 
-TODO: pictures
-
 We define an operation $+$ on $E(\Fqk)$.
 Let $P = (a,b), Q = (c,d) \in E(\Fqk)$ be finite points.
 
@@ -374,17 +370,17 @@ This allows us to compute $x_3, y_3$. Explicitly we have for $P_1 \ne P_2$:
 
 \[
 \begin{array}{rcl}
-\lambda &\leftarrow& (y_2 - y_1)/(x_2 - x_1) \\
-x_3 &\leftarrow& \lambda^2 - x_1 - x_2 \\
-y_3 &\leftarrow& (x_1 - x_3) \lambda - y_1
+\lambda &\gets& (y_2 - y_1)/(x_2 - x_1) \\
+x_3 &\gets& \lambda^2 - x_1 - x_2 \\
+y_3 &\gets& (x_1 - x_3) \lambda - y_1
 \end{array}
 \]
 and for $P_1 = P_2$:
 \[
 \begin{array}{rcl}
-\lambda &\leftarrow& (3x_1^2 + a)/(2y_1) \\
-x_3 &\leftarrow& \lambda^2 - 2x_1 \\
-y_3 &\leftarrow& (x_1 - x_3) \lambda - y_1
+\lambda &\gets& (3x_1^2 + a)/(2y_1) \\
+x_3 &\gets& \lambda^2 - 2x_1 \\
+y_3 &\gets& (x_1 - x_3) \lambda - y_1
 \end{array}
 \]
 The most expensive step is the division in the computation of
@@ -484,8 +480,6 @@ even though they will never occur with elliptic curves.
 for some integers $r,s$ with $r \mid s$.
 \end{theorem}
 
-TODO: table? diagram?
-
 In the running example, $E : Y^2 = X^3 + X + 6$ over $\F_{19}$,
 the order of the group is $n = 18 = 3^2 \times 2$, and it so happens
 that the group is cyclic: it can be checked that $(0,5)$ is a generator.
@@ -515,7 +509,7 @@ is equivalent to conventional cryptography.
 It can be shown that the set $E_{ns}$ nonsingular points (all but
 one) of a singular elliptic curve over a field $K$
 also form a group under the chord-tangent law,
-and $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite{prop2.5silverman}.
+and $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite[Proposition 2.5]{silverman}.
 Furthermore these isomorphisms are efficiently computable in either
 direction.
 (The latter case is not useful as discrete log is easy in $K^+$.)

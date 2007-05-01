@@ -21,9 +21,10 @@ give cyclic groups additional properties.
 Initially, in the 1990s,
 these additional properties were seen as detrimental
 as they could be exploited to break cryptosystems \cite{mov, fr, fmr},
-but it was later found that they could also be exploited to build cryptosystems.
+but it was later discovered
+that they could also be exploited to build cryptosystems.
 Rather than avoiding pairings, one can seek them out to construct new
-schemes. Thus pairing-based cryptography came into being.
+schemes.
 
 Boneh and Franklin's identity-based encryption scheme \cite{bf} is perhaps
 the most famous early example of what could be achieved using
@@ -35,11 +36,11 @@ twenty years.
 With bilinear maps, a relatively straightforward scheme
 was found \cite{bf}. With a little more work, identity-based schemes
 with additional useful properties (such as authenticated or hierarchical
-identity-based encryption TODO:cite) can be constructed.
+identity-based encryption~\cite{l, hl}) can be constructed.
 
 We note that an identity-based scheme
 scheme based on quadratic residues (and not bilinear maps)
-has since been discovered \cite{cocks01}, albeit one that is signifcantly
+has since been found \cite{cocks01}, albeit one that is signifcantly
 less practical.
 However, this is the exception rather than the rule. In general it is not
 known how to find conventional
@@ -71,8 +72,8 @@ solved, all other related problems could also be solved.
 \section{Formal Security Definitions}
 
 For completeness we include formal definitions of difficult problems
-commonly used by cryptographers.
-We do not need them as we do not provide any security proofs; our
+commonly used by cryptographers, even though
+we do not need them as we do not provide any security proofs. Our
 focus is on the implementation of pairing-based cryptosystems, not
 their correctness.
 
@@ -184,7 +185,6 @@ has yet to be found. In other words, the fastest known way to break discrete log
 for a general elliptic curve is to use a algorithm for a generic
 cyclic group (such as Pollard rho or lambda method) implying that a group
 size of 160 bits is roughly equivalent to 1024-bit finite field security.
-TODO: cite?
 
 Thus currently elliptic curves present many advantages over finite fields.
 Despite more complex algorithms for basic operations, they are much faster
@@ -472,7 +472,7 @@ curves where much of theory can be generalized, but this is beyond
 our scope. To the author's knowledge, there are no implementations
 of pairing-based cryptosystems constructed using hyperelliptic curves.
 Additionally, at present only \emph{supersingular} hyperelliptic
-curves~\cite{galbraith,silverberg} can be used but there is no compelling
+curves~\cite{galbraith,rubinsilverberg} can be used but there is no compelling
 reason to do so.
 Hyperelliptic equivalents of other elliptic curve families
 used for pairing-based cryptography have yet to be discovered.

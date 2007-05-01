@@ -355,6 +355,9 @@ Let $G$ be a cyclic subgroup of $E(\mathbb{F}_q)$ of order $r$ with $r, q$
 coprime. Let $k$ be the smallest positive integer such that $r \mid q^k - 1$.
 For brevity write $K = \Fqk$.
 
+An equivalent characterization is that
+$\Fqk$ is the smallest extension of $\Fq$ containing the $r$th roots of unity.
+
 The Tate (or Tate-Lichtenbaum) pairing
 \[
 e : E[r] \cap E(K) \times
@@ -395,7 +398,7 @@ if the order of a point $Q$ is not a mulitple of $r$ then $Q$ represents
 the coset $O + r E(K)$. Otherwise $Q$ represents some nonidentity
 element.)
 
-In contrast, when evaluating the Weil pairing we must ensure that the second
+In contrast, when evaluating the Weil pairing we require that the second
 input $Q$ satisfies $r Q = O$.
 
 \section {Miller's Algorithm}
@@ -456,7 +459,7 @@ Thus we may compute $f_P(Q) = f_r(Q)$ using the following algorithm,
 where the binary representation of $r$ be $r_t ... r_0$.
 
 \begin{algorithm}
-\caption{(Miller) Weil pairing}
+\caption{Miller's algorithm for Weil pairing. $x = f_P(Q)$}
 \begin{algorithmic}[1]
 \STATE $x_1 \gets V_{P+R}(Q) / L_{P,R}(Q)$
 \STATE $x \gets x_1$
@@ -488,7 +491,7 @@ f_k \cdot \frac{L_{P+R,kP}}{L_{R,(k+1)P}}
 \right) = (f_{k+1}) .
 \]
 thus could replace step 3(c)(i) with
-$x \leftarrow x \cdot L_{P+R, Z}(Q) / L_{R,Z+P}(Q)$
+$x \gets x \cdot L_{P+R, Z}(Q) / L_{R,Z+P}(Q)$
 and avoid computing and storing $x_1$, but unless
 $r$ has very low Hamming weight this is not a good trade
 because computing vertical lines is much cheaper than general lines.
@@ -538,16 +541,16 @@ computes $f_P(Q)$ given points $P,Q$ (where $P$ has order $r$).
 Let the binary representation of $r$ be $r_t ... r_0$.
 
 \begin{algorithm}
-\caption{(Miller) Tate pairing}
+\caption{Miller's algorithm for Tate pairing. $x = f_P(Q)$}
 \begin{algorithmic}[1]
 \STATE $x \gets 1$
 \STATE $Z \gets P$
 \FOR {$i \gets t-1, ..., 0$}
-    \STATE $x \leftarrow x^2 \cdot T_Z(Q) / V_{2Z}(Q)$
-    \STATE $Z \leftarrow 2Z$
+    \STATE $x \gets x^2 \cdot T_Z(Q) / V_{2Z}(Q)$
+    \STATE $Z \gets 2Z$
     \IF {$r_i = 1$}
-	\STATE $x \leftarrow x \cdot L_{Z,P}(Q) / V_{Z+P}(Q)$
-	\STATE $Z \leftarrow Z + P$
+	\STATE $x \gets x \cdot L_{Z,P}(Q) / V_{Z+P}(Q)$
+	\STATE $Z \gets Z + P$
     \ENDIF
 \ENDFOR
 \end{algorithmic}
@@ -594,27 +597,33 @@ One generator of $G$ is $P = (25, 30)$:
 E(\F_{59})[5] =
 \{P = (25, 30), 2P = (35, 31), 3P = (35, 28), 4P = (25, 29), 5P = O \} \]
 
-It turns out $\F_{59^2} = \F_{59}[i]$ (where $i = \sqrt{-1}$) contains
-all 25 points of $E[5]$, and furthermore, the map given by
-$\phi(x,y) = (-x, i y)$ maps $G$ to another subgroup $G'$ in $E[r]$:
+Feeding any two of these points as inputs to the Weil pairing is pointless
+as the output will be 1 since they are linearly dependent. We must first
+find other 5-torsion points.
 
+The Tate pairing is also useless at the moment, because $5 \nmid 59 - 1$,
+
+But $5 \mid 59^2 - 1$, and we will see that $E(\F_{59^2})$ contains
+all 25 points of $E[5]$, so in the field extension $\F_{59^2}$
+both the Tate pairing
+and Weil pairing exist and are nontrivial.
+Note $-1$ is a quadratic nonresidue in $\F_{59}$
+so we may write $\F_{59^2} = \F_{59}[i]$ where $i = \sqrt{-1}$.
+
+It also turns out that the so-called distortion map given by
+$\phi(x,y) = (-x, i y)$ enables us to write down all of $E[5]$ easily.
+This map $\phi$ takes $G$ to another subgroup $G'$ in $E[5]$:
 \[ G' =
 \{Q = (-25, 30i), ..., 4Q = (-25, 29i), 5Q = O \} \]
-where $Q = \phi(P)$.
-Thus evey element of $E[5]$ can be written as a sum of an element in $G$
-and an element in $G'$
+where $Q = \phi(P)$,
+and every element of $E[5]$ can be written as a sum of an element in $G$
+and an element in $G'$.
 
 \subsection {The Weil Pairing}
 
 Let us first consider the Weil pairing, which we denote by $f$.
-In practice we wrap the Weil pairing in another map:
-$e : G\times G \rightarrow \F_{q^2}$:
-\[ e(U, V) = f(U, \phi(V)) \].
-Note that $U, \phi(V)$ are always linearly independent thus
-we have a nondegenerate bilinear map with cyclic input groups.
-(If we worked with the Weil pairing directly then both input groups would be
-$E[r]$, which is not cyclic.)
-We walk through the computation of $e(P, P) = f((25,30), (-25,30i))$.
+We walk through the computation of $f((25,30), (-25,30i))$.
+The two inputs points are linearly independent thus the output is not 1.
 
 Computing $f(P, Q)$ entails evaluating several rational functions
 at various points that depend on two picked points $R$ and $S$.
@@ -643,7 +652,7 @@ We now enter the main loop.
 Firstly, $f_2 = f_1^2 T_{P} / V_{2P}$ where
 \[ T_{P} : 12 X + Y + 24 \]
 \[ V_{2P} : X + 24 \].
-Then we assign $x \leftarrow x_1^2 T_{P}(Q+S) / V_{2P}(Q+S)$
+Then we assign $x \gets x_1^2 T_{P}(Q+S) / V_{2P}(Q+S)$
 which turns out to be $(18 + 16i)(3+45i)/(43+17i) = 33 + 22i$.
 \item
 Since the second bit of $5 = 101_2$ is zero, the condition for the if statement
@@ -651,11 +660,11 @@ is false and the next iteration begins. Now
 $f_4 = f_2^2 T_2 / V_4$, where
 \[ T_{2P} : 53 X + Y + 2 \]
 \[ V_{4P} : X + 34 \].
-and we compute $x \leftarrow x^2 T_{2P}(Q+S) / V_{4P}(Q+S)$.
+and we compute $x \gets x^2 T_{2P}(Q+S) / V_{4P}(Q+S)$.
 It can be checked $x = 58 + 23i$ now.
 \item
 The last bit is 1, so this time we do execute the contents of the if block,
-namely $x=\leftarrow x \cdot x_1 \cdot L_{4P,P}(Q+S)/V_{5P}(Q+S)$.
+namely $x=\gets x \cdot x_1 \cdot L_{4P,P}(Q+S)/V_{5P}(Q+S)$.
 Since $5P = O$ we discard the denominator in this case, and since $P = -4P$,
 $L_{4P, P} = V_P$ which is given by
 \[ V_P : X + 34 \] thus $x = (58+23i)(25+31i)(53+17i) = 18 + 2i$,
@@ -684,14 +693,10 @@ f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P+R)/f_Q(R)} = 46+56i .
 \subsection {The Tate Pairing}
 
 Let $f$ denote the Tate pairing.
-Like the Weil pairing, with our choice of curve we can wrap the Tate pairing
-in another map
-$e : G\times G \rightarrow \F_{q^2}$:
-\[ e(U, V) = f(U, \phi(V) + rG) \].
-Again, $e$ is a nondegenerate bilinear map with cyclic input groups.
-We shall walk through the computation of $e(P, P) = f((25,30), (-25,30i))$.
+Again we walk through the computation of
+$f((25,30), (-25,30i))$.
 
-For this case, one can show that
+In a later chapter we shall show that in this case,
 for all $R$ we have $f_P(Q) = f_P(Q+R)/f_P(R)$.
 thus we only walk through the calculation of
 $f_P(Q)$.
@@ -760,9 +765,8 @@ in the second-last iteration as well as last iteration, effectively canceling
 itself out. After some thought it can be seen this will always happen
 for odd $r$.
 
-Observe that whenever a vertical line is evaluated in the Tate pairing
-example, the result is an element of $\Fq$. This fact will be exploited
-later for certain pairings.
+Whenever a vertical line is evaluated in the Tate pairing
+example, the result is an element of $\Fq$.
 
 The Weil pairing requires Miller's algorithm to be run twice, once for
 $f_P(Q+S) / f_P(S)$ and once for $f_Q(P+R)/f_Q(R)$. In the computation
@@ -775,6 +779,46 @@ but requires an exponentiation by $(q^k - 1)/r$. Like the computation
 of $f_P$ in the Weil pairing, to determine the equations of the lines,
 tangents and verticals during Miller's algorithm only requires arithmetic
 in the base field $\Fq$.
+
+\section {Restricting Inputs}
+
+We shall have much to say on this topic later, but the above example
+serve as a good introduction.
+Recall we have the Weil pairing $f$ on
+the curve $E : Y^2 = X^3 + X$ over some field $\Fq$
+where $q = 3 \bmod 4$. We have a distortion
+map $\phi(x,y) = (-x, i y)$, and we have
+a group $G$ of $r$-torsion points in $E(\Fq)$ for some $r$.
+
+In real applications, we wrap the Weil pairing $f$ in another map
+$e : G\times G \rightarrow \F_{q^2}$:
+\[ e(U, V) = f(U, \phi(V)) . \]
+We use $e$, not $f$, as our pairing.
+There are at least two reasons for doing this.
+
+The input points to $e$ have coordinates in $\Fq$ and lie on the
+same curve (that is, $e$ is symmetrical) and
+
+Both input groups of $e$ are cyclic.
+Thus the construction of cryptosystems and their
+security proofs are simpler. We could work with the
+Weil pairing directly but then both input groups would be $E[r]$,
+which is not cyclic.
+
+As $U, \phi(V)$ are always linearly independent hence
+the wrapper function $e$ guarantees
+a nontrivial pairing output whenever $U$ and $V$ are nontrivial.
+This is not the case with the Weil pairing,
+where complications arise from linearly dependent inputs.
+
+Lastly, the input points have coordinates in the field $\Fq$ which is
+smaller and hence more efficient to compute on than $\F_{q^2}$.
+
+Similarly, if $f$ now denotes the Tate pairing,
+we wrap $f$ in the map
+$e : G\times G \rightarrow \F_{q^2}$:
+\[ e(U, V) = f(U, \phi(V) + rG) \]
+and use $e$ instead of $f$ in our cryptosystems.
 
 \section {The Shipsey-Stange Algorithm}
 There is another procedure for computing Tate pairings that takes a completely

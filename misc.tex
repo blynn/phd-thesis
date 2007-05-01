@@ -29,8 +29,8 @@ compress or reduce points or pairings, and so on.
 Needless to say, each of these classes of optimizations cannot be viewed
 in isolation. An optimization that may not usually help could be beneficial
 when the behaviour of the whole system is taken into account.
-For one example, see the discussion on Montgomery representation below.
-Similarly, one optimization could adversely affect another.
+Another possibility is that
+one optimization could adversely affect another.
 \end{enumerate}
 
 We have concentrated optimizations from all aspects of
@@ -54,13 +54,11 @@ Lastly, the organization of these chapters reflects good software
 engineering practices. When developing a pairing-based cryptography
 library from scratch,
 the initial goal should be to write finite field arithmetic
-routines, including
-quadratic extensions. The next
-step is to implement elliptic curve groups.
+routines. The next step is to implement elliptic curve groups.
 Once the code for this has been tested satisfactorily, a simple
 pairing algorithm should be built.
 Only when the pairing is correctly functioning
-should one at last even consider efficiency improvements.
+should one at last consider efficiency improvements.
 
 The slowest parts of the system should be attacked first.
 Educated guessing can meet with some success, but
@@ -119,8 +117,8 @@ contribute to the result.
 
 In some cases it may help to test for one as well.
 
-Of course, one could rewrite higher level algorithms to avoid these cases
-but this can be tedious and may only be negligibly better.
+%Of course, one could rewrite higher level algorithms to avoid these cases
+%but this can be tedious and may only be negligibly better.
 
 \section{Montgomery Reduction}
 
@@ -269,8 +267,8 @@ In the next section we describe squaring tricks
 for $\F_{q^2}$ when $q$ is a prime satisfying $q = 2 \pmod 3$
 or $q = 3 \pmod 4$.
 
-More generally, for low degree extensions (e.g. 3, 6),
-hand-coding generalized Karatsuba squaring and
+For other low degree extensions (e.g. 3, 6),
+one can write special cases of generalized Karatsuba squaring and
 multiplication algorithms \cite{wpkaratsuba}.
 
 \section{Quadratic Field Extensions}
@@ -338,31 +336,17 @@ goto step 2.
 Goto step 3.
 \end{enumerate}
 
-\section{Preprocessing}
-
-We previously discussed preprocessing for pairings,
-but other opportunities for
-calculating and storing results ahead of time often exist.
-
-For example, in some schemes, we must exponentiate the some group element $g$
-of some group $G$ by various powers. Then TODO
-
-One trivial application of this principle
-is that the random points needed for certain pairing
-computations can be chosen and stored long before they are needed.
-Another is the caching of quadratic nonresidues that are key
-ingredients in a number of algorithms.
-
-\section{Multiexponentiation}
-
-TODO: move ecc opts here, mention low hamming field bad, low hamming
-order not so bad
-
 \section {Projective Coordinates}
 
 Instead of using a pair of numbers to represent a point,
 we can use Jacobian projective coordinates: the triplet
 $(x,y,z)$ represents the point $(x/z^2, y/z^3)$.
+
+This allows us to replace inversions with several multiplications in a finite
+field, which is usually worth the trouble though the savings
+vary from implementation to implementation. Note that Montgomery reduction
+complements projective coordinates as it speeds up multiplication at the
+expense of inversion.
 
 We quote algorithms for point addition and doubling using projective
 coordinates from Blake, Seroussi and Smart~\cite{bss}:
@@ -423,11 +407,7 @@ to obtain an $a$ that is faster than the general case.
 Cohen, Miyaji and Ono~\cite{cmo} investigate other variants of projective
 coordinates, where point doubling or multiplication can be even faster.
 
-TODO: how extensively should one use projective coordinates
-
 \section {Point Multiplication}
-
-TODO: mention optimizations later, present basic method here
 
 Point multiplication is the elliptic curve equivalent of modular
 exponentiation, thus optimizations that apply to one often apply to the other.
@@ -437,20 +417,24 @@ one simply negates the $y$-coordinate, an operation that is essentially free,
 whereas in finite fields one must spend time running the extended
 Euclidean algorithm.
 
-This allows one to use non-adjacent forms (or signed windows), which
-TODO: refer to bss, handbook
-Sliding Windows.
+This allows one
+work with addition-subtraction chains instead of addition chains, that is,
+use signed sliding
+windows~\cite[Chapter 14]{handbook}~\cite[Section IV.2.5]{bss}.
 
 If it is known in advance that a particular point $P$ will feature in
 several point multiplications, preprocessing can be employed, namely
 multiples of $P$ used often in the exponentiation routine
 are computed and stored.
 
+\section{Multiexponentiation}
+
 When computing expressions
 of the form $a P + b Q$ (the equivalent of $g^x h^y$ in
 finite fields), rather than computing $a P$ and $b Q$ separately
 and adding the results, one can use
-a multiexponentiation trick to roughly halve the number of point doublings
+a multiexponentiation trick, sometimes referred to as vector addition chains~\cite[Chapter 14]{handbook},
+to roughly halve the number of point doublings
 (if $a$ and $b$ are about the same length).
 In its simplest form, $P + Q$ is precomputed and stored,
 then a double-and-add algorithm is used to compute the
@@ -461,23 +445,23 @@ To compute $12 P + 7 Q$ one precomputes $P + Q$, then:
 
 \begin{enumerate}
 \item
-$R \leftarrow P$
+$R \gets P$
 \item
-$R \leftarrow 2R$
+$R \gets 2R$
 \item
-$R \leftarrow R + (P + Q)$
+$R \gets R + (P + Q)$
 \item
-$R \leftarrow 2R$
+$R \gets 2R$
 \item
-$R \leftarrow R + Q$
+$R \gets R + Q$
 \item
-$R \leftarrow 2R$
+$R \gets 2R$
 \item
-$R \leftarrow R + Q$
+$R \gets R + Q$
 \end{enumerate}
 
-Multiexponentiation can
-be generalized to computing any expression of the form
+Of course vector-chain-addition exponentiation generalizes
+to computing any expression of the form
 $a_1 P_1 + ... + a_t P_t$. Multiexponentiation can also be combined with
 sliding window techniques.
 One drawback is the amount of precomputation needed,
@@ -486,10 +470,6 @@ is increased in which case one must store $m P + n Q$ for several $m, n$.
 
 Note the Tonelli-Shanks algorithm contains a multiexponentiation
 that benefits from this optimization.
-
-Cite Lange Sica Quisquater
-
-Cohen Miyaji Ono
 
 \section{Floating-Point Complex Numbers}
 
@@ -500,8 +480,8 @@ floating point complex arithmetic.
 
 Packages that provide arbitrary precision floating point numbers
 may not include routines for complex arithmetic. When implementing
-complex numbers using such a library, a couple of issues must be
-dealt with.
+complex numbers using such a library, one should be aware of a few basic
+facts.
 
 Multiplication should use the
 tricks for quadratic field extensions described earlier.

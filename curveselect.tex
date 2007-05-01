@@ -261,7 +261,7 @@ are as fast as possible.
 \item
 $q^k$ must be large enough so that finite field discrete logarithm attacks
 in $\mathbb{F}_{q^k}$ are ineffective.
-$q$ should not have low Hamming weight~\cite{someone}, nor be a power of
+$q$ should not have low Hamming weight~\cite{stinson}, nor be a power of
 $2$ or $3$.
 \item
 $q^k$ must be small enough so that operations in $\mathbb{F}_{q^k}$
@@ -344,8 +344,6 @@ but unfortunately at the same time specialized discrete logarithm attacks
 exist \cite{coppersmith}, and we must use bigger fields to compensate for
 this. 
 
-TODO:how bad is it?
-
 The $k=6$ case requires $p=3$. Again, we may apply
 a host of specialized optimizations, but we must also be wary of
 low-characteristic discrete logarithm algorithms.
@@ -353,7 +351,7 @@ low-characteristic discrete logarithm algorithms.
 \section {Type A Curves}
 
 Let $q$ be a prime satisfying $q = 3 \pmod{4}$.
-Let $E$ be the curve $y^2 = x^3 + x$. It can be shown \cite{silverman86}
+Let $E$ be the curve $y^2 = x^3 + x$. It can be shown \cite{silverman}
 that $E(\mathbb{F}_q)$ is supersingular and $k = 2$.
 
 We have $\#E(\mathbb{F}_q) = q+1$, and $\#E(\mathbb{F}_{q^2}) = (q+1)^2$,
@@ -361,7 +359,9 @@ thus for any $P\in E(\mathbb{F}_q)$
 the embedding degree of $G = \langle P \rangle$ is 2.
 
 Note $-1$ is a quadratic nonresidue in $\mathbb{F}_q$ since $q = 3\pmod{4}$.
-Consider the map given by
+Let $i$ be a square root of $-1$. Then $\mathbb{F}_q[i]$ is a degree 2
+extension of $\Fq$.
+Consider the following map, sometimes referred to as a distortion map:
 \[ \Psi(x, y) = (-x, i y) \]
 
 Then $\Psi$ maps points of $E(\mathbb{F}_q)$ to points of
@@ -413,7 +413,7 @@ Again we have $\#E(\mathbb{F}_q) = q+1$ and $\#E(\mathbb{F}_{q^2}) = (q+1)^2$,
 thus for any $P\in E(\mathbb{F}_q)$
 the embedding degree of $G = \langle P \rangle$ is 2.
 
-Consider the map given by
+Consider the distortion map given by
 \[ \Psi(x, y) = (\zeta x, y) \]
 where $\zeta$ is a primitive cube root of unity.
 
@@ -445,8 +445,10 @@ Define the curves $E^{+} : y^2 = x^3 + 2 x + 1$ over $\F_{3^l}$
 and $E^{-} : y^2 = x^3 + 2 x - 1$, also over $\F_{3^l}$.
 
 Unlike all the other curves we consider,
-we are working in a low characteristic field, and furthermore this
-field does not have prime order.
+we are work in a low characteristic field. Thus these pairings
+are susceptible to certain discrete log attacks due to
+Coppersmith~\cite{coppersmith} and are perhaps better avoided.
+We describe them here for completeness.
 
 One can show
 \[
@@ -474,7 +476,8 @@ Define the map $\Psi$ by
 where $x, y$ are elements of $\F_{3^{6l}}$. Then $\Psi$ maps points
 of $E(\F_{3^l})$ to points of $E(\F_{3^{6l}})$.
 
-We arrive at a curve selection algorithm:
+We arrive at a curve selection algorithm as described by
+Boneh, Lynn and Shacham~\cite{bls}:
 
 \begin{enumerate}
 \item
@@ -489,7 +492,7 @@ If so, set $E$ to the corresponding curve equation.
 
 It turns out there are not many suitable curves.
 
-TODO: give table, mention coppersmith, cite weil descent paper
+TODO: give table, cite weil descent paper
 
 \section {Complex Multiplication}
 
@@ -647,12 +650,7 @@ residue and $n(1,g) = O$, where $g$ is a square root of $k + 1$.
 
 \section {Type G Curves}
 
-The ideas of Miyaji et al. have been developed extensively\cite{alotofstuff}.
-For example, methods exist to construct curves of any embedding degree
-provided that one can tolerate a subgroup order $r$ that is
-in general significantly smaller than the field order $q$.
-
-Freeman unified many of the approaches in a single
+Freeman unified many approaches for finding curves in a single
 framework\cite{freeman06}, and also showed how to construct curves with
 embedding degree 10, with $r$ and $q$ around the same size.
 Freeman also notes that it seems unlikely that curves
@@ -797,6 +795,8 @@ if $|b| = a$ or $a=c$ then $b\ge0$.
 Hence the following algorithm computes Hilbert class polynomials.
 Here, $P$ is a polynomial variable, and $D = 0, -1 \pmod 4$.
 
+\begin{algorithm}
+\caption {Hilbert class polynomial computation: $P \gets H_D(X)$}
 \begin{algorithmic}[1]
 \STATE $P\gets 1$
 \STATE $b\gets D \pmod 2$
@@ -820,8 +820,8 @@ Here, $P$ is a polynomial variable, and $D = 0, -1 \pmod 4$.
 \UNTIL $b>B$
 \STATE round coeffcients of $P$ to nearest integer
 \STATE return $P$
-
 \end{algorithmic}
+\end{algorithm}
 
 It remains to specify the precision of the floating point operations.
 Cohen recommends using at least $k + 10$ significant digits where
@@ -829,6 +829,8 @@ Cohen recommends using at least $k + 10$ significant digits where
 the sum running over all reduced forms $(a,b,c)$ of discriminant $D$,
 which can be computed using the following algorithm~\cite[Algorithm 5.3.5]{1993-cohen}:
 
+\begin{algorithm}
+\caption {Counting reduced forms: $s \gets \#$forms of discriminant $D$}
 \begin{algorithmic}[1]
 \STATE $s\gets 1$, $b\gets D \pmod 2$, $B\gets \left\lfloor \sqrt{|D|/3}
 \right\rfloor$.
@@ -850,6 +852,7 @@ which can be computed using the following algorithm~\cite[Algorithm 5.3.5]{1993-
 \UNTIL $b>B$
 \STATE Output $s$
 \end{algorithmic}
+\end{algorithm}
 
 \section {Arbitrary Embedding Degree}
 
