@@ -298,14 +298,14 @@ $r$ points in $E'(\F_{q^d})[r]$ and exactly $r$ points in $E(\Fqk)[r]$ of trace
 zero.
 \end{proof}
 
-One consequence of this is that the asymmetric bilinear pairing defintion
-cannot be used. Recall this requires an efficiently
-computable bilinear nondegenerate map
+One consequence of this is that we
+now have an asymmetric bilinear pairing
 \[
 e:G_1 \times G_2 \rightarrow G_T
 \]
-along with an efficiently computable group isomorphism
-$\phi : G_2 \rightarrow G_1$.
+but no known efficiently computable group isomorphism
+$\phi : G_2 \rightarrow G_1$. Cryptosystems relying on the existence of
+such a map must be modified accordingly.
 
 For a randomly chosen $Q$ in $E(\Fqk)[r]$ we have $\tr Q \ne O$ with
 overwhelming probability, and one can take $\phi$ to be the trace map
@@ -445,27 +445,35 @@ One advantage of restricting the first input $P$ of a pairing
 to $E(\Fq)[r]$ is that during Miller's algorithm, we perform point additions
 and doubling involving $P$ and also compute equations of lines that
 pass through various multiples of $P$. Thus if $P \in E(\Fq)[r]$ all the
-arithmetic involved for these operations can be performed in $\Fq$ rather
+arithmetic involved for these operations, which form the bulk of Miller's
+algorithm, can be performed in $\Fq$ rather
 than $\Fqk$.
 
-In the literature, this is known as a Miller-lite operation.
+This has been dubbed a \emph{Miller-lite} operation in the literature.
 When $P$ does not lie in the base field but rather is some element of
 $E(\Fqk)$ then we refer to an iteration of Miller's algorithm with
-first input $P$ as a full Miller, or Miller-full operation.
+first input $P$ as a full Miller, or Miller-full, operation.
 
-Eventually, we must evaluate equations of lines at points of $E(\Fqk)$.
-If distortion maps or twist maps are being used, they must be evaluated
-on the second input point $Q$ to obtain a point on $E(\Fqk)$. However
-this should be done carefully:
-
-\subsection{Last-Second Conversions}
+\section{Last-Second Conversions}
 
 One easy optimization is also easy to overlook as it is hidden by
 notation.
+In a Miller-lite operation, even if we use distortion maps or twists,
+at some point we must encounter $\Fqk$ arithmetic.
+Distortion maps or twist maps must be applied
+on the second input point $Q$ to obtain a point on $E(\Fqk)$, which in turn
+is fed to line equations.
 
-Consider a type A pairing $e : E(\mathbb{F}_q) \times E(\mathbb{F}_q)
-\rightarrow \mathbb{F}_{q^2}$, and suppose we have chosen to
-use $\mathbb{F}_q [i]$ to represent $\mathbb{F}_{q^2}$.
+However this should be done carefully.
+In general, we wish to avoid computing in $\Fqk$
+until absolutely necessary. We describe the procedure in detail for
+type A pairings. Similar statements can be made for other pairing types,
+with greater savings in some cases.
+
+Let $e : E(\mathbb{F}_q) \times E(\mathbb{F}_q)
+\rightarrow \mathbb{F}_{q^2}$ be a type A pairing 
+and suppose we have chosen to
+use $\mathbb{F}_q [i]$ to represent $\mathbb{F}_{q^2}$ where $i =\sqrt{-1}$.
 
 During the computation of the pairing,
 we evaluate $g(Q')$ where $g = aX + bY + c$ is an equation of some line and
@@ -474,24 +482,19 @@ and $Q$ is some point $(x,y)$ in $E(\mathbb{F}_q)$.
 
 If we follow the notation blindly, we would first compute the point
 $Q'$ which takes twice as much storage as $Q$ (as the field it lies over is
-twice as big), and computing $g(Q')$ involves
-operations on elements of $\mathbb{F}_q[i]$.
+twice as big), and perform operations on elements of $\mathbb{F}_q[i]$ to
+arrive at $g(Q')$.
 
-Instead, it is wiser to never explicitly compute $Q'$, and instead
-performs the following:
+It is wiser to never explicitly compute $Q'$ and execute the following steps:
 
 \begin{enumerate}
 \item
-$Re(R) = c - a x$
+$Re(R) \gets c - a x$
 \item
-$Im(R) = b y$
+$Im(R) \gets b y$
 \end{enumerate}
 
 Now $R = g(Q')$, and we have only computed in $\mathbb{F}_q$.
-
-Similar statements can be made for other pairing types, with greater
-savings in some cases. In general, we wish to avoid computing in $\Fqk$
-until absolutely necessary.
 
 \section {The Final Powering}
 
@@ -629,18 +632,6 @@ In particular, if we choose $n = q - 1$ then denominator elimination
 also applies to the Weil pairing. Additionally, the above powering trick
 means the exponentiation is cheap.
 
-\section {Collating Inversions}
-
-Recall the computation of a pairing involves several iterations
-of multiplying by an expression of the form $g(Q) / h(Q)$
-where $g, h$ are equations of lines and $Q$ is some point.
-
-A straightforward optimization is to defer the division,
-and have one inversion at the end instead of one per iteration, at
-the cost of an extra variable.
-In other words, compute $(g_1(Q) ... g_m(Q)) / (h_1(Q) ... h_m(Q))$ instead
-of $(g_1(Q) / h_1(Q)) ... (g_m(Q) / h_m(Q))$.
-
 \section {Preprocessing}
 
 We previously discussed preprocessing for exponentiation in a group.
@@ -705,50 +696,34 @@ Define
 
 It turns out that $(a+\alpha b)^n = V_n / 2 + \alpha b U$,
 where $U = (P V_n - 2 V_{n-1}) / (P^2 - 4)
-= (2 V_{n+1} - P V_n) / (P^2 - 4)$.
+= (2 V_{n+1} - P V_n) / (P^2 - 4)$,
+and that the following algorithm
+computes $v_0 = V_n$ and $v_1 = V_{n+1}$ for even $n$,
+and $v_0 = V_{n-1}$ and $v_1 = V_n$ otherwise.
+We can easily compute $U$ in either case.
 
-Consider the following laddering algorithm.
-Let $n_t ... n_0$ be the binary respresentation of $n$.
+\begin{algorithm}
+\caption {Compute Lucas sequence: $v_0 = V_m$ and $v_1 = V_{m+1}$,
+where $m = n$ for even $n$ and $m = n-1$ for odd $n$}
+\begin{algorithmic}[1]
+\STATE Let $n_t ... n_0$ be the binary respresentation of $n$.
+\STATE $v_0 \gets 2, v_1 \gets P, j \gets t$
+\WHILE {$j > 0$}
+    \IF {$n_j = 1$}
+	\STATE $v_0 \gets v_0 v_1 - P, v_1 \gets v_1^2 - 2$
+    \ELSE
+	\STATE $v_1 \gets v_0 v_1 - P, v_0 \gets v_0^2 - 2$
+    \ENDIF
+    \STATE $j \gets j - 1$
+\ENDWHILE
+\STATE $v_1 \gets v_0 v_1 - P, v_0 \gets v_0^2 - 2$
+\end{algorithmic}
+\end{algorithm}
 
-\begin{enumerate}
-\item
-$v_0 \leftarrow 2, v_1 \leftarrow P, j \leftarrow t$
-\item
-If $j = 0$ then
-\begin{enumerate}
-\item
-$v_1 \leftarrow v_0 v_1 - P, v_0 \leftarrow v_0^2 - 2$
-\item
-Halt
-\end{enumerate}
-\item
-If $n_j = 1$ then
-\begin{enumerate}
-\item
-$v_0 \leftarrow v_0 v_1 - P, v_1 \leftarrow v_1^2 - 2$
-\end{enumerate}
-\item
-Else
-\begin{enumerate}
-\item
-$v_1 \leftarrow v_0 v_1 - P, v_0 \leftarrow v_0^2 - 2$
-\end{enumerate}
-\item
-$j \leftarrow j - 1$
-\item
-Goto the step 2.
-\end{enumerate}
-
-It can be shown that upon termination, for even $n$ we have
-$v_0 = V_n$ and $v_1 = V_{n+1}$, otherwise
-$v_0 = V_{n-1}$ and $v_1 = V_n$, and we can easily compute $U$ in either
-case.
-
-Note we usually have $r$ odd (every pairing-based cryptosystem yet
-proposed chooses
-$r$ to be an odd prime or a product of two odd primes) and $q + 1$
-even (we never work in characteristic 2 fields), so we
-only encounter the case when $n = (q + 1) / r$ is even.
+Usually $r$ is odd (currently every pairing-based cryptosystem yet
+proposed requires $r$ to be an odd prime or a product of two odd primes)
+and $q + 1$ is even (we never work in characteristic 2 fields), so we
+can assume $n = (q + 1) / r$ is even.
 
 Clearly the above is faster than a standard $\F_{q^2}$ exponentiation
 procedure as all operations take place in the smaller field $\Fq$.
@@ -873,7 +848,7 @@ exponentiation algorithm.)
 Of course, in doing so we lose some information: $x, x^{q^2}, x^{q^4}$
 all have the same trace, but this is tolerable in most cases.
 
-Recall from Section 5.7 that
+Recall from Section~\ref{sec:quadext} that
 if $q = 2 \pmod 3$ or $q = 3 \pmod 4$, then with a suitable constructed
 field extension $\F_{q^2}$, for $x, y, z \in \F_{q^2}$:
 \begin{enumerate}
@@ -932,11 +907,13 @@ We see a division in Miller's algorithm is slightly more expensive than
 a multiplication, requiring also an inversion in $G_T$ along with
 another vertical line.
 
-Denominator elimination allows us to ignore vertical lines, and as
-stated above the $G_T$
-inversions can be collated into one (by keeping separate
-numerator and denominator variables during the main loop and only
-dividing at the end).
+Denominator elimination allows us to ignore vertical lines.
+Also, the inversions can be collated. We can defer divisions,
+and have one inversion at the end instead of one per iteration,
+by maintaining numerator and denominator variables during the main loop
+and only dividing at the end.
+(In other words, compute $(g_1(Q) ... g_m(Q)) / (h_1(Q) ... h_m(Q))$
+instead of $(g_1(Q) / h_1(Q)) ... (g_m(Q) / h_m(Q))$.)
 
 Thus addition-subtraction-chain exponentiation can be
 better than simply addition-chain exponentiation and as with

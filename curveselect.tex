@@ -153,9 +153,7 @@ degrees and must take this attack into account.
 
 Thus we shall find that constructing a pairing is a delicate balancing act:
 $K$ must be large enough
-so that $E(K)$ can foil generic discrete log attacks
-(e.g. Pollard rho, baby-step-giant-step TODO: reference earlier chapter?).
-, while $L$ must be
+so that $E(K)$ can foil generic discrete log attacks, while $L$ must be
 large enough to resist finite field discrete log attacks. At the same time,
 $K$ and $L$ should be as small as possible to minimize time and space
 usage.
@@ -210,33 +208,38 @@ Because most pairing-based cryptosystems use groups of prime order,
 one may become so accustomed to facts like these that one may erroneously
 assume them to be true when working with groups of composite order.
 
-\section {Security Considerations}
+\section {Pairing Security}
 
-Consider a nonsingular elliptic curve $E$ over finie field $\Fq$ with
+Consider a nonsingular elliptic curve $E$ over finie field $\Fq$ containing
+some cyclic group $G$ of order $r$ with
 embedding degree $k$.
 We mentioned earlier that with pairings,
-we can solve the discrete log problem in
-$E(\Fq)$ by first solving the discrete log problem in $E(\Fqk)$.
-Interesting, this attack was the first application of pairings
+we can solve the discrete log problem in the elliptic curve subgroup $G$
+by first solving the discrete log problem in the finite field $\Fqk$.
+
+Interestingly, this attack was the first application of pairings
 in cryptography to appear in the literature,
 predating all publications describing
 constructive uses of the pairing.
-(The newfound utility
+The newfound utility
 of pairings has meant that instead of shunning curves with efficiently
-computable pairings, we active seek them out.)
-We now give the details for this attack~\cite{mov,fr}.
+computable pairings, we active seek them out.
+
+We now give the details for this attack~\cite{mov,fr},
+sometimes termed the Frey-Ruck or MOV attack.
 
 Let $P \in E(\Fq)$ be a point of prime order $r$.
 Let $G = \langle P \rangle$.
 By bilinearity and nondegeneracy of the Weil pairing
-$e : G \times G \rightarrow \Fqk$ we have
-\[ \dlog (P, nP) = \dlog ( e(P,P), e(P, nP) )
-= \dlog (e(P,P),e(P,P)^n) = n \]
+Let $e : G \times G \rightarrow \Fqk$ be a bilinear, nondegenerate map,
+such as the Weil or Tate pairing.
+Then
+\[ \dlog ( e(P,P), e(P, nP) )
+= \dlog (e(P,P),e(P,P)^n) = n = \dlog(P,nP) \]
 for $n \in \{0,...,r-1\}$.
-Since $e(P,P), e(P, nP) \in \Fqk$,
+In other words, since $e(P,P), e(P, nP) \in \Fqk$,
 if the discrete logarithm problem can be solved
-in $\mathbb{F}_{q^k}$, then it can also be solved in $G$. The corresponding
-attack for the Tate pairing is similar.
+in $\mathbb{F}_{q^k}$, then it can also be solved in $G$.
 
 Hence we must ensure $q^k$ is large enough so that
 finite field discrete logarithm algorithms such as index calculus are
@@ -481,7 +484,7 @@ Boneh, Lynn and Shacham~\cite{bls}:
 
 \begin{enumerate}
 \item
-Choose $l = \pm 1, \pm 5 \bmod 12$. To avoid Weil descent attacks,
+Choose $l = \pm 1, \pm 5 \bmod 12$. To avoid Weil descent attacks~\cite{weildescent1, weildescent2},
 $l$ should not have any small prime factors (say $3,5,7$).
 \item
 Compute $3^l + l \pm 3^{(l+1)/2}$ and check if either has a large prime
@@ -490,9 +493,41 @@ factor $r$.
 If so, set $E$ to the corresponding curve equation.
 \end{enumerate}
 
-It turns out there are not many suitable curves.
+As can be seen from Table~\ref{tbl:typec}, there are not many suitable
+curves. Note the third entry has $l = 11^2$. Although this is a fairly low
+prime, there has been some evidence suggesting that Weil descent attacks
+are still ineffectual for this case~\cite{ghsonodd}.
 
-TODO: give table, cite weil descent paper
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+
+  \hline
+  Curve & $l$ & Field       Size      & Group Size         & Finite Field Security \\
+        &     & $\lceil\lg_2 q \rceil$ & $\lceil \lg_2 r \rceil$ &
+    $\lceil \lg_2 {q^6} \rceil$ \\
+
+  \hline
+  $E^-$ & $\phantom079$ & $126$ & $126$ & $752$ \\
+  \hline
+  $E^+$ & $\phantom097$  & $154$ & $151$ & $923$ \\
+  \hline
+  $E^+$ & $121$ & $192$ & $155$ & $1151$ \\
+  \hline
+  $E^+$ & $149$ & $237$ & $220$ & $1417$ \\
+  \hline
+  $E^+$ & $163$ & $259$ & $256$ & $1551$ \\
+  \hline
+  $E^-$ & $163$ & $259$ & $259$ & $1551$ \\
+  \hline
+  $E^+$ & $167$ & $265$ & $262$ & $1589$ \\
+  \hline
+\end{tabular}
+\end{center}
+\caption{  \label{tbl:typec}
+  Type C pairings~\cite{bls}.
+}
+\end{table}
 
 \section {Complex Multiplication}
 
@@ -683,9 +718,69 @@ Construct the corresponding curve $E$ using the CM method.
 It can be shown that $n \mid q^{10} - 1$ thus the resulting curve has
 embedding degree 10.
 
-TODO: comparison table: symmetric? group sizes? embedding degree? ordinary?
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+
+  \hline
+  Type & Supersingular & $k$ & Min Input Size & Min Output Size \\
+        &     & & $\lceil \lg_2 q \rceil$ & $\lceil \lg_2 {q^k} \rceil$ \\
+
+  \hline
+  A & yes & $2$ & $512$ & $1024$ \\
+  \hline
+  B & yes & $2$ & $512$ & $1024$ \\
+  \hline
+  C & yes & $6$ & $>171$ & $>1026$ \\
+  \hline
+  D & no & $6$ & $171$ & $1026$ \\
+  \hline
+  E & no & $1$ & $1024$ & $1024$ \\
+  \hline
+  F & no & $12$ & $160$ & $1920$ \\
+  \hline
+  G & no & $10$ & $160$ & $1600$ \\
+  \hline
+\end{tabular}
+\end{center}
+\caption{  \label{tbl:comparepairings}
+    Pairing comparison.
+}
+\end{table}
+
+\section {Comparing Pairings}
+
+Assuming that 160 bits are sufficient to defeat generic discrete log attacks
+and that 1024 bits are sufficient to defeat index calculus, we can use
+the embedding degree $k$ to determine a lower bound for $q$.
+(In all cases,
+for the input we would use a subgroup of the elliptic curve group
+with order $r$ around 160 bits.)
+The results are shown in Table~\ref{tbl:comparepairings}.
+
+For type C pairings, the numbers shown ignore the Coppersmith attack
+for low characteristic fields (which is why the greater-than symbol appears).
+The exact effectiveness of the Coppersmith attack on characteristic 3 fields
+of the magnitudes used in cryptography is not known.
+
+Of course, size is not the only factor. If one must have
+a symmetric pairing whose inputs, one is limited to using A, B or C pairings.
+
+If speed is the top priority, then A or B pairings should be used. If symmetry
+can be sacrificed as well, then perhaps B pairings are the better choice because
+they also allow faster random point generation and point compression.
+
+If a particular group order $r$ is required, one must use A, B or E pairings.
+
+If input size length is important, type D pairings are a good choice.
+Type F and G pairings allow only slightly shorter inputs, but are slower.
+On the other hand, they guard against future improvements to
+finite field discrete log algorithms.
 
 \section {Generalized Pell Equations}
+
+For completeness we describe how to solve the Diophantine equations that arise
+when searching for some of the above pairing types.
 
 Consider the \emph{Pell equation}
 \[ x^2 - D y^2 = 1 \]
@@ -767,6 +862,9 @@ it does not appear in the family of solutions generated by $(x, y)$.
 
 We quote an algorithm to compute Hilbert class
 polynomials as described by Cohen~\cite[section 7.6.2]{1993-cohen}.
+We need roots of these polynomials over certain fields in order to generate
+some of the above pairing types, a procedure we shall describe in
+Section~\ref{sec:rootfinding}.
 
 Let $\tau \in \mathbb{C}$ lie in the upper complex plane.
 Set $q = e^{2 i \pi \tau}$. Define
