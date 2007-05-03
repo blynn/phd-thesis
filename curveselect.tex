@@ -15,7 +15,7 @@ in $G$ and the running times depend on operations on $l$-bit numbers.
 We focus on this case, namely when
 $r$ and $\#E(K)$ take roughly the same number of
 bits. Relaxing this condition
-allows us to use a wider variety of pairings, and we discuss one
+permits us to use a wider variety of pairings, and we discuss one
 such case later.
 
 If $L$ is a field extension of $K$
@@ -44,11 +44,12 @@ The converse is not true: it is possible for the subset inclusion to be strict.
 In other words, for a field $L$ to contain the $r$th roots of unity but
 at the same time have part of $E[r]$ lying outside $E(L)$.
 
-However, the converse is almost true:
+However, as Balasubramanian and Koblitz have shown~\cite{bk},
+the converse is almost true (though the proof here is slightly different):
 
 \section {The Embedding Degree}
 
-\begin{theorem} \cite{bk}
+\begin{theorem}
 Let $E$ be an elliptic curve defined over $\mathbb{F}_q$.
 Let $G$ be a subgroup of $E(\Fq)$ of order $r$ with
 $r \nmid q-1$.
@@ -135,28 +136,9 @@ At this point, our goal seems to be minimizing this embedding degree,
 so that $L$ is as close as possible to $K$, and if possible,
 to have $K = L$ and have all computations in a
 small a field as possible.
-
-However, the pairing is a double-edged sword. Though it
-bestows additional cryptographically useful properties upon cyclic groups,
-we will show how it also allows one to break the discrete log problem in $E(K)$
-by first breaking the discrete log problem in $L$.
-Since the latter are finite fields, subexponential
-algorithms such as index calculus are applicable, thus the size of $L$ and
-$L'$ must be large enough to resist this (1024 bits at the very least).
-
-This statement is true for every nonsingular elliptic curve, but in general
-the embedding degree is so large that it is futile to attempt this attack
-on a typical elliptic curve as $L$ and $L'$ are far too large for any
-practical calculations.
-However, for pairings, we actively seek curves with low embedding
-degrees and must take this attack into account.
-
-Thus we shall find that constructing a pairing is a delicate balancing act:
-$K$ must be large enough
-so that $E(K)$ can foil generic discrete log attacks, while $L$ must be
-large enough to resist finite field discrete log attacks. At the same time,
-$K$ and $L$ should be as small as possible to minimize time and space
-usage.
+Unfortunately, things are not quite this simple, because of
+pairing security issues which we will soon examine in
+Section~\ref{sec:pairingsec}.
 
 \section {Weil and Tate Pairing Comparison}
 
@@ -169,10 +151,10 @@ be computable in $\mathbb{F}_q$, but the Weil pairing may not be.
 Usually this is not significant because we shall see
 $k > 1$ is preferred.
 Nonetheless, we shall find the Tate pairing to be the best choice in
-any case due to other benefits.
+any case for other reasons.
 
 Consider the curve $E: Y^2 = X^3 + X + 6$ which has
-18 points over $\mathbb{F}_{19}$, quoted from a publication by
+18 points over $\mathbb{F}_{19}$, which we borrow from a publication by
 Balasubramanian and Koblitz~\cite{bk}.
 The point $R=(0,5)$ generates a cyclic group of order 18,
 so the point $P = 6R = (12,13)$ generates a cyclic group of order 3.
@@ -189,9 +171,12 @@ implementations may give different results.
 Sjnce the cube roots of unity in
 $\mathbb{F}_{19}$ are $1, 7, 11$, we expect $7$ or $11$.)
 
+\subsection {\label{sec:compositeexample} Composite Group Orders}
+
 We can also use this curve to exhibit
 interesting behaviour that can occur with
-pairings on cyclic groups with composite order.
+pairings on cyclic groups with composite order mentioned in Section~\ref{sec:generalpairing}.
+
 It can be checked that $e(R, R) = 17$, a ninth root of unity.
 (If were to strictly adhere to the definition of the Tate pairing
 the second input should be written as $R + 18G$ since it is supposed to be
@@ -208,50 +193,75 @@ Because most pairing-based cryptosystems use groups of prime order,
 one may become so accustomed to facts like these that one may erroneously
 assume them to be true when working with groups of composite order.
 
-\section {Pairing Security}
+\section { \label{sec:pairingsec} Pairing Security}
 
 Consider a nonsingular elliptic curve $E$ over finie field $\Fq$ containing
 some cyclic group $G$ of order $r$ with
 embedding degree $k$.
-We mentioned earlier that with pairings,
-we can solve the discrete log problem in the elliptic curve subgroup $G$
-by first solving the discrete log problem in the finite field $\Fqk$.
 
-Interestingly, this attack was the first application of pairings
-in cryptography to appear in the literature,
-predating all publications describing
-constructive uses of the pairing.
-The newfound utility
-of pairings has meant that instead of shunning curves with efficiently
-computable pairings, we active seek them out.
+In some sense, the pairing is a double-edged sword. Though it
+bestows additional cryptographically useful properties upon cyclic groups,
+it also allows one to break the discrete log problem in $E(\Fq)$
+by first breaking the discrete log problem in $\Fqk$,
+using an algorithm known as the MOV or Frey-Ruck attack~\cite{mov,fr}
+which we now describe.
 
-We now give the details for this attack~\cite{mov,fr},
-sometimes termed the Frey-Ruck or MOV attack.
-
-Let $P \in E(\Fq)$ be a point of prime order $r$.
-Let $G = \langle P \rangle$.
-By bilinearity and nondegeneracy of the Weil pairing
+Suppose we are given $P, nP \in G$ and asked to recover $n$.
 Let $e : G \times G \rightarrow \Fqk$ be a bilinear, nondegenerate map,
 such as the Weil or Tate pairing.
-Then
+
+By bilinearity and nondegeneracy,
 \[ \dlog ( e(P,P), e(P, nP) )
 = \dlog (e(P,P),e(P,P)^n) = n = \dlog(P,nP) \]
 for $n \in \{0,...,r-1\}$.
-In other words, since $e(P,P), e(P, nP) \in \Fqk$,
-if the discrete logarithm problem can be solved
-in $\mathbb{F}_{q^k}$, then it can also be solved in $G$.
 
-Hence we must ensure $q^k$ is large enough so that
+Since $e(P,P), e(P, nP) \in \Fqk$,
+we can use a method like index calculus
+to recover $n$, the solution
+to the discrete log problem in the elliptic curve group $G$.
+
+Interestingly, these attacks were the first application of pairings
+in cryptography to appear in the literature,
+predating all publications describing
+constructive uses of the pairing.
+
+To avoid them, we must ensure $q^k$ is large enough so that
 finite field discrete logarithm algorithms such as index calculus are
 infeasible in $\mathbb{F}_{q^k}$.
+
+It may seem we have contradicted ourselves, for in Section~\ref{sec:eccsec}
+we touted elliptic curves over finite fields because we claimed they
+are only susceptible to generic discrete log attacks, yet we have just seen
+we must guard against index calculus.
+
+But although it is true that a pairing exists
+for every nonsingular elliptic curve, in general
+the embedding degree $k$ is so large that it is futile to mount a MOV or
+Frey-Ruck attack on a typical elliptic curve
+because $\Fqk$ will be too large for any
+practical calculations.
+
+Normally we shun such curves in standard elliptic curve cryptography
+and can ignore these attacks, which is why they were not mentioned before.
+The newfound utility of pairings has meant 
+we actively seek out curves with low embedding degrees (so that pairings
+are efficiently computable)
+and now we do need to take these attacks into account.
 
 Are there any other attacks that concern us? It turns out
 the curves used in pairing-based cryptography are special in other senses.
 They are supersingular, or have complex multiplication.
 Fortunately, no specific attacks for either case is known.
 
-We have now described all necessary conditions on the sizes of
-$r$ and $q^k$:
+\section {Lower Bounds on Field and Group Sizes}
+
+Constructing a pairing is a delicate balancing act.
+Using the notation of the previous section,
+$\Fq$ must be large enough
+so that $E(\Fq)$ can foil generic discrete log attacks, while $\Fqk$ must be
+large enough to resist finite field discrete log attacks. At the same time,
+$\Fq$ and $\Fqk$ should be as small as possible to minimize time and space
+usage. More precisely:
 
 \begin{enumerate}
 \item
@@ -263,9 +273,9 @@ $q$ ought to be as small as possible, so that computations in $\mathbb{F}_q$
 are as fast as possible.
 \item
 $q^k$ must be large enough so that finite field discrete logarithm attacks
-in $\mathbb{F}_{q^k}$ are ineffective.
+in $\mathbb{F}_{q^k}$ are ineffective. Also
 $q$ should not have low Hamming weight~\cite{stinson}, nor be a power of
-$2$ or $3$.
+a small prime~\cite{coppersmith}.
 \item
 $q^k$ must be small enough so that operations in $\mathbb{F}_{q^k}$
 are efficient. All other things being equal,
@@ -273,26 +283,31 @@ $q^k$ should be small as possible so that operations
 are as fast as possible.
 \end{enumerate}
 
-Of course, the first three statements are true for any cryptographically
+Observe the first three statements are true for any cryptographically
 useful elliptic curve, not just for pairing-based cryptography.
+The last condition, requiring $\Fqk$ to be small enough to compute on,
+is responsible for much of the difficulty in pairing-based cryptography
+research, as finding curves with small $k$ is nontrivial.
 
-Currently it is acceptable to have $r$ about 160-bits.
+Currently it is acceptable to have an 160-bit $r$.
 As for $q^k$, 1024 bits is adequate for many applications, and calculations
 in fields of this size can certainly be performed.
 Ideally we have $r \approx \#E(\mathbb{F}_q) \approx q$
 and hence $q$ is also about 160 bits. This gives an
 embedding degree $k$ around $1024 / 160 = 6.4$.
 
-We later describe how to construct curves of embedding degree 6 and 12.
+We later describe how to construct curves of embedding degree 6, 10 and 12.
 For the near future, embedding degree 6 should be reasonable if used along
 with an $r$ that is at least $170$ bits long,
-and embedding degree 12 curves may be more desirable as time passes.
+while embedding degree 10 and 12 curves which currently produce excessively
+large finite fields may be more desirable as time passes and index calculus
+improvements are discovered.
 
 \section {Approaches to Finding Curves}
 
 A randomly-chosen elliptic curve will have a large embedding
-degree, which instills it with resistance to the aforementioned discrete log
-attack, but also renders it useless for pairing-based cryptography.
+degree, which endows it with resistance to the MOV and Frey-Ruck
+attacks, but also renders it useless for pairing-based cryptography.
 We must take one of two approaches to find curves suitable for pairings:
 
 \begin{enumerate}
@@ -305,10 +320,10 @@ By carefully tailoring the complex multiplication method of constructing
 elliptic curves, we can produce curves of a certain embedding degree. 
 \end{enumerate}
 
-We note that supersingular hyperelliptic curves have also been considered,
-and it is thought that using the hyperelliptic equivalent of the
-complex multiplication method may lead to more curves with low
-embedding degrees, though further research in this area is required.
+We note that supersingular hyperelliptic curves have also been
+considered~\cite{galbraith, rubinsilverberg},
+and as well as the hyperelliptic equivalent of the
+complex multiplication method~\cite{freemanhyper}.
 
 Below we survey some types of curves used in practice for pairing-based
 cryptography. To make them easier to refer to, we label them with letters.
@@ -474,7 +489,7 @@ For an $l = \pm 1, \pm 5$ and a
 curve $E : y^2 = x^3 + 2 x \pm 1$ over $\mathbb{F}_{3^l}$
 let $t$ be a root of $t^3 + 2t \pm 2 = 0$, and let $i$ be a
 square root of $-1$. These both exist in $\mathbb{F}_{3^{6l}}$.
-Define the map $\Psi$ by
+Define the distortion map $\Psi$ by
 \[ \Psi(x,y) = (-x + t, i y) \]
 where $x, y$ are elements of $\F_{3^{6l}}$. Then $\Psi$ maps points
 of $E(\F_{3^l})$ to points of $E(\F_{3^{6l}})$.
@@ -748,7 +763,7 @@ embedding degree 10.
 }
 \end{table}
 
-\section {Comparing Pairings}
+\section { \label{sec:comparingpairings} Comparing Pairings}
 
 Assuming that 160 bits are sufficient to defeat generic discrete log attacks
 and that 1024 bits are sufficient to defeat index calculus, we can use
@@ -760,8 +775,9 @@ The results are shown in Table~\ref{tbl:comparepairings}.
 
 For type C pairings, the numbers shown ignore the Coppersmith attack
 for low characteristic fields (which is why the greater-than symbol appears).
-The exact effectiveness of the Coppersmith attack on characteristic 3 fields
-of the magnitudes used in cryptography is not known.
+Although asymptotic estimates are available,
+the exact efficacy of the Coppersmith attack on characteristic 3 fields
+of the sizes shown has yet to be thoroughly investigated.
 
 Of course, size is not the only factor. If one must have
 a symmetric pairing whose inputs, one is limited to using A, B or C pairings.
@@ -1067,10 +1083,10 @@ obtain a curve containing a cyclic subgroup of order $r$
 with embedding degree $k$. There is a drawback however: $m$ tends to be close
 in size to $r$, giving $\rho \approx 2$.
 
-In a comprehensive survey paper,
 Freeman, Scott and Teske~\cite{fst} note this approach is a special case of a
-construction by Brezing and Weng~\cite{bw}, which in turn can be thought of as a
-variation of a method due to Cocks and Pinch~\cite{cp}.
+more recent construction by
+Brezing and Weng~\cite{bw}, which in turn can be thought of as a specific
+approach of a general method suggested by Cocks and Pinch~\cite{cp}.
 
 Other methods to construct pairings of arbitrary embedding degree,
 some of which with $\rho$ substantially less than 2, are beyond our scope.

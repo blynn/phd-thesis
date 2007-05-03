@@ -198,7 +198,7 @@ multipicative groups of finite fields.
 
 We shall begin with the original and simplest definition of the pairing.
 
-\section{The Symmetric Pairing}
+\section{ \label{sec:symmetricpairing} The Symmetric Pairing}
 
 Let $G, G_T$ be cyclic groups of prime order $r$.
 Let $g$ be a generator of $G$.
@@ -223,7 +223,7 @@ for any given cyclic group: if
 $e(g,g)=1$ then we have the degenerate case and the other $r-1$ maps are
 equivalent up to a constant,
 in the sense that if $e_1(g,g) = g_1$ and $e_2(g,g) = g_2$
-then $e_2 = g_1^{-1} g_2 e_1$. The difficulty is in finding such a map
+then $e_2 = g_1^{-1} g_2 e_1$. The difficulty lies in finding such a map
 that is efficiently computable.
 
 We can immediately see the power of such a map: given
@@ -318,13 +318,14 @@ year later\cite{bgls}.
 As before, both asymptotic and fixed-security-parameter formal security
 definitions can be constructed for each of the above problems.
 
-\section{Pairings Redefined}
+\section{ \label{sec:asymmetricpairing} Loosening the Pairing Definition}
 
 In practice, symmetric pairings can be instantiated by
 using suitable supersingular elliptic curves.
 However, in order to allow a wider range of curves to be used,
-the definition can be modified as follows, sometimes referred
-to as the asymmetric pairing.
+the definition must be modified. One early pairing-based cryptography
+publication by Boneh, Lynn and Shacham
+suggested the following~\cite{bls}:
 
 Let $G_1, G_2, G_T$ be cyclic groups of prime order $r$.
 Assume the Diffie-Hellman problem is hard in $G_1$.
@@ -338,17 +339,48 @@ e:G_1 \times G_2 \rightarrow G_T
 such that $e(g_1,g_2) \ne 1$ and
 $e(g_1^a, g_2^b) = e(g_1,g_2)^{a b}$ for all $a, b \in \mathbb{Z}$.
 
+This version of the bilinear map is sometimes called
+the \emph{asymmetric pairing}.
+
 Note if a problem is hard $G_1$, it is also hard in $G_2$
 due to existence of an efficiently computable
-$\phi$.
+$\phi$. Thus some security proofs require only minimal changes. For example,
+a scheme based on the CDH assumption in $G$ under
+the symmetric pairing definition could now be based on the CDH assumption in
+$G_1$.
 
-This definition appears in the literature, but it is advantageous
-to modify it further.
+This definition allows a greater variety of pairings to be used,
+notably those constructed on ordinary curves.
+However, it is advantageous to further loosen the
+definition.
 
-\section{The General Bilinear Pairing}
+\subsection{A Problem With Hashing}
 
-To allow some optimizations on bilinear maps,
-we use the following definition.
+Suppose we have chosen an ordinary curve that does not yield a symmetric
+pairing, and suppose that we wish to redesign
+the cryptosystem to instead use an asymmetric pairing defined above.
+
+It turns out that there is no
+known method to hash to an element of $G_2$ (such that
+its discrete log to some fixed base is unknown). We can hash to elements of
+$G_1$ and $G_T$, and perform all other cryptographically useful
+operations in $G_2$ such as picking a random element, multiplication
+and inversion. We can even map an element of $G_2$ to $G_1$.
+It is simply that we cannot hash a string
+to an element of $G_2$.
+
+For some cryptosystems, this issue can complicate their design,
+and in extreme cases we may have to give up and stick to symmetric pairings
+only.
+
+However, with a more general pairing definition, we can use ordinary curves
+and still be able to hash to $G_2$.
+
+\section{ \label{sec:generalpairing} The General Bilinear Pairing}
+
+To enable certain optimizations (see Section~\ref{sec:denomelim}) and
+to allow hashing to any element of any group involved including $G_2$,
+we prefer the following definition.
 
 Let $r$ be a prime.
 Let $G_1, G_T$ be cyclic groups of order $r$.
@@ -393,6 +425,7 @@ that takes $(g_1, g_2)$ to a $d$th root of unity is still nondegenerate.
 Since there is more than one choice for $d$ for a composite $r$,
 these maps cannot be equivalent up to a constant. They are however still
 completely determined by $e(g_1, g_2)$ where $g_1, g_2$ are generators.
+We present a concrete example later in Section~\ref{sec:compositeexample}.
 
 This also means that $e(g_1, g_2) = 1$ does not imply at least
 one of $g_1, g_2$ is the identity element, in contrast to the case when
@@ -498,7 +531,7 @@ When deploying a pairing-based cryptosystem one must select a type of
 curve to use. The correct choice depends on several factors,
 which we discuss in later chapters.
 
-We conclude with a toy example of the aforementioned signature scheme.
+We conclude with a toy example of the BLS signature scheme.
 Let $q = 427211363219$.
 Consider the curve $E : y^2 = x^3 + x$ over
 $\Fq$. Then $E(\Fq)$ contains a subgroup

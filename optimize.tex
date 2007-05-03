@@ -161,24 +161,33 @@ We may also simplify the Weil pairing in a similar fashion.
 Recall that two points $R, S$ are needed in addition to the input points
 $P,Q$. We show that we can pick $R = O$ and compute the Weil pairing as
 \[ f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P)} \]
-where as before $f_Q$ is a rational function with divisor
-$(f_Q) = (Q+S)^r /(S)^r$, and $f_P$ is a rational function
+where $f_P$ is a rational function
 satisfying $(f_P) = (P)^r$ (reminiscent of a rational function defined
-for the Tate pairing), but $f_Q$ is chosen carefully:
+for the Tate pairing),
+and $f_Q$ is a certain rational function with divisor
+$(f_Q) = (Q+S)^r /(S)^r$.
 
-In Miller's algorithm each iteration consists of finding an equation of
+In our original definition, the choice of rational function for $f_Q$
+did not matter. They are all equivalent up to a constant,
+which cancels itself out during a division. In the above formula,
+we never divide $f_Q$ by itself so we build $f_Q$ carefully as follows.
+
+During Miller's algorithm each iteration consists of finding an equation of
 a line and evaluting it at a certain point before multiplying it to the
 running product. We compute $f_Q(P)$ in the same way, except we ensure
 the lines, tangents and verticals have a particular form. For lines and
-tangents, the coefficient of $Y$ must be unity. For verticals, the
-coefficient of $X$ must be unity.
+tangents, we pick the equation where the coefficient of $Y$ is unity.
+For verticals, we pick the equation where the coefficient of $X$ is unity.
 
-For these choices it can be shown that $f_Q(O) = 1$, which explains how
-the simplification works.
+For this particular construction of $f_Q$, we can check that $f_Q(O) = 1$,
+proving that we can indeed simplify the Weil pairing as claimed.
 
 We can instead choose $S = O$ and compute
 \[ f(P,Q) = \frac{f_P(Q)}{f_Q(P+R)/f_Q(R)} \]
 with similarly defined $f_P, f_Q$.
+
+Note we cannot simultaneously have $R = S = O$ for this would imply
+both $f_P$ and $f_Q$ have poles at $O$ hence cannot be evaluated at $O$.
 
 \section {Twist Curves and the Trace-Zero Group}
 
@@ -356,7 +365,7 @@ pairings and use the distortion map instead in order to keep symmetry,
 but this would mean the important optimization of the next section
 cannot be used.
 
-\section {Denominator Elimination}
+\section {\label{sec:denomelim} Denominator Elimination}
 
 When using twist curves, we can halve the running time of a pairing by applying
 a technique due to Barreto, Lynn and Scott~\cite{bals2}.
@@ -411,24 +420,26 @@ Since $(r-1)P = -P$, this is equivalent to $f \leftarrow f V_P(Q)$
 and hence can be skipped since no vertical line computations are needed.
 In this case we have $f_r = f_{r-1}$ and the logic can be simplified.
 
-\section {Input Restriction}
+\section {\label{sec:inputrestriction} Input Restriction}
 
-Recall for Type A, B and C curves we can use distortion maps to construct
-symmetric pairings whose input groups are cyclic and lie over smaller
-fields.
+Consider a supersingular type A, B or C curve $E$ over $\Fq$ containing
+a cyclic group of order $r$ of embedding degree $k$. Recall
+a distortion map $\phi$ exists for this curve.
+Let $f$ be the Weil or Tate pairing for this
+curve.
+
+We can symmetric pairings defined in Section~\ref{sec:symmetricpairing}
+(i.e. the input groups are the same, cyclic and lie over smaller fields)
+by defining $G = E(\Fq)[r]$,
+$G_T$ to be the group of $r$th roots of unity in $\Fqk$.
+and $e : G \times G \rightarrow G_T$ by
+$e(P,Q) = e(P, \phi(Q))$.
 
 Let $E(\Fq)$ be an elliptic curve containing a cyclic
 group of order $r$ of embedding degree $k$.
 In general, distortion maps might not exist for our curve $E$.
 However, we can always restrict the first input to $E(\Fq)[r]$,
 which is cyclic when $k > 1$.
-
-In practical cryptosystems, picking the second input randomly from
-$E(\Fqk)$ or $E(\Fqk)[r]$ (depending on whether the Tate or Weil pairing is
-used) will most likely result in a nontrivial pairing output and for the
-most part it does not
-matter that $E(\Fqk)$ is not cyclic, though security proofs do need
-to be rewritten.
 
 We have just seen that for even $k = 2d$,
 the other input can be restricted to some curve over $\F_{q^d}$.
@@ -485,15 +496,8 @@ $Q'$ which takes twice as much storage as $Q$ (as the field it lies over is
 twice as big), and perform operations on elements of $\mathbb{F}_q[i]$ to
 arrive at $g(Q')$.
 
-It is wiser to never explicitly compute $Q'$ and execute the following steps:
-
-\begin{enumerate}
-\item
-$Re(R) \gets c - a x$
-\item
-$Im(R) \gets b y$
-\end{enumerate}
-
+It is wiser to never explicitly compute $Q'$ and instead do
+\[ Re(R) \gets c - a x , Im(R) \gets b y .\]
 Now $R = g(Q')$, and we have only computed in $\mathbb{F}_q$.
 
 \section {The Final Powering}
@@ -668,10 +672,11 @@ we denoted by $c_k$ is completely determined by the first input.
 Thus caching $c_k^2$ and $c_{k-1}c_{k+1}$ for later pairings
 will improve the running time substantially.
 
-\section {Lucas Sequences}
+\section {\label{sec:compressedpairings} Compressed Pairings}
 
 In the next few sections we quote without proof observations
-due to Scott and Barreto~\cite{compressedpairings}.
+due to Scott and Barreto~\cite{compressedpairings} that speed up pairings and
+reduce their output size, though in some cases at the cost of losing a few bits.
 
 We first examine the simplest case.
 Suppose we have constructed a pairing
@@ -703,7 +708,7 @@ and $v_0 = V_{n-1}$ and $v_1 = V_n$ otherwise.
 We can easily compute $U$ in either case.
 
 \begin{algorithm}
-\caption {Compute Lucas sequence: $v_0 = V_m$ and $v_1 = V_{m+1}$,
+\caption {Lucas sequence: $v_0 = V_m$ and $v_1 = V_{m+1}$,
 where $m = n$ for even $n$ and $m = n-1$ for odd $n$}
 \begin{algorithmic}[1]
 \STATE Let $n_t ... n_0$ be the binary respresentation of $n$.
@@ -887,7 +892,7 @@ former.
 Let us analyze the analogue of division in Miller's algorithm.
 Using the notation of Chapter 3, we have
 \[
-(f_(-k)) = (P)^{-k}/(-kP)
+(f_{-k}) = (P)^{-k}/(-kP)
 \]
 hence
 \[
@@ -916,7 +921,7 @@ and only dividing at the end.
 instead of $(g_1(Q) / h_1(Q)) ... (g_m(Q) / h_m(Q))$.)
 
 Thus addition-subtraction-chain exponentiation can be
-better than simply addition-chain exponentiation and as with
+better than plain addition-chain exponentiation and as with
 point multiplication, one can employ signed sliding
 windows~\cite[Chapter 14]{handbook}~\cite[Section IV.2.5]{bss}.
 

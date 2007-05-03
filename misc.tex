@@ -11,14 +11,14 @@ hand-coded assembly should be used.
 Fortunately a lot of research has been conducted in this area~\cite{taocp2},
 and numerous implementations exist, many of them freely available~\cite{gmp, miracl}.
 \item
-Elliptic curve operations should also be fast. Though a newer area of research,
-numerous publications on this subject exist~\cite{bss}.
+Elliptic curve operations should also be fast. Though a newer subject,
+much research has been conducted on this area~\cite{bss}.
 \item
 Speeding up the pairing has only been a high priority relatively recently,
 and is the main topic of the next chapter.
 \item
-Sometimes high-level modifications to a scheme (such as allowing one or
-two bits of error, choosing a different group to contain a key, etc.)
+Sometimes high-level modifications to a scheme (such as tolerating the
+loss of a few bits, choosing a different group to contain a key, etc.)
 will garner savings by
 permitting one to
 exploit other pairing properties,
@@ -36,9 +36,9 @@ one optimization could adversely affect another.
 We have concentrated optimizations from all aspects of
 a pairing-based cryptosystem into a couple of chapters,
 rather than introduce each technique along with the algorithm that it
-affects. We prefer presenting shortcuts in one go as a big bag of tricks to
-sprinkling them throughout the text.
-The last item of the above list relates one reason.
+affects. Presenting shortcuts in one go as a big bag of tricks is
+preferable to sprinkling them throughout the text.
+One motivation is the last item of the above list.
 
 Secondly, an optimization buried in the middle of a section on another topic
 may be overlooked or forgotten. This may be less likely when it is found in
@@ -65,29 +65,23 @@ Educated guessing can meet with some success, but
 ideally profiling should be employed to identify the
 bottlenecks.
 
-\section{Using Existing Libraries}
+\section{Multiprecision Arithmetic}
 
 In the author's pairing implementations, to avoid the drawbacks
 of assembly code (e.g. loss of portability, the need to learn platform-specific
 low-level tricks, frequent rewrites due to new hardware,
 fewer potential developers, increase in debugging difficulty, longer
 development time),
-pre-existing multiprecision arithmetic libraries
+pre-existing arbitrary-precision arithmetic libraries
 were utilized.
 
-Obviously, the ideal choice is
-a library designed for maximum efficiency when using finite
-fields sizes typically found in cryptography.
-But if no suitable library is available (perhaps due to reasons unrelated
-to performance such as lack of portability or licensing issues),
-one can easily graft finite field routines on top of
-any arbitrary-precision integer library, though doing so can cause losses.
+One can easily graft finite field routines to any such library,
+though there are costs.
 
 For example, the GMP library has a highly optimized modular exponentiation
 routine that uses Montgomery reduction (see below),
 but expects the input not to be
 in Montgomery form, and also outputs normal integers.
-
 Hence if numbers are already internally stored in Montgomery form,
 they must be converted to a normal integer first, and then converted
 back to Montgomery form afterwards. Including the unwanted conversions in
@@ -97,7 +91,11 @@ Another example is that an external library may be able to handle integers
 of arbitrary length, but a particular deployment of a cryptosystem is
 concerned only with integers in a certain range. Routines that know
 in advance how many bytes their input integers take can be faster than
-a more general routine.
+their more general counterparts.
+
+Designers of libraries for arbitrary-precision integers should be aware of
+these issues, and perhaps should provide access to fairly low-level
+routines in the library interface.
 
 \section{All or Nothing}
 
@@ -371,7 +369,7 @@ coordinates from Blake, Seroussi and Smart~\cite{bss}:
 \end{algorithm}
 
 Note when one input is projective and the other affine fewer multiplications
-are required. This is called \emph{mixed} addition.
+are required. This is called \emph{mixed addition}.
 
 \begin{algorithm}
 \caption{Projective Point Doubling, $(x_3, y_3, z_3) = 2(x_1, y_1, z_1)$}

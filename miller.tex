@@ -1,14 +1,15 @@
 \chapter {The Weil and Tate Pairings}
 
-The Weil and Tate pairings \emph{torsion points}
-as input, and in the case of the Weil pairing, both inputs are torsion points.
+The Weil and Tate pairings take \emph{$r$-torsion points}
+as input, and in the case of the Weil pairing, both inputs are
+$r$-torsion points.
 They can be defined using \emph{rational functions}.
-They output an element of a finite field (that turns out to be a root of unity).
+They output an element of a finite field that is an $r$th root of unity.
 
 \section {Torsion Points}
 
 Let $K$ be a finite field of characteristic $q$, so that
-$K = \mathbb{F}_q^m$ for some natural number $m$.
+$K = \mathbb{F}_{q^m}$ for some natural number $m$.
 Let $E$ be an elliptic curve defined
 over $K$. Let $n=\#E(K)$
 Suppose $P\in E(K)$ satisfies $r P = O$, so that $P$ has order $r$ or a
@@ -27,10 +28,10 @@ which breaks discrete log in linear time.
 It can be proved~\cite{silverman} that for some integer $k \ge 1$,
 $E(\Fqk)[r]$ contains exactly $r^2$ points and is isomorphic to
 $\mathbb{Z}_r^+ \times \mathbb{Z}_r^+$,
-d furthermore, for all $k' \ge k$ we have $E(\mathbb{F}_{q^{k'}})[r]
+and furthermore, for all $k' \ge k$ we have $E(\mathbb{F}_{q^{k'}})[r]
 = E(\Fqk)[r]$.
 Roughly speaking, there are no other $r$-torsion points beyond the
-first $r^2$ points found, no matter how large the field extensions get.
+first $r^2$ points found, no matter how many times we extend the field.
 (That is, if $\bar{K}$ is the algebraic closure of $K$ then $\#E(\bar{K})[r] = r^2$.)
 We define $E[r] = E(\Fqk)[r]$, the set of
 \emph{$r$-torsion points} of $E$.
@@ -40,15 +41,14 @@ It can be shown that $E[r]$ is the product of two cyclic groups of order $r$:
 \[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r . \]
 
 When $r=2$ this is easy to see: a point has order 2 if and only if it has
-a zero $y$-coordinate. As $E$ is nonsingular
+a zero $y$-coordinate. Since $E$ is nonsingular,
 $x^3 + ax + b = 0$ has three distinct solutions, thus we can always find
 some field $\Fqk$ where $E$ has
 four points of order 2: the point $O$ and three points of the form
 $(\alpha, 0)$ where $\alpha$ is a root of the cubic.
-
-Moreover,
-the line through any two of the finite points is simply the line $Y = 0$,
-which certainly intersects $E$ at the other finite point.
+Since the line through any two of the finite points is simply the line $Y = 0$,
+which certainly intersects $E$ at the other finite point, we have
+$E[2] \cong \mathbb{Z}_2 \times \mathbb{Z}_2$.
 The proof is much less trivial for general $r$.
 
 The Weil pairing is a bilinear map
@@ -304,8 +304,8 @@ alter it once we have made a choice.
 
 Finding explicit expressions for these functions is infeasible for
 cryptographically useful pairings. Instead, we will soon describe
-an algorithm, known as \emph{Miller's algorithm}
-that evaluate these functions in a lazy fashion at the required
+an algorithm, known as \emph{Miller's algorithm}~\cite{miller}
+that evaluates these functions in a lazy fashion at the required
 points. This algorithm resembles a typical exponentiation routine
 that performs repeating squaring.
 
@@ -398,8 +398,32 @@ if the order of a point $Q$ is not a mulitple of $r$ then $Q$ represents
 the coset $O + r E(K)$. Otherwise $Q$ represents some nonidentity
 element.)
 
-In contrast, when evaluating the Weil pairing we require that the second
+In contrast, the Weil pairing requires that the second
 input $Q$ satisfies $r Q = O$.
+
+\section {Merging Theory with Practice}
+
+We have now described the Weil and Tate pairings. It remains to show
+how they fit the abstract definitions given in Chapter 1.
+
+Let $E$ be some elliptic curve defined over $\Fq$ and let $G$ be some
+cyclic subgroup of points in $E(\Fq)$ of order $r$.
+Suppose the embedding degree of $G$ is $k > 1$.
+
+Then by defining $G_1 = G$, $G_2 = E[r]$, and $G_T$ to be the $r$th roots
+of unity in $\Fqk$, both the Weil and Tate pairings satisfy the abstract
+definition of a bilinear map given in Section~\ref{sec:generalpairing}.
+
+With high probability, a random point $Q \in G_2$, does not
+lie in $G_1$, does not have trace zero,
+and generates a subgroup $H$ in $G_2$ of order $r$. Then
+if we replace $G_2$ with $H$, we have now satisfied the asymmetric pairing
+definition of Section~\ref{sec:asymmetricpairing} because the
+trace map nontrivially maps $G_2$ to $G_1$.
+
+Symmetric pairings described in Section~\ref{sec:symmetricpairing} can only
+be obtained by using supersingular curves and distortion maps, which
+we discuss in Section~\ref{sec:inputrestriction}
 
 \section {Miller's Algorithm}
 
@@ -780,10 +804,10 @@ of $f_P$ in the Weil pairing, to determine the equations of the lines,
 tangents and verticals during Miller's algorithm only requires arithmetic
 in the base field $\Fq$.
 
-\section {Restricting Inputs}
+\section { Restricting Inputs}
 
-We shall have much to say on this topic later, but the above example
-serve as a good introduction.
+We shall have much to say on this topic in Section~\ref{sec:inputrestriction},
+but the above example serves as a good introduction.
 Recall we have the Weil pairing $f$ on
 the curve $E : Y^2 = X^3 + X$ over some field $\Fq$
 where $q = 3 \bmod 4$. We have a distortion
@@ -805,11 +829,11 @@ security proofs are simpler. We could work with the
 Weil pairing directly but then both input groups would be $E[r]$,
 which is not cyclic.
 
-As $U, \phi(V)$ are always linearly independent hence
+As $U, \phi(V)$ are always linearly independent,
 the wrapper function $e$ guarantees
 a nontrivial pairing output whenever $U$ and $V$ are nontrivial.
 This is not the case with the Weil pairing,
-where complications arise from linearly dependent inputs.
+where one must be mindful of linearly dependent inputs.
 
 Lastly, the input points have coordinates in the field $\Fq$ which is
 smaller and hence more efficient to compute on than $\F_{q^2}$.
@@ -879,7 +903,8 @@ to compute the Tate pairing.
 Let $r_t ... r_0$ be the binary representation of $r$.
 
 \begin{algorithm}
-\caption{(Shipsey-Stange) Tate pairing via elliptic nets}
+\caption{(Shipsey-Stange) Tate pairing via elliptic nets. Outputs
+$e(P,Q)$.}
 \begin{algorithmic}[1]
 \STATE $k \gets 1$
 \STATE
@@ -902,7 +927,7 @@ Compute $c_{2k-2},...,c_{2k+5}$ and  $d_{2k}, d_{2k+1}, d_{2k+2}$
 \STATE $k \gets 2k + 1$
     \ENDIF
 \ENDFOR
-\STATE return $d_{r+1}/c_{r+1}$
+\RETURN $d_{r+1}/c_{r+1}$
 \end{algorithmic}
 \end{algorithm}
 

@@ -543,7 +543,7 @@ We note that if an efficiently bilinear nondegenerate pairing could be found
 for singular curves then the Decisional Diffie-Hellman problem could be broken
 in finite fields.
 
-\section {Security}
+\section {\label{sec:eccsec} Security}
 
 We have not yet shown any benefits to using elliptic curves instead
 of finite fields. On the contrary, although a group inversion is
@@ -568,24 +568,21 @@ finite fields results in savings in both space and time.
 
 The most important attribute of elliptic curves for our purposes
 is that without them, we cannot construct a cryptographically
-useful bilinear map.
-However, we shall later find pairings require certain elliptic curves,
-for which subexponential discrete log algorithms exist. In short,
-one can map pairing-friendly elliptic curve groups to finite fields, where
-index calculus can break the discrete log problem.
+useful bilinear map. That elliptic curves happen to be more
+efficient than finite fields
+is a happy coincidence and makes pairings even more useful.
 
 \section {Short Signatures}
 
 At this point we can see why
-the signature scheme introduced
+the BLS signature scheme introduced
 in the first chapter features a short signature length.
 Recall in abstract terms,
 a signature is a single element of a cyclic group $G$ of prime order $r$
 and we need a bilinear map to exist on $G$.
 
-We shall see later
-a concrete instantiation of such a group with a pairing
-can be realized by using a subgroup of points
+In Section~\ref{sec:comparingpairings} we give examples
+of pairings where one input group is a subgroup of points
 on an elliptic curve $E$ over some field $\Fq$ where
 $q$ is about 160 bits long.
 
@@ -611,9 +608,11 @@ $P, Q$. By the bilinearity of the pairing, if we have guessed the point $Q$
 wrongly, we can obtain the value of $e(P,-Q) = e(P,Q)^{-1}$ by performing
 an inversion rather than recompute another pairing.
 
-Later we will see we can do better than this by using a technique known
-as pairing compression or reduction, and in effect check both
+In Section~\ref{sec:compressedpairings} we will see we can do better
+than this by using a technique known
+as \emph{pairing compression}, and in effect check both
 cases at once.
 
-Note instead of discarding the $y$-coordinate, we can
-replace it with a single bit signifying which solution of $y$ to take.
+Instead of discarding the $y$-coordinate, we can
+replace it with a single bit signifying which solution of $y$ to take,
+a technique known as \emph{point compression}~\cite[Section IV.4]{bss}.
