@@ -87,7 +87,7 @@ the curve $E : Y^2 = X^3 + X + 6$ (over $\F_{19}$) has the
 twist $E': Y^2 = X^3 + 4 X + 10$, and $E'(\F_{19})$ contains 22 points.
 
 In $\F_{19^2}$, both $E$ and $E'$ contain 396 points, and we can map
-points of $E'$ to points of $E$ via $(x,y) \rightarrow (2 x, 2\sqrt{2} y)$.
+points of $E'$ to points of $E$ via $(x,y) \mapsto (2 x, 2\sqrt{2} y)$.
 
 We can use quadratic residues to transform the equation of a given elliptic
 curve $E$ into a form that allows certain optimizations.
@@ -97,8 +97,8 @@ this an impossible transformation. As mentioned before, a
 reasonable alternative is $a = -3$.
 
 Then from above, a curve $Y^2 = X^3 + aX + b$ can be transformed into
-one of the form $Y^2 = X^3 - 3X + b'$ if we can find $c\in \Fq$
-satisfying $a c^4 = -3$.
+one of the form $Y^2 = X^3 - 3X + b'$ if we can find $v\in \Fq$
+satisfying $a v^2 = -3$.
 
 When no such $c$ exists, a compromise is to have
 $a = 1$ or $a = -3 d^2$ for some small integer $d$
@@ -365,7 +365,7 @@ pairings and use the distortion map instead in order to keep symmetry,
 but this would mean the important optimization of the next section
 cannot be used.
 
-\section {\label{sec:denomelim} Denominator Elimination}
+\section {\label{sec:denomelim}Denominator Elimination}
 
 When using twist curves, we can halve the running time of a pairing by applying
 a technique due to Barreto, Lynn and Scott~\cite{bals2}.
@@ -420,7 +420,7 @@ Since $(r-1)P = -P$, this is equivalent to $f \leftarrow f V_P(Q)$
 and hence can be skipped since no vertical line computations are needed.
 In this case we have $f_r = f_{r-1}$ and the logic can be simplified.
 
-\section {\label{sec:inputrestriction} Input Restriction}
+\section {\label{sec:inputrestriction}Input Restriction}
 
 Consider a supersingular type A, B or C curve $E$ over $\Fq$ containing
 a cyclic group of order $r$ of embedding degree $k$. Recall
@@ -488,7 +488,7 @@ use $\mathbb{F}_q [i]$ to represent $\mathbb{F}_{q^2}$ where $i =\sqrt{-1}$.
 
 During the computation of the pairing,
 we evaluate $g(Q')$ where $g = aX + bY + c$ is an equation of some line and
-$Q' = \phi(Q)$, where $\phi$ is defined by  $(X,Y) \rightarrow (-X, iY)$
+$Q' = \phi(Q)$, where $\phi$ is defined by  $(X,Y) \mapsto (-X, iY)$
 and $Q$ is some point $(x,y)$ in $E(\mathbb{F}_q)$.
 
 If we follow the notation blindly, we would first compute the point
@@ -672,7 +672,7 @@ we denoted by $c_k$ is completely determined by the first input.
 Thus caching $c_k^2$ and $c_{k-1}c_{k+1}$ for later pairings
 will improve the running time substantially.
 
-\section {\label{sec:compressedpairings} Compressed Pairings}
+\section {\label{sec:compressedpairings}Compressed Pairings}
 
 In the next few sections we quote without proof observations
 due to Scott and Barreto~\cite{compressedpairings} that speed up pairings and

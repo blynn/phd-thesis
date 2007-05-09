@@ -4,7 +4,7 @@ microfilm.ps: microfilm.tex abstract.tex
 	latex microfilm.tex
 	dvips microfilm.dvi
 
-thesis.ps: *.tex
+thesis.ps: *.tex thesis.bib
 	latex thesis.tex
 	bibtex thesis
 	latex thesis.tex

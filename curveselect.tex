@@ -193,7 +193,7 @@ Because most pairing-based cryptosystems use groups of prime order,
 one may become so accustomed to facts like these that one may erroneously
 assume them to be true when working with groups of composite order.
 
-\section { \label{sec:pairingsec} Pairing Security}
+\section {\label{sec:pairingsec}Pairing Security}
 
 Consider a nonsingular elliptic curve $E$ over finie field $\Fq$ containing
 some cyclic group $G$ of order $r$ with
@@ -369,17 +369,21 @@ low-characteristic discrete logarithm algorithms.
 \section {Type A Curves}
 
 Let $q$ be a prime satisfying $q = 3 \pmod{4}$.
-Let $E$ be the curve $y^2 = x^3 + x$. It can be shown \cite{silverman}
-that $E(\mathbb{F}_q)$ is supersingular and $k = 2$.
-
-We have $\#E(\mathbb{F}_q) = q+1$, and $\#E(\mathbb{F}_{q^2}) = (q+1)^2$,
-thus for any $P\in E(\mathbb{F}_q)$
-the embedding degree of $G = \langle P \rangle$ is 2.
+Let $E$ be the curve $y^2 = x^3 + a x$ for any $a$.
+In Section~\ref{sec:projcoord} we will find $a=-3$ is a good choice
+(though $a=\pm1$ is better for the first step of the Shipsey-Stange algorithm).
+Then
+$E(\mathbb{F}_q)$ is supersingular,
+$\#E(\mathbb{F}_q) = q+1$, and
+$\#E(\mathbb{F}_{q^2}) = (q+1)^2$~\cite[\S 3.2]{fst}.
+Furthermore, for any odd $r$ dividing $q + 1$ we have that
+$G = E(\Fq)[r]$ is cyclic and has embedding degree $k = 2$.
 
 Note $-1$ is a quadratic nonresidue in $\mathbb{F}_q$ since $q = 3\pmod{4}$.
 Let $i$ be a square root of $-1$. Then $\mathbb{F}_q[i]$ is a degree 2
 extension of $\Fq$.
-Consider the following map, sometimes referred to as a distortion map:
+Consider the following map, sometimes referred to as a distortion
+map~\cite{verheul}:
 \[ \Psi(x, y) = (-x, i y) \]
 
 Then $\Psi$ maps points of $E(\mathbb{F}_q)$ to points of
@@ -424,15 +428,18 @@ algorithm.
 \section {Type B Curves}
 
 Let $q$ be a prime satisfying $q = 3 \pmod{4}$.
-Let $E$ be the curve $y^2 = x^3 + 1$. Then
-$E(\mathbb{F}_q)$ is supersingular and $k = 2$.
+Let $E$ be the curve $y^2 = x^3 + b$ for any $b$. Typically $b=\pm1$ is
+chosen.
 
-Again we have $\#E(\mathbb{F}_q) = q+1$ and $\#E(\mathbb{F}_{q^2}) = (q+1)^2$,
-thus for any $P\in E(\mathbb{F}_q)$
-the embedding degree of $G = \langle P \rangle$ is 2.
+Then as before,
+$E(\mathbb{F}_q)$ is supersingular,
+$\#E(\mathbb{F}_q) = q+1$, and
+$\#E(\mathbb{F}_{q^2}) = (q+1)^2$~\cite[\S 3.2]{fst}.
+Again, for any odd $r$ dividing $q + 1$ we have that
+$G = E(\Fq)[r]$ is cyclic and has embedding degree $k = 2$.
 
-Consider the distortion map given by
-\[ \Psi(x, y) = (\zeta x, y) \]
+Consider the distortion map $\Psi:E(\Fq)\rightarrow E(\F_{q^2})$ given by
+\[ \Psi(x, y) \mapsto (\zeta x, y) \]
 where $\zeta$ is a primitive cube root of unity.
 
 Then $\Psi$ maps points of $E(\mathbb{F}_q)$ to points of
@@ -456,6 +463,18 @@ They do have one drawback however. Unlike the previous type,
 there is a certain optimization that
 only applies if we forgo symmetry of the pairing. One must choose between
 symmetry and efficiency in this case.
+
+\section {Other Embedding Degree 2 Curves}
+
+Type A and B curves require a prime $q > 3$ satisfying $q = 2 \bmod 3$ or
+$q = 3 \bmod 4$.
+
+We note the remaining case $q = 1 \bmod 12$ can also lead to supersingular
+embedding degree 2 curves~\cite[\S 3.2]{fst} but we do not bother with it here.
+The construction is more involved as it uses the CM method (which
+we shall encounter soon), and these pairings are
+less desirable as no distortion maps are available and the resulting
+curves are harder to optimize.
 
 \section {Type C Curves}
 
@@ -650,7 +669,7 @@ even.
 Scott and Barreto discovered a procedure that finds more curves of these
 types than the original MNT algorithm~\cite{moremnt}
 which can be viewed as a generalization of a method due to
-Barreto, Lynn and Scott~\cite{bals}.
+Barreto, Lynn and Scott to be described in Section~\ref{sec:balscurves}.
 
 We quote their algorithm without proof, though we suggest how it works
 in Section~\ref{sec:balscurves}. In the algorithm, $k$ is 3, 4 or 6.
@@ -696,7 +715,8 @@ not be an integer.
 
 \section {Type E Curves}
 
-Curves of embedding degree 1 are easily constructed using the CM method.
+A cursory inspection of the CM method reveals that
+curves of embedding degree 1 are easily constructed. For example,
 Let $t = 2$, $D = 7$. Let $r$ be a positive integer
 and suppose $q = 28 r^2 h^2 + 1$ is prime for some $h$.
 Then the CM equation
@@ -716,6 +736,20 @@ find the curve with order $q-1$.
 Note $r \mid q-1$ hence the Tate pairing on this curve can be computed
 in $\F_q$. For most applications we choose $r$ to be prime but composite
 orders can be chosen instead.
+
+We can do better by using a result due to Koblitz and Menezes~\cite{km}.
+If $q = n^2 + 1$ is a prime for some $n$, then define the elliptic curve
+$E$ over $\Fq$ by
+\[E:y^2 = x^3  - x\]
+if $4 \mid n$ and
+\[E:y^2 = x^3 - 4x\]
+otherwise (that is $n = 2 \bmod 4$).
+
+Then $E(\Fq) = \mathbb{Z}_n^+ \times \mathbb{Z}_n^+$ and the map
+$\Psi:E(\Fq) \rightarrow E(\Fq)$
+defined by
+\[(x,y) \mapsto (-x, ny)\]
+is a distortion map.
 
 \section {Type F Curves}
 
@@ -806,12 +840,12 @@ embedding degree 10.
   \hline
 \end{tabular}
 \end{center}
-\caption{  \label{tbl:comparepairings}
+\caption{\label{tbl:comparepairings}
     Pairing comparison.
 }
 \end{table}
 
-\section { \label{sec:comparingpairings} Comparing Pairings}
+\section {\label{sec:comparingpairings}Comparing Pairings}
 
 Assuming that 160 bits are sufficient to defeat generic discrete log attacks
 and that 1024 bits are sufficient to defeat index calculus, we can use
@@ -831,7 +865,7 @@ Incidentally, they correspond to an $E^-$ type C curve with $l=193$
 in Table~\ref{tbl:typec}).
 
 Of course, size is not the only factor. If one must have
-a symmetric pairing whose inputs, one is limited to using A, B or C pairings.
+a symmetric pairing, one is limited to using A, B, C or E pairings.
 
 If speed is the top priority, then A or B pairings should be used. If symmetry
 can be sacrificed as well, then perhaps B pairings are the better choice because
@@ -1019,7 +1053,7 @@ which can be computed using the following algorithm~\cite[Algorithm 5.3.5]{1993-
 \end{algorithmic}
 \end{algorithm}
 
-\section {\label{sec:balscurves} Arbitrary Embedding Degree}
+\section {\label{sec:balscurves}Arbitrary Embedding Degree}
 
 What if other embedding degrees are desired? It turns out that given any
 positive integer $k$ we can in fact construct pairings with embedding degee $k$,
