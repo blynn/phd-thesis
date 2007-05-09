@@ -401,7 +401,7 @@ the line between $Z$ and $P$.
 \STATE Let the binary representation of $r$ be $b_t ... b_0$.
 \STATE $f \gets 1$
 \STATE $Z \gets P$
-\FOR {$i=t-1$ to $0$}
+\FOR {$i\gets t-1$ to $0$}
     \STATE $f \gets f^2 \cdot T_Z(Q)$
     \STATE $Z \gets 2Z$
     \IF {$b_i = 1$}
@@ -460,16 +460,16 @@ arithmetic involved for these operations, which form the bulk of Miller's
 algorithm, can be performed in $\Fq$ rather
 than $\Fqk$.
 
-This has been dubbed a \emph{Miller-lite} operation in the literature.
+This has been dubbed a \emph{Miller-Lite} operation in the literature.
 When $P$ does not lie in the base field but rather is some element of
 $E(\Fqk)$ then we refer to an iteration of Miller's algorithm with
-first input $P$ as a full Miller, or Miller-full, operation.
+first input $P$ as a full Miller, or Miller-Full, operation.
 
 \section{Last-Second Conversions}
 
 One easy optimization is also easy to overlook as it is hidden by
 notation.
-In a Miller-lite operation, even if we use distortion maps or twists,
+In a Miller-Lite operation, even if we use distortion maps or twists,
 at some point we must encounter $\Fqk$ arithmetic.
 Distortion maps or twist maps must be applied
 on the second input point $Q$ to obtain a point on $E(\Fqk)$, which in turn
@@ -882,6 +882,24 @@ is not used until after it has been exponentiated.
 Thus when designing a pairing library, one should make
 a powered pairing function available to the user, to take full advantage
 of the above optimizations that allow faster exponentiation of pairing outputs.
+
+Also, for any $m$ coprime to the group order $r$, the $m$th power of a pairing
+is a nondegenerate bilinear map. Thus in any cryptosystem we can replace
+the pairing with the $m$th power of the pairing.
+
+One application of this is to replace a Weil pairing $e$ of even embedding
+degree $k = 2d$ in any cryptosystem with $e^{q^d-1}$, which means
+denominator elimination can be applied
+during the computation of the Weil pairing. Recall raising to the $q$th
+power is a cheap operation, so this will speed up the Weil pairing~\cite{km}.
+
+In fact, this optimization makes it less clear which pairing
+is faster. The Tate pairing costs one Miller-Lite operation and a final
+powering. The powered Weil pairing costs one Miller-Lite
+and one Miller-Full operation, and needs no final powering.
+In both cases, denominator elimination applies. Without
+final powering optimizations, a Miller-Full might outperform it,
+in which case the Weil pairing would beat the Tate pairing~\cite{gps}.
 
 \section {Exponentiation Tricks}
 

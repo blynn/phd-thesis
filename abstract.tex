@@ -1,0 +1,21 @@
+Pairing-based cryptography has become a highly active research area.
+We define bilinear maps, or pairings, and show how they
+give rise to cryptosystems with new functionality.
+
+There is only one known mathematical setting where desirable
+pairings exist: hyperelliptic curves. We focus on elliptic curves,
+which are the simplest case, and also the only curves ever to be implemented
+in real life pairing-based cryptosystems at present.
+Accordinly,
+we provide a brief overview of elliptic curves, and functions known as
+the Tate and Weil pairings from which cryptographic pairings are derived.
+
+We describe several methods for obtaining curves that yield Tate and Weil
+pairings that are efficiently computable yet are still cryptographically
+secure.
+
+We discuss many optimizations that greatly reduce the running time
+of a naive implementation of any pairing-based cryptosystem. These
+techniques were used to reduce the
+cost of a pairing from several minutes
+to several milliseconds on a modern consumer-level machine.

@@ -411,8 +411,9 @@ cyclic subgroup of points in $E(\Fq)$ of order $r$.
 Suppose the embedding degree of $G$ is $k > 1$.
 
 Then by defining $G_1 = G$, $G_2 = E[r]$, and $G_T$ to be the $r$th roots
-of unity in $\Fqk$, both the Weil and Tate pairings satisfy the abstract
+of unity in $\Fqk$, the Weil pairing satisfies the abstract
 definition of a bilinear map given in Section~\ref{sec:generalpairing}.
+Fitting the Tate pairing to the definition is similar.
 
 With high probability, a random point $Q \in G_2$, does not
 lie in $G_1$, does not have trace zero,
@@ -423,7 +424,14 @@ trace map nontrivially maps $G_2$ to $G_1$.
 
 Symmetric pairings described in Section~\ref{sec:symmetricpairing} can only
 be obtained by using supersingular curves and distortion maps, which
-we discuss in Section~\ref{sec:inputrestriction}
+we discuss in Section~\ref{sec:inputrestriction}.
+
+We see now why we cannot hash into $G_2$ in general if it is required
+to be cyclic.
+In the case of the Weil pairing, we can easily hash to a point of $E[r]$,
+but it is not known how to hash to an point of
+some cyclic subgroup of $E[r]$ of order $r$ that is not $G$. 
+For the Tate pairing we have a similar problem.
 
 \section {Miller's Algorithm}
 

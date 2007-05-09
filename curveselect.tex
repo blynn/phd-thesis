@@ -508,8 +508,9 @@ factor $r$.
 If so, set $E$ to the corresponding curve equation.
 \end{enumerate}
 
-As can be seen from Table~\ref{tbl:typec}, there are not many suitable
-curves. Note the third entry has $l = 11^2$. Although this is a fairly low
+Table~\ref{tbl:typec} shows the first seven cryptographically useful curves
+found by this algorithm. Evidently they are far and few between.
+Note the third entry has $l = 11^2$. Although this is a fairly low
 prime, there has been some evidence suggesting that Weil descent attacks
 are still ineffectual for this case~\cite{ghsonodd}.
 
@@ -540,7 +541,7 @@ are still ineffectual for this case~\cite{ghsonodd}.
 \end{tabular}
 \end{center}
 \caption{  \label{tbl:typec}
-  Type C pairings~\cite{bls}.
+  Some Type C pairings~\cite{bls}.
 }
 \end{table}
 
@@ -573,7 +574,7 @@ a curve of order $q+t-1$ or $q-t-1$.
 \section {Type D Curves}
 
 Miyaji et al. describe a method for constructing ordinary elliptic
-curves with embedding degree 3,4 or 6 \cite{mnt}. Moreover, they show
+curves with embedding degree 3, 4 or 6 \cite{mnt}. Moreover, they show
 that in a sense, there are no other parametrizations that lead to curves
 with these embedding degrees.
 
@@ -645,6 +646,53 @@ we match the notation of Miyaji et al.\cite{mnt}.)
 
 For $k=3$ Miyaji et al. give $q = 3 x^2 - 1$, $t = -1 \pm 3x$ where $x$ is
 even.
+
+Scott and Barreto discovered a procedure that finds more curves of these
+types than the original MNT algorithm~\cite{moremnt}
+which can be viewed as a generalization of a method due to
+Barreto, Lynn and Scott~\cite{bals}.
+
+We quote their algorithm without proof, though we suggest how it works
+in Section~\ref{sec:balscurves}. In the algorithm, $k$ is 3, 4 or 6.
+The CM method is used to construct curves from the algorithm's output.
+The choices $h_{max} = 4$ and $D_{max} \approx 10^8$ or so are reasonable.
+
+\begin{algorithm}
+\caption {Scott-Barreto generalization of MNT method.}
+\begin{algorithmic}[1]
+\FOR {$h \gets 1$ to $h_{max}$}
+    \FOR {$m \gets 1$ to $4h - 1$}
+	\FOR {$D \gets 1$ to $D_{max}$ such that $D$ is squarefree}
+	    \STATE solve $DV^2 = 4 h \Phi_k(x) / m - (x-1)^2$ for $x, V$ (generalized Pell equation)
+	    \STATE $r\gets \Phi_k(x) /m$
+	    \STATE $n\gets hr$
+	    \STATE $q\gets n + x$
+	    \IF {$q, r$ are both primes}
+		\STATE output $q, r, h, D$
+	    \ENDIF
+	\ENDFOR
+    \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+Scott and Barreto also concisely state how to transform the CM equation
+into a generalized Pell equation:
+
+If $k = 3$, set $a \gets 2h + m$.
+
+If $k = 4$, set $a \gets m$.
+
+If $k = 6$, set $a \gets -2h + m$.
+
+(These three statements can be condensed into
+$a \gets (-2 \lfloor k/2 \rfloor + 4)h + m$.)
+Set $b \gets 4h - m$. Then the variable substitution
+defined by $x = (y-a)/b$ transforms the CM equation into the generalized
+Pell equation
+\[ y^2 - (mbD)V^2 = (a^2 + b^2) .\]
+After solving this equation, we must have $b | y - a$ otherwise $x$ will
+not be an integer.
 
 \section {Type E Curves}
 
@@ -746,7 +794,7 @@ embedding degree 10.
   \hline
   B & yes & $2$ & $512$ & $1024$ \\
   \hline
-  C & yes & $6$ & $>171$ & $>1026$ \\
+  C & yes & $6(\approx 3.53)$ & $\approx 305$ & $\approx 1080$ \\
   \hline
   D & no & $6$ & $171$ & $1026$ \\
   \hline
@@ -773,11 +821,14 @@ for the input we would use a subgroup of the elliptic curve group
 with order $r$ around 160 bits.)
 The results are shown in Table~\ref{tbl:comparepairings}.
 
-For type C pairings, the numbers shown ignore the Coppersmith attack
-for low characteristic fields (which is why the greater-than symbol appears).
-Although asymptotic estimates are available,
-the exact efficacy of the Coppersmith attack on characteristic 3 fields
-of the sizes shown has yet to be thoroughly investigated.
+The exact efficacy of the Coppersmith attack on characteristic 3 fields
+of cryptographically-useful sizes has yet to be thoroughly investigated.
+One conservative estimate by Page, Smart and Vercauteren~\cite{psv}
+suggests that the low characteristic
+effectively changes the embedding degree $k$ from $6$ to about $5.6 \log 2 / \log 3 \approx 3.53$, suggesting the approximate numbers given in the table.
+Incidentally, they correspond to an $E^-$ type C curve with $l=193$
+(which does not appear
+in Table~\ref{tbl:typec}).
 
 Of course, size is not the only factor. If one must have
 a symmetric pairing whose inputs, one is limited to using A, B or C pairings.
@@ -933,7 +984,7 @@ Here, $P$ is a polynomial variable, and $D = 0, -1 \pmod 4$.
     \STATE $b=b+2$
 \UNTIL $b>B$
 \STATE round coeffcients of $P$ to nearest integer
-\STATE return $P$
+\RETURN $P$
 \end{algorithmic}
 \end{algorithm}
 
@@ -964,11 +1015,11 @@ which can be computed using the following algorithm~\cite[Algorithm 5.3.5]{1993-
     \UNTIL $a^2>q$
     \STATE $b\gets b+2$
 \UNTIL $b>B$
-\STATE Output $s$
+\RETURN $s$
 \end{algorithmic}
 \end{algorithm}
 
-\section {Arbitrary Embedding Degree}
+\section {\label{sec:balscurves} Arbitrary Embedding Degree}
 
 What if other embedding degrees are desired? It turns out that given any
 positive integer $k$ we can in fact construct pairings with embedding degee $k$,
@@ -982,6 +1033,10 @@ discrete log security, we must perform our computations on $\rho r$-bit numbers.
 Our main focus is $\rho \approx 1$ pairings, but we now take a small detour
 and describe an algorithm to find
 pairings with any given embedding degree $k$ due to Barreto, Lynn and Scott~\cite{bals}.
+
+In fact, this algorithm is relevant to the previous section.
+A variation of this approach leads to $\rho \approx 1$ type D
+curves that the method of Miyaji et al. does not find~\cite{moremnt}.
 
 \begin{lemma}
 Let $E(\Fq)$ be an elliptic curve and suppose it has
@@ -1049,24 +1104,26 @@ Also $r$ is usually taken to be the largest prime dividing $\Phi_k(x)$,
 which almost never divides $\Phi_i(x^d)$ for $1 \le i < k$.
 
 It remains to show how to construct a curve given these parameters. We shall
-employ the CM method. Recall $n = hr$ and $r \mid \Phi_k(x)$, so write
-$n = m \Phi_k(x)$. The CM equation becomes
+employ the CM method.
+Recall $r \mid \Phi_k(x)$, so write $m r = \Phi_k(x)$.
+The CM equation becomes
 
-\[ D V^2 = 4m\Phi_k(x)-(x^d-1)^2 . \]
+\[ D V^2 = 4 h \Phi_k(x) / m -(x^d-1)^2 . \]
 
-If $k=3,4,6$ then $\deg \Phi_k = 2$. Picking some small value for $m$
-and fixing $D$ yields
+If $k=3,4,6$ then $\deg \Phi_k = 2$.
+Set $m = 1$.
+Picking some small value for $h$ and fixing $D$ yields
 a Diophantine equation that can be transformed into a Pell-type equation,
 which can be solved to find $x$ and $V$. With luck, $\Phi_k(x)$ will be
 prime or a small number times a prime, giving a $\rho \approx 1$ pairing.
-When $m=1$ we have the equivalent of the MNT method.
+When $h=1$ we have the equivalent of the MNT method.
 
-Fixing $m$ and $D$ for higher degree cyclotomic polynomials
+Fixing $h$ and $D$ for higher degree cyclotomic polynomials
 $\Phi_k$ result in higher degree Diophantine equations which are not easily
 solved.
 
 Instead, if $D$ is now viewed as a variable and $x$ if fixed,
-(and $m$ is still fixed) we can find integer solutions for $D$ and $V$
+(and $h$ is still fixed) we can find integer solutions for $D$ and $V$
 easily. Unfortunately, for cryptographically-useful choices of $x$,
 the integer $D$ is too large to allow the Hilbert class field polynomial $H_D$
 to be computed.
@@ -1077,16 +1134,21 @@ Now consider fixing $D$ and $x$. In particular, $D$ is small enough so
 that $H_D$ can be computed and $x$ is large enough to be cryptographically
 useful.This gives a Diophantine
 equation of the form
-\[ D V^2 = Am - B \]
-where $D, A, B$ are integer constants. We can solve for $V$ and $m$ and
+\[ D V^2 = Ah - B \]
+where $D, A, B$ are integer constants. We can solve for $V$ and $h$ and
 obtain a curve containing a cyclic subgroup of order $r$
-with embedding degree $k$. There is a drawback however: $m$ tends to be close
+with embedding degree $k$. There is a drawback however: $h$ tends to be close
 in size to $r$, giving $\rho \approx 2$.
 
-Freeman, Scott and Teske~\cite{fst} note this approach is a special case of a
-more recent construction by
-Brezing and Weng~\cite{bw}, which in turn can be thought of as a specific
-approach of a general method suggested by Cocks and Pinch~\cite{cp}.
+We have set $m = 1$ above. More generally,
+when $k = 3,4,6$, if $m$ is allowed to be some small integer then one
+can find curves with low $h$ that are not found using the MNT method as
+originally described ~\cite{moremnt}.
+
+Freeman, Scott and Teske~\cite{fst} note the approach of Barreto, Lynn and
+Scott is a special case of a more recent construction by
+Brezing and Weng~\cite{bw}. which in turn can be thought of as a specific
+application of a general strategy suggested by Cocks and Pinch~\cite{cp}.
 
 Other methods to construct pairings of arbitrary embedding degree,
 some of which with $\rho$ substantially less than 2, are beyond our scope.
