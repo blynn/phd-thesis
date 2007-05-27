@@ -189,7 +189,7 @@ with similarly defined $f_P, f_Q$.
 Note we cannot simultaneously have $R = S = O$ for this would imply
 both $f_P$ and $f_Q$ have poles at $O$ hence cannot be evaluated at $O$.
 
-\section {Twist Curves and the Trace-Zero Group}
+\section {\label{sec:twistcurves}Twist Curves and the Trace-Zero Group}
 
 Let $E : y^2 = x^3 + a x + b$ be an elliptic curve over $\F_q$,
 and $P$ be a point of prime order $r$.
@@ -262,13 +262,13 @@ We can say more about this particular group selection.
 \begin{theorem}
 Let $E : y^2 = x^3 + a x + b$ be an elliptic curve over $\F_q$,
 and $P$ be a point of prime order $r$.
-Suppose the embedding degree $k$ of $G = \langle P \rangle$ is even.
+Suppose the embedding degree $k$ of $G_1 = \langle P \rangle$ is even.
 Then write $d = k / 2$. Let $v$ be a quadratic nonresidue in $\F_{q^d}$,
 Let $E'$ be given by $y^2 = x^3 + v^2 a x + v^3 b$.
 Define the map $\Psi:E'\rightarrow E(\F_{q^k})$ by
 \[ \Psi(x,y) = (v^{-1}x, v^{-3/2}y) . \]
 
-Then $\Psi(E'(\F_{q^d})[r])$ is precisely the subgroup of trace zero points
+Then $G_2 = \Psi(E'(\F_{q^d})[r])$ is precisely the subgroup of trace zero points
 in $E(\Fqk)[r]$.
 \end{theorem}
 
@@ -981,3 +981,125 @@ Then if we use signed ternary representation point multiplication can be
 sped up. Furthermore, if $r$ is chosen to have the form
 $3^a \pm 3^b \pm 1$ (a base 3 analogue of a Solinas number) then Miller's
 algorithm is much faster.
+
+\section {Higher Degree Twists}
+
+We quote facts neatly summarized by
+Hess, Smart and Vercauteren~\cite{hsv}.
+
+Let $E$ be an elliptic over $\Fq$ where $q\ge 5$ is prime.
+Let $t$ be the trace of Frobenius, that
+is $t$ satisfies $\#E(\Fq) = q-t+1$.
+Table~\ref{tbl:twistcurves}
+describes the twists of $E$
+for various choices of $v \in \F_q^*$.
+Some choices of $v$ result in
+the original curve (or rather a curve easily mapped to the original),
+while others lead to quadratic, cubic, quartic or sextic twists, which are
+depicted in the table.
+We define $w$ as the smallest integer such that the twist curve
+maps to $E(\F_{q^w})$ by taking a point $(x,y)$ to the point shown in the table.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|l|c|c|}
+
+  \hline
+  Curve & $w$ & Twist & Twist Map & Point Count \\
+  \hline
+  $Y^2 = X^3 + a X + b$ & 2 &
+  $Y^2 = X^3 + a / v^2 X + b / v^3$ &
+  $v x, v^{3/2} y$ &
+  $q + 1 + t$ \\
+  \hline
+  $Y^2 = X^3 + a X$ & 2 &
+  $Y^2 = X^3 + a / v X$ &
+  $v^{1/2} x, v^{3/4} y$ &
+  $q + 1 + t$ \\
+  & 4 & & & $q + 1 \pm f$ \\
+  & & & & ($t^2 - 4q = -f^2$) \\
+  \hline
+  $Y^2 = X^3 + b$ & 2 &
+  $Y^2 = X^3 + b / v$ &
+  $v^{1/3} x, v^{1/2} y$ &
+  $q + 1 + t$ \\
+  & 3 & & & $q + 1 - (\pm 3f - t)/2$ \\
+  & 6 & & & $q + 1 - (\pm 3f + t)/2$ \\
+  & & & & ($t^2 - 4q = - 3f^2$) \\
+  \hline
+\end{tabular}
+\end{center}
+\caption{\label{tbl:twistcurves}
+    Twist curves
+}
+\end{table}
+
+A simple method to find a desired twist is to
+
+\begin{enumerate}
+\item Choose $v \in \F_q^{*}$ and construct the twist $E'$ using $v$.
+\item Generate a random point $P \in E'$.
+\item If $P$ does not have the order specified by Table~\ref{tbl:twistcurves}
+then goto step 1.
+\end{enumerate}
+
+The twist curve optimization tricks discussed earlier correspond to
+quadratic twists.
+For this case, Hess, Smart and Vercauteren note the alternate form:
+\[ E : DY^2 = X^3 + a X + b \]
+with
+\[ \phi : (x,y) \mapsto (x, v^{1/2} y) \]
+may be better from a programmer's point of view.
+
+We can generalize our method to higher-degree twists
+on certain curves (and embedding degrees), leading to greater time and space
+savings.
+
+Let $G$ be a cyclic subgroup of $E(\Fq)$ of prime order $r \ge 5$
+and embedding degree $k$.
+In all cases, it can be shown exactly one of the twist curves
+has order that is a multiple of $r$. Let $w$ be the degree of this twist.
+
+We assume that $w$ divides $k$. When this is not the case,
+we can use a suitable factor of $w$ instead with reduced savings.
+(In the extreme case, we have $E' = E$ and $d = k$ which implies we
+are not using the twist curve optimization at all and gain nothing.)
+Let $d = k/w$. Then as before, we can work within the groups $E(\Fq)[r]$
+and $E'(\Fqd)$ for a suitable twist curve $E'$ at all times except
+during a pairing computation, where we use the twist map and
+operate in $\Fqk$.
+
+\section {The Ate and Twisted Ate Pairing}
+
+Barreto et al. discovered a variation on the Tate pairing,
+dubbed the Eta pairing, that can be more efficient in some cases~\cite{etapairing}.
+Hess, Smart and Vercauteren further refine this new pairing and obtain
+the Ate pairing~\cite{hsv}. We state their results without proof.
+
+Let $E$ be an elliptic over $\Fq$ containing a cyclic subgroup $G_1$ of
+order $r$ and even embedding degree $k$. Let $G_2$ be the group of trace zero
+points in $E'(\Fqd)$ where, like the previous section,
+$E'$ and $d$ represent the twist curve optimization
+being employed. Let $t$ be the trace of Frobenius, that
+is $t$ satisfies $\#E(\Fq) = q-t+1$.
+
+Let $f_{n,P}$ be a rational function with divisor $n(P)/(nP)$ for any integer
+$n$ and any point $P$. Then the following are bilinear and nondegenerate
+up to coset representatives (in practice one needs to execute a final powering
+on the output of any of these functions).
+\begin{enumerate}
+\item
+Tate pairing:
+\[ f_{r,P}(Q) \]
+\item
+Ate pairing:
+\[ f_{t-1,Q}(P) \]
+\item
+Twisted Ate pairing:
+\[ f_{(t-1)^d,P}(Q) \]
+\end{enumerate}
+
+In some cases, the Ate or twisted Ate pairing may be faster than the Tate
+pairing. Note that even when $t-1$ is much smaller than $r$,
+the Ate pairing may not necessarily be faster because it
+requires a Miller-Full operation.

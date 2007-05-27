@@ -29,18 +29,22 @@ schemes.
 Boneh and Franklin's identity-based encryption scheme \cite{bf} is perhaps
 the most famous early example of what could be achieved using
 bilinear maps, though not the first \cite{sok, j}.
-First proposed in 1984 \cite{shamir1984},
+First described in 1984 \cite{shamir1984},
 researchers were unable to build an identity-based encryption scheme by
 conventional means for approximately
 twenty years. 
-With bilinear maps, a relatively straightforward scheme
-was found \cite{bf}. With a little more work, identity-based schemes
-with additional useful properties (such as authenticated or hierarchical
-identity-based encryption~\cite{l, hl}) can be constructed.
+Boneh and Franklin found an elegant solution using
+bilinear maps~\cite{bf}. Extending the basic idea leads to
+identity-based schemes with additional useful properties
+(such as authenticated or hierarchical
+identity-based encryption~\cite{l, hl}). More generally,
+so many cryptographic applications of the pairing have been identified
+this area of research is sometimes considered its own field:
+pairing-based cryptography~\cite{thelounge}.
 
-We note that an identity-based scheme
-scheme based on quadratic residues (and not bilinear maps)
-has since been found \cite{cocks01}, albeit one that is signifcantly
+We note that an identity-based scheme based on quadratic residues
+(and not bilinear maps)
+has since been proposed \cite{cocks01}, albeit one that is signifcantly
 less practical.
 However, this is the exception rather than the rule. In general it is not
 known how to find conventional
@@ -244,9 +248,10 @@ This abstract definition can easily be used to construct
 a cryptosystem. We have just noted that if cyclic group with such a
 bilinear map exists, then we have a group where the Computational
 Diffie-Hellman
-problem is thought to be hard, yet the Decisional variant is easy to solve.
-Such groups have been named Gap Diffie-Hellman groups\cite{bls} and
-imply a signature scheme, often referred to as the BLS Signature Scheme:
+problem is thought to be hard, yet the Decisional variant is easy to solve
+(sometimes called Gap Diffie-Hellman groups~\cite{op}) and
+imply a signature scheme,
+often referred to as the BLS Signature Scheme~\cite{bls}:
 
 \begin{description}
 \item[Setup.]

@@ -39,15 +39,40 @@ we do not review basic abstract algebra.
 On the other hand, we introduce enough elliptic curve theory for
 cryptographic purposes.
 
-The research found in the following publications
+\section {Summary of Contributions}
+
+Our main original contributions are
+\begin{itemize}
+\item Abstract definitions of pairings that bridge the
+gap between formal security proofs and bilinear maps used in practice.
+\item A practical digital signature scheme with the shortest known
+signature length at typical security levels. This signature scheme
+in fact has many other desirable features, but they fall outside the scope
+of this text.
+\item The first published method for constructing cryptographically
+useful pairings with any given embedding degree.
+\item Optimizations that greatly improve the running time of a pairing
+by at least a factor of four over a naive implementation. Some of our
+techniques are now so commonplace that they are
+sometimes considered "standard"~\cite{hsv}.
+\end{itemize}
+
+The following publications
 form the foundation of this thesis:
-\begin{enumerate}
-\item "Short signatures from the Weil pairing" by Boneh, Lynn and Shacham~\cite{bls}
-\item "Efficient algorithms for pairing-based cryptosystems" by Barreto, Kim, Lynn and Scott~\cite{bakls}
-\item "Constructing elliptic curves with prescribed embedding degree" by Barreto, Lynn and Scott~\cite{bals}
-\item "On the selection of pairing-friendly groups" by Barreto, Lynn and Scott~\cite{bals2}
-\end{enumerate}
-Slightly updated versions of the above works can be found
+\begin{itemize}
+\item D.Boneh, B. Lynn, and H. Shacham. Short signatures from the Weil pairing.
+{\it Journal of Cryptology}, 17(1):297--319, 2004.
+\item
+P. S. L. M. Barreto, H. Y. Kim, B. Lynn and M. Scott.
+Efficient algorithms for pairing-based cryptosystems. In {\it CRYPTO 2002},
+pages 354--368.
+\item P. S. L. M. Barreto, B. Lynn and M. Scott.
+Constructing elliptic curves with prescribed embedding degree. In {\it Third
+Conference on Security in Communication Networks 2002}.
+\item P. S. L. M. Barreto, B. Lynn and M. Scott.
+On the selection of pairing-friendly groups. In {\it Selected Areas of Cryptography 2003}.
+\end{itemize}
+More polished versions of the above works can be found
 in the Journal of Cryptology~\cite{blsjournal, balsjournal}.
 
 Most of the described algorithms and optimizations
