@@ -39,24 +39,6 @@ we do not review basic abstract algebra.
 On the other hand, we introduce enough elliptic curve theory for
 cryptographic purposes.
 
-\section {Summary of Contributions}
-
-Our main original contributions are
-\begin{itemize}
-\item Abstract definitions of pairings that bridge the
-gap between formal security proofs and bilinear maps used in practice.
-\item A practical digital signature scheme with the shortest known
-signature length at typical security levels. This signature scheme
-in fact has many other desirable features, but they fall outside the scope
-of this text.
-\item The first published method for constructing cryptographically
-useful pairings with any given embedding degree.
-\item Optimizations that greatly improve the running time of a pairing
-by at least a factor of four over a naive implementation. Some of our
-techniques are now so commonplace that they are
-sometimes considered "standard"~\cite{hsv}.
-\end{itemize}
-
 The following publications
 form the foundation of this thesis:
 \begin{itemize}
@@ -78,4 +60,4 @@ in the Journal of Cryptology~\cite{blsjournal, balsjournal}.
 Most of the described algorithms and optimizations
 feature in the PBC (Pairing-Based Cryptography) library, maintained by the
 author, and available under the GNU Public License at 
-http://crypto.stanford.edu/ibe/
+\url{http://crypto.stanford.edu/pbc/}.

@@ -1,0 +1,59 @@
+\chapter{Summary of Contributions}
+
+We briefly reiterate our main original contributions.
+
+\section{Abstract definitions}
+
+In Chapter 1 we gave abstract definitions of pairings that bridge the
+gap between formal security proofs and bilinear maps used in practice.
+We began with a symmetric definition, which was the first to appear in
+the literature, and gradually extended it so that a greater variety of
+pairings are available.
+
+We presented examples of assumptions that pairing-based cryptosystems
+rely on, and indicated how to modify them for different pairing definitions.
+
+\section{The BLS Signature Scheme}
+
+We exhibited a practical digital signature scheme with the shortest known
+signature length at typical security levels.
+This signature scheme, often referred to as the BLS signature scheme,
+has many other desirable features~\cite{bls,bgls},
+but they fall outside the scope of this text.
+The BLS signature scheme is a pairing-based cryptosystem,
+and many of these features rely heavily on
+properties of bilinear maps. It is not known how to construct
+signature schemes with similar advantages without using pairings.
+
+\section{Constructing With Prescribed Embedding Degree}
+
+We presented the
+first published method for constructing cryptographically
+useful pairings with any given embedding degree.
+Inspired by the work of Miyaji et al.~\cite{mnt}, we use
+cyclotomic polynomials to guarantee certain conditions are met,
+yielding cryptographically-usedful
+pairings with any given embedding degree~\cite{bals}.
+
+\section{Optimizations}
+
+In the last two chapters we showed how to
+improve the running time of a pairing
+by roughly a factor of four over a naive implementation.
+
+Firstly, we proved that the classic definition of the
+Tate pairing may be replaced by a simpler version that
+can be evaluated in half the time~\cite{bakls}.
+
+Secondly, using twist curves we can ignore denominators
+in Miller's algorithm, doubling its speed~\cite{bals2}.
+This technique is now so commonplace that it is
+considered ``standard''~\cite{hsv}.
+
+We also described methods for efficiently computing
+the final powering, a costly operation that is required
+to standardize coset representatives in the output group~\cite{bakls}.
+
+Additionally, we gave more minor optimizations that together
+substantially speed up a pairing computation, and pairing-based cryptosystems
+in general~\cite{bakls, bals2}.
