@@ -8,7 +8,6 @@ difficult or impossible to assemble using standard primitives.
 We first define a cryptographic pairing abstractly and show how it
 can be used to build a signature scheme that is simple yet has many
 desirable properties.
-
 Next we examine how a pairing can be implemented in practice. The only known
 mathematical setting where suitable pairings exist are groups on certain
 families of curves. We focus on the simplest and most well-understood case:
@@ -21,12 +20,12 @@ traditional cryptosystems.
 
 It is hoped that this work will be useful guide to implementing pairing-based
 cryptography to a programmer who has experience with conventional
-cryptosystems. While not comprehensive (notably absent are in-depth
-discussion of the characteristic 3 case, pairings where
-the subgroup size is necessarily significantly smaller than the field size,
-and hyperelliptic curves),
+cryptosystems. While not comprehensive,
 the information contained herein should be enough to allow one to build
 practical pairing-based applications from scratch.
+Notably absent are in-depth discussion of the characteristic 3 case,
+pairings where the subgroup size is necessarily significantly
+smaller than the field size, and hyperelliptic curves,
 
 This text is intended to be self-contained. Aside from
 arithmetic at the lowest level, algorithms not likely to

@@ -79,7 +79,7 @@ One can easily graft finite field routines to any such library,
 though there are costs.
 
 For example, the GMP library has a highly optimized modular exponentiation
-routine that uses Montgomery reduction (see below),
+routine that uses Montgomery reduction,
 but expects the input not to be
 in Montgomery form, and also outputs normal integers.
 Hence if numbers are already internally stored in Montgomery form,
@@ -94,7 +94,7 @@ in advance how many bytes their input integers take can be faster than
 their more general counterparts.
 
 Designers of libraries for arbitrary-precision integers should be aware of
-these issues, and perhaps should provide access to fairly low-level
+these issues, and should consider providing access to fairly low-level
 routines in the library interface.
 
 \section{All or Nothing}
@@ -127,14 +127,18 @@ does not compensate for the savings gained for individual multiplications~\cite{
 
 Pairing-based cryptosystems on the other hand can benefit from having
 all coordinates of points stored in Montgomery representation, with conversion
-only during input and output (though even then, there is no reason why keys
-and such could not be stored in Montgomery representation). This is because
-during point additions and multiplications as well as pairing computations,
-there are many finite field operations but never a need to convert the
+only during input and output.
+This is because during point additions and multiplications,
+as well as pairing computations,
+we must perform many finite field operations but never need to convert the
 coordinates back to its normal representation.
+In fact, we could take this idea further and
+avoid conversion completely by storing keys and such in
+Montgomery representation, though this does requires choosing
+some fixed machine word size.
 
 Division is slower using Montgomery representation, but this drawback is
-of no concern if projective coordinates are used (see below),
+of no concern if projective coordinates are used (Section~\ref{sec:projcoord}),
 where each division is replaced by a few multiplications in any case.
 
 The following algorithms can be found in several textbooks in the
@@ -286,7 +290,7 @@ which in turn implies computing expressions such as $x z - y z^q$ only
 costs four multiplications in $\Fq$, where $x,y,z \in \Fq[i]$.
 
 For primes $q=2\pmod 3$,
-the polynomial $X^2 + X + 1$ irreducible in $\Fq$, thus its roots
+the polynomial $X^2 + X + 1$ is irreducible in $\Fq$, thus its roots
 form an optimal normal basis of $\F_{q^2}$
 allowing several shortcuts~\cite{xtr}.
 
@@ -384,8 +388,8 @@ are required. This is called \emph{mixed addition}.
 \end{algorithm}
 
 We see the computation of $3x^2 + a z^4$ in general requires three
-squarings and one multiplication. (We consider multiplication by
-a small constant to be negligible.)
+squarings and one multiplication. Obeserve we consider multiplication by
+a small constant to be negligible.
 
 For $a=0$ the only one squaring is required.
 

@@ -95,9 +95,9 @@ small $m$ the expressions are unwieldy.)
 This is an example of a \emph{curve endomorphism}, because points of
 $E(\Fqk)$ are mapped to points of $E(\Fqk)$. Another important example
 is the $q$th power \emph{Frobenius map} $\Phi$,
-given by $(X, Y) \mapsto (X^{q}, Y^{q})$. (In general one defines
+given by $(X, Y) \mapsto (X^{q}, Y^{q})$. In general one defines
 $q^k$th power Frobenius maps but we only define the $q$th power map,
-and if we need higher powers $k$ we shall write $\Phi^k$.)
+and if we need higher powers $k$ we shall write $\Phi^k$.
 
 \begin{theorem}
 [Hasse]
@@ -229,8 +229,9 @@ Furthermore if $D$ is a principal divisor, we will
 omit as many $(O)$ terms as we like, as its real order
 can be calculated simply by negating
 of the sum of the orders of the other zeroes and poles.
-(If we need to switch to conventional notation we will use angled brackets
-rather than parentheses.)
+If we need to switch to conventional additive
+notation we will use angled brackets
+rather than parentheses.
 
 On an elliptic curve, in our unorthodox notation:
 \begin{description}
@@ -606,14 +607,14 @@ Recall we have an almost unrestricted choice for the points $R, S$ in
 the Weil pairing and also for the point $R$
 in the Tate pairing. To use Miller's algorithm, we choose them
 to avoid the zeroes or poles
-of the intermediate functions. One way to do this is to choose
-these points at random (since there are only $O(t)$ bad choices).
+of the intermediate functions. We can simply
+take points at random since there are only $O(t)$ bad choices.
 
 Alternatively we may ensure their coordinates do not lie in the
 field that the functions are defined in, but rather in some field
 extension, so that in the case of a Weil pairing, $P+R$, $R$, $Q+S$, $S$
 cannot possibly be a zero or pole in the intermediate functions
-(though we must still avoid choices such as $R = S$),
+though we must still avoid choices such as $R = S$,
 and in the case of a Tate pairing, neither $R$ nor $Q + R$
 can be a zero or pole.
 

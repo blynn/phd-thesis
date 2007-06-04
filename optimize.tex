@@ -249,14 +249,6 @@ generalization of the $\Psi$ map used in Type A curves.
 The curve $E : y^2 = x^3 + x$ is equivalent to $E' : y^2 = x^3 + v^2 x$
 because either $v$ or $-v$ is a quadratic residue.)
 
-A dilemma arise with Type B curves however. The twist
-of a curve $E : y^2 = x^3 + 1 $ is $E: y^2 = x^3 + v^3 $ for some
-quadratic nonresidue $v$. We could work on these two curves but now
-the pairing is no longer symmetric. On the other hand, if we insist on
-a symmetric pairing, then although most computations can still be done
-in $\Fq$, we cannot employ the optimization of the next section. For
-many applications symmetry is not needed, and type B curves may be beneficial.
-
 We can say more about this particular group selection.
 
 \begin{theorem}
@@ -325,7 +317,7 @@ However, as we are picking $Q$ to be a point of trace zero, this choice
 of $\phi$ no longer applies, thus we must use the more general definition
 of a bilinear pairing.
 
-\subsection {Remarks on Implementation}
+\subsection {\label{sec:twistcurveremarks}Remarks on Implementation}
 
 Observe that all cryptosystem operations except for the bilinear map
 can be computed in $\Fq$ or $\F_{q^d}$.
@@ -349,21 +341,38 @@ its distortion map can be thought of as the
 map $\phi$ above that takes points on the twist curve $E'(\Fq)$
 to $E(\F_{q^2})$, since $E' = E$ in this case.
 
-Type B curves are different however. The distortion map of a type B curve
-\[E : y^2 = x^3 + 1\]
-is not a twist map. We have $E' \ne E$, since $E'$ is given by
-\[E' : y^2 = x^3 + v^3\]
-for some quadratic nonresidue $v$,
-and if we are to use
-the twist curve optimization, we must abandon the distortion map and keep track
-of two different curves $E'$ and $E$ that are defined over the same field
-$\Fq$. In doing so, we lose symmetry, that is, the two input groups are now
-distinct.
+A dilemma arises with type B curves however.
+Recall a type B curve is given by
+$E : y^2 = x^3 + 1$
+over a field $\Fq$.
+Its twist $E'$ is given by
+$E' : y^2 = x^3 + v^3$
+for some quadratic nonresidue $v$ and also over $\Fq$.
+Elements of $G_1$ are points on $E(\Fq)$. We have two choices for
+$G_2$:
 
-It may seem that one should avoid twist curves for Type B
-pairings and use the distortion map instead in order to keep symmetry,
-but this would mean the important optimization of the next section
-cannot be used.
+\begin{enumerate}
+\item
+Take elements of $G_2$ from $E(\Fq)$, and
+feed them into the distortion map $\Psi$ (Section~\ref{sec:typeb})
+to obtain elements of $E(\F_{q^2})$ for the pairing.
+Recall the distortion map is given by $\Psi(x,y) \mapsto (\zeta x , y)$
+where $\zeta$ is a primitive cube root of unity.
+
+Then we have symmetry as elements of either input group are chosen
+from $E(\Fq)$.
+Unfortunately, we cannot use the important optimization of the following
+section.
+
+\item
+Use the twist curve, that is, take elements of $G_2$ from $E'(\Fq)$, and
+feed them into the twist map $\phi$ to obtain elements of $E(\F_{q^2})$
+for the pairing.
+
+This allows us to eliminate denominators as described in the following
+section, but also means we lose symmetry, since the points from $G_2$
+lie in a different curve.
+\end{enumerate}
 
 \section {\label{sec:denomelim}Denominator Elimination}
 
@@ -628,7 +637,7 @@ for some curve $E$ over $\Fq$ with embedding degree $k > 1$, and for some
 $r$.
 
 For pairing-based cryptography, any nondegenerate bilinear map can be used.
-Thus we may replace $f$ by $f^n$ where $f$ is prime to $r$.
+Thus we may replace $f$ by $f^n$ where $n$ is prime to $r$.
 The map $f^n$ is still nondegenerate and bilinear; it merely differs from the
 Weil pairing by a constant factor.
 
@@ -725,9 +734,10 @@ where $m = n$ for even $n$ and $m = n-1$ for odd $n$}
 \end{algorithmic}
 \end{algorithm}
 
-Usually $r$ is odd (currently every pairing-based cryptosystem yet
-proposed requires $r$ to be an odd prime or a product of two odd primes)
-and $q + 1$ is even (we never work in characteristic 2 fields), so we
+Every pairing-based cryptosystem yet
+proposed requires $r$ to be an odd prime or a product of two odd primes,
+thus we assume $r$ is odd. As we avoid characteristic 2 fields,
+we also assume $q + 1$ is even, so we
 can assume $n = (q + 1) / r$ is even.
 
 Clearly the above is faster than a standard $\F_{q^2}$ exponentiation
@@ -737,7 +747,7 @@ This method applies to any curve of even embedding degree, but we shall
 find that for embedding degree $k = 6$ an even better algorithm exists.
 However, before describing it, we first discuss pairing compression.
 
-\section {Pairing Compression For Even Embedding Degree}
+\section {\label{sec:pairingcompressioneven}Pairing Compression For Even Embedding Degree}
 
 We have seen that the output of a pairing is some unitary element
 $a + \alpha b \in \F_{q^2}$.
@@ -921,10 +931,10 @@ and
 f_{a-b}(Q) = \frac{f_a(Q)L_{a,-b}(Q)}{f_b(Q)V_b(Q)V_{a-b}(Q)}
 \]
 
-Since group inversion (point negation) is practically free,
-we may neglect the cost of computing $-kP$ from $kP$ and we may view
-computing $(a-b)P$ from $aP$ and $bP$ the same as computing
-$(a+b)P$.
+Since group inversion, i.e. point negation, is practically free,
+we may neglect the cost of computing $-kP$ from $kP$. We may treat
+the cost of computing $(a-b)P$ from $aP$ and $bP$ as the same as the
+cost of computing $(a+b)P$.
 
 We see a division in Miller's algorithm is slightly more expensive than
 a multiplication, requiring also an inversion in $G_T$ along with
@@ -953,11 +963,11 @@ but since $rP = O$
 we have that $L_{rP}$ is a vertical line at $P$ and hence $f_{r+1} = f_r$
 (recall we ignore verticals for denominator elimination).
 
-Sometimes it is possible to choose the order $r$ of the input (and output)
+Sometimes it is possible to choose the order $r$ of the input and output
 groups. In such cases it is desirable to pick $r$ so that the resulting
 addition-subtraction-chain is as short as possible. For example,
 a good choice is an $r$ that has low Hamming weight or that has the form
-$2^a \pm 2^b \pm 1$ (a Solinas number).
+$2^a \pm 2^b \pm 1$. Such numbers have been called Solinas numbers.
 
 Like multiexponentiation,
 when computing products or quotients of pairings we
@@ -978,9 +988,9 @@ y_3 &=& -(y^3)^3
 since cubing is cheap in characteristic 3
 (here $b$ is the constant term of the elliptic curve).
 Then if we use signed ternary representation point multiplication can be
-sped up. Furthermore, if $r$ is chosen to have the form
-$3^a \pm 3^b \pm 1$ (a base 3 analogue of a Solinas number) then Miller's
-algorithm is much faster.
+sped up. Furthermore, if $r$ is chosen to
+a base 3 analogue of a Solinas number $3^a \pm 3^b \pm 1$,
+then Miller's algorithm is much faster.
 
 \section {Higher Degree Twists}
 
@@ -997,8 +1007,10 @@ Some choices of $v$ result in
 the original curve (or rather a curve easily mapped to the original),
 while others lead to quadratic, cubic, quartic or sextic twists, which are
 depicted in the table.
-We define $w$ as the smallest integer such that the twist curve
+We define $w$, the degree of the twist,
+as the smallest integer such that the twist curve
 maps to $E(\F_{q^w})$ by taking a point $(x,y)$ to the point shown in the table.
+We must have $q = 1 \bmod w$ for a twist of degree $w$ to exist.
 
 \begin{table}
 \begin{center}
@@ -1046,7 +1058,7 @@ then goto step 1.
 The twist curve optimization tricks discussed earlier correspond to
 quadratic twists.
 For this case, Hess, Smart and Vercauteren note the alternate form:
-\[ E : DY^2 = X^3 + a X + b \]
+\[ E : v Y^2 = X^3 + a X + b \]
 with
 \[ \phi : (x,y) \mapsto (x, v^{1/2} y) \]
 may be better from a programmer's point of view.
@@ -1062,8 +1074,8 @@ has order that is a multiple of $r$. Let $w$ be the degree of this twist.
 
 We assume that $w$ divides $k$. When this is not the case,
 we can use a suitable factor of $w$ instead with reduced savings.
-(In the extreme case, we have $E' = E$ and $d = k$ which implies we
-are not using the twist curve optimization at all and gain nothing.)
+In the extreme case, we have $E' = E$ and $d = k$ which implies we
+are not using the twist curve optimization at all and gain nothing.
 Let $d = k/w$. Then as before, we can work within the groups $E(\Fq)[r]$
 and $E'(\Fqd)$ for a suitable twist curve $E'$ at all times except
 during a pairing computation, where we use the twist map and

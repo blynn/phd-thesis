@@ -9,8 +9,8 @@ elliptic curves in cryptosystems based on cyclic groups.
 We discuss pairings and algorithms to find pairing-friendly curves
 in future chapters. We will not
 discuss curve-finding and point-counting algorithms geared
-towards standard elliptic curve cryptography (which necessarily requires
-curves that are not pairing-friendly), but instead direct
+towards standard elliptic curve cryptography which necessarily requires
+curves that are not pairing-friendly, but instead direct
 the interested reader to Blake, Seroussi and Smart~\cite{bss}.
 
 \section {Informal Overview of Elliptic Curves}
@@ -81,14 +81,14 @@ be avoided.
 An elliptic curve $E$ over such a field $\Fq$ is an equation of the form
 \[ E: Y^2 = X^3 + a X + b \]
 where $a, b \in \Fq$.
-Let $\Delta = 4 a^3 + 27b^2$ (the discriminant of the cubic in $x$). Then
-$E$ is \emph{singular} if $\Delta = 0$ (the cubic has a repeated root)
-and \emph{nonsingular} otherwise (the cubic has distinct roots).
+Let $\Delta = 4 a^3 + 27b^2$, the discriminant of the cubic in $x$. Then
+$E$ is \emph{singular} if $\Delta = 0$, i.e. the cubic has a repeated root,
+and \emph{nonsingular} otherwise, i.e. the cubic has distinct roots.
 
 Unless otherwise stated we always consider nonsingular elliptic curves.
-(Later we will encounter \emph{supersingular} curves, a particular
+Later we will encounter \emph{supersingular} curves, a particular
 breed of nonsingular curves and are not singular despite their name.
-The antonym of supersingular is \emph{ordinary} or \emph{nonsupersingular}.)
+The antonym of supersingular is \emph{ordinary} or \emph{nonsupersingular}.
 
 For any field $\Fqk$ define $E(\Fqk)$ (or $E/\Fqk$)
 to be the set of all solutions
@@ -154,18 +154,19 @@ $\#E(\F_{{19}^2}) = 396$.
 
 Let $E : Y^2 = X^3 + a X + b$
 be an elliptic curve over a field $K$.
-We describe a simple method for finding finite points on $E$.
-(The point at infinity $O$ is always the unique infinite solution.)
+There always exists an unique infinite solution, namely $O$.
+We describe a simple method for finding the finite points of $E$.
 
 For any $x \in K$, we may attempt to
 solve $Y^2 = x^3 + a x + b$ for $Y$ by finding a square root
 of the right-hand side. We momentarily postpone describing the
 details of square root algorithms.
+For now, assume we can find square roots.
 
-Sometimes no square root exists, though when solutions for $Y$ exist,
-we have found exactly two points, one for each square root. (Except
-in the rare case when the point lies on the $X$-axis, which happens at
-most three times on any curve.)
+When solutions for $Y$ do exist for a given $x$,
+we have found exactly two points, one for each square root, except
+in the rare case when the point lies on the $X$-axis, which can happen in
+at most three places.
 
 Also, recall from an above theorem that the size of $K$ is roughly the same
 as the number of points on $E(K)$.
@@ -190,19 +191,20 @@ Of course, it is impossible to choose the point at infinity with this method,
 and points that lie on the $X$-axis have a slightly higher probability of
 been picked than other points. For cryptography this is of no concern
 since the point of infinity is usually unwanted, and the probability
-of finishing with a point with zero $Y$-coordinate is negligible since there
+of finishing at a point with zero $Y$-coordinate is negligible since there
 are at most three of them. Moreover, it is often unimportant which
 square root is chosen.
 
 If one insists on choosing all points of $E(K)$ uniformly, one could simply
-add a step before choosing $x$: with $1/n$ (where
-$n = \#E(K)$) probability each,
+add a step before choosing $x$.
+Let $n = \#E(K)$. Then with
+with $1/n$ probability,
 choose $O$ or one of the points lying
 on the $X$-axis, otherwise proceed with the above algorithm, except
-in the second step, we also return to the first step if the only solution
+in the second step, we also go back to the first step if the only solution
 is $Y = 0$.
 
-Note before attempting to find a square root of a given element $x \in K$,
+Before attempting to find a square root of a given element $x \in K$,
 we can check that one actually exists first.
 When $K$ has prime order,
 one can compute the Legendre symbol before attempting to square root $x$.
@@ -281,13 +283,13 @@ Alternatively, for some cases we can simply use $x$ alone, which
 is sometimes called \emph{point reduction}. For example,
 suppose Alice needs to send Bob a point in some cryptosystem. She sends
 Bob $x$, who guesses the solution $y$. Bob attempts to proceed normally.
-If the protocol fails (e.g. the signature does not verify) then Bob tries
-$-y$ and tries again. This does not cost much more since the solutions are
-related by negation, and we will see that in some pairing-based systems
-one can check both possibilities at the same time.
+If the protocol fails e.g. the signature does not verify, then Bob tries again
+with $-y$. This does not cost much more since the solutions are
+related by negation, and in Section~\ref{sec:pairingcompressioneven}
+we show how to check both possibilities with only one operation.
 
-(Of course we can take this principle further. Alice can
-omit $k$ bits of $x$, and leave Bob to try all $2^k$ possibilities.)
+Trivially we can take this principle further. Alice can
+omit $k$ bits of $x$, and leave Bob to try all $2^k$ possibilities.
 
 \section {The Chord-Tangent Law of Composition}
 
@@ -327,7 +329,7 @@ we are using elliptic curve groups where one would use
 the multiplicative group of a finite field.
 
 Mathematicians use additive group notation for the elliptic curve group
-(since the group is Abelian), and we will adhere to this convention in this
+since the group is Abelian, and we will adhere to this convention in this
 section.
 
 \section {Explicit Formulas}
@@ -396,25 +398,23 @@ and $(0, 5) + (2, 15) = (4, 13)$.
 
 \section {Elliptic Curve Cryptography}
 
-We now posess enough theory to show how elliptic curves may be used
+We now possess enough theory to show how elliptic curves may be used
 in cryptography.
 Let $E$ be an elliptic curve over a field $K$.
-The group operation described above means that every point on $E$.
+The group operation described above means that every point on $E$
 generates a cyclic group $G$.
 Then we can use $G$ for cyclic group cryptography
-provided that the basic operations (group operation, inversion, hashing) are
-fast, that the group order is prime,
-and that problems such as discrete log are difficult.
+provided that its order is prime,
+that the basic operations, namely group operation, inversion, hashing,
+are efficient, and that problems such as discrete log are difficult.
 
 The formulas above show that only a few operations in $K$ are required for
 point addition and negation.
 We previously saw how to hash to points in $E(K)$.
 Thus it seems elliptic curve cryptography can replace
 cryptography in finite fields by using
-points in $E(K)$ instead of elements of some $F^*$ (where $F$ is a
-finite field), and the group oeprations is
-point addition instead of modular multiplication. (Hence
-exponentiation becomes point multiplication.)
+points in $E(K)$ instead of elements of some $F^*$ for some finite field $F$,
+and the group operation is point addition instead of modular multiplication.
 The only obstacle is ensuring that randomly chosen points and hashed points
 lie in $G$, and not all of $E(K)$.
 
@@ -427,10 +427,9 @@ Thus after using some algorithm to
 choose or hash to some element $x \in F^*$,
 to obtain an element of a suitable order one simply exponentiates $x$
 by $n / r$ where $n = \#F^*$.
-
-On elliptic curves, the construction a point of order $r$ (or a factor of $r$)
-from some given point $P \in E(K)$ can be accomplished similarly
-by multiplying $P$ by
+On elliptic curves, the construction of a point of order $r$,
+or a factor of $r$, from some given point $P \in E(K)$ can be accomplished
+similarly by multiplying $P$ by
 $n / r$ where $n = \#E(K)$.
 
 Let $n = \#E(K)$. Then from Abelian group theory
@@ -470,10 +469,10 @@ In these cases we allow $r^2$ to divide $n$.
 
 We quote another well-known theorem which implies that we
 never have more than two copies of $\mathbb{Z}_r^+$ in
-$E(K)$, though we shall never use this fact and prefer to
-keep our definitions more general. In other words, we permit groups
-with at least three copies of a cyclic group in our definitions,
-even though they will never occur with elliptic curves.
+$E(K)$.
+Note our most general abstract definition of the pairing in fact permits
+groups with at least three copies of a cyclic group, even though this
+theorem shows this is impossible for elliptic curves.
 
 \begin{theorem}
 \[ E(K) = \mathbb{Z}_r^+ \times \mathbb{Z}_s^+ \]
@@ -499,7 +498,7 @@ we must use families of curves where the size of the group
 is known in advance and has the requisite properties,
 a subject of a later chapter.
 
-For now, we exhibit one case where $\#E(K)$ is always easy to work out
+For now, we exhibit one case where $\#E(K)$ is always easy to determine
 and furthermore $E(K)$ is always cyclic.
 
 \section {Singular Elliptic Curves}
@@ -512,7 +511,8 @@ also form a group under the chord-tangent law,
 and $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite[Proposition 2.5]{silverman}.
 Furthermore these isomorphisms are efficiently computable in either
 direction.
-(The latter case is not useful as discrete log is easy in $K^+$.)
+Note the latter case is useless for cryptographically
+as discrete log is easy in $K^+$.
 
 For example, consider the curve
 \[ E : y^2 = x^3 + x^2 \]
@@ -539,7 +539,7 @@ those that complain that elliptic curve cryptography is controversial,
 too experimental and untested must qualify
 their remarks by making exceptions for singular curves!
 
-We note that if an efficiently bilinear nondegenerate pairing could be found
+It is clear that if an efficiently bilinear nondegenerate pairing were found
 for singular curves then the Decisional Diffie-Hellman problem could be broken
 in finite fields.
 
@@ -555,7 +555,7 @@ general elliptic curves that outperforms generic methods has ever been
 discovered.
 
 The best generic methods are based on the birthday paradox, and have
-$O(\sqrt{n})$ expected running time (where $n$ is the order of the group).
+$O(\sqrt{n})$ expected running time, where $n$ is the group order.
 A group order around 160 bits in length is sufficient to defeat such attacks.
 In contrast, subexponential discrete log algorithms for finite fields
 mean that one must use at least 1024-bit finite fields for security.
@@ -570,7 +570,7 @@ The most important attribute of elliptic curves for our purposes
 is that without them, we cannot construct a cryptographically
 useful bilinear map. That elliptic curves happen to be more
 efficient than finite fields
-is a happy coincidence and makes pairings even more useful.
+is a happy coincidence and makes pairings even more attractive.
 
 \section {Short Signatures}
 
