@@ -1,4 +1,4 @@
-\chapter{Optimizating Cryptosystems}
+\chapter{Optimizing Cryptosystems}
 
 Improving the efficiency of a pairing-based cryptosystem can be quite involved:
 
@@ -17,14 +17,11 @@ much research has been conducted on this area~\cite{bss}.
 Speeding up the pairing has only been a high priority relatively recently,
 and is the main topic of the next chapter.
 \item
-Sometimes high-level modifications to a scheme (such as tolerating the
-loss of a few bits, choosing a different group to contain a key, etc.)
-will garner savings by
-permitting one to
-exploit other pairing properties,
+Sometimes high-level modifications to a scheme, such as tolerating the
+loss of a few bits, choosing a different group to contain a key, etc.
+will garner savings by permitting one to exploit other pairing properties,
 move exponentiations or multiplications to cheaper groups,
-precompute more elements,
-compress or reduce points or pairings, and so on.
+precompute more elements, compress or reduce points or pairings, and so on.
 \item
 Needless to say, each of these classes of optimizations cannot be viewed
 in isolation. An optimization that may not usually help could be beneficial
@@ -316,8 +313,8 @@ When computing parameters for curves using the CM method, we
 need to find a root of a Hilbert polynomial modulo a prime.
 As we only want a single root, we may use the Cantor-Zassenhaus
 method and skip many steps. For example, we do not care about
-the multiplicity of the factors or factors of degree higher than 1.
-Thus we may do the folliowing to find a root of a
+the multiplicity of the factors, nor the factors of degree higher than 1.
+Thus we may do the following to find a root of a
 degree $n$ polynomial $f(x)$ in
 $\F_q$.
 

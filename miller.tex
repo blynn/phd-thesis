@@ -83,8 +83,8 @@ and $g$ is not a multiple of $E$.
 
 \section {Curve Endomorphisms}
 
-Given a point $P$ and integer $m$ consider the \emph{multiplication by $m$ map}
-$[m]$ given by \[ P \mapsto m P . \]
+Given a point $P$ and integer $m$ consider the "\emph{multiplication-by-$m$}"
+map $[m]$ given by \[ P \mapsto m P . \]
 If $P$ is viewed as a pair of variables $(X,Y)$, this map
 can be written as $(f(X,Y), g(X,Y))$ for some rational functions $f,g$.
 (Using the explicit formulas for point addition and doubling
@@ -98,6 +98,9 @@ is the $q$th power \emph{Frobenius map} $\Phi$,
 given by $(X, Y) \mapsto (X^{q}, Y^{q})$. In general one defines
 $q^k$th power Frobenius maps but we only define the $q$th power map,
 and if we need higher powers $k$ we shall write $\Phi^k$.
+
+We state another well-known theorem from the theory of elliptic curves.
+Below, $f \circ g$ denotes the map defined by $P\mapsto f(g(P))$.
 
 \begin{theorem}
 [Hasse]
@@ -143,68 +146,71 @@ and every $P \in G$ satisfies $\Phi(P) = q P$.
 \section {Zeroes and Poles}
 
 When we study a polynomial $f(X)$, the roots of $f(X)$ play an important
-role. For example, if the roots are $\alpha_1,...,\alpha_n$ we may
-instantly write down a polynomial with those roots, unique up to a constant:
-$(X-\alpha_1)...(X-\alpha_n)$. Then when considering the quotient of
+role. Given the roots, or zeroes, of a polynomial $f$, we can
+instantly write down an expression for $f$ that is unique up to a constant
+multiple.
+Extending this idea, when considering the quotient of
 two polynomials $f(X)/g(X)$, we see the zeroes are the roots of $f$ and
-the poles are the roots of $g$.
+the poles are the roots of $g$, and $f/g$ is completely determined up
+to a constant by its zeroes and poles and their multiplicities.
+Indeed, suppose the zeroes and poles are $\alpha_1,...,\alpha_n$
+with multiplicites $a_1,...,a_n$ where $\alpha_i$ is a zero of multiplcity
+$a_i$. We consider a zero of negative multiplicity $a_i$ to be a pole
+of multiplicity $-a_i$. Then we may write $f(X)/g(X)$ immediately
+by multiplying equations of appropriate vertical lines:
 
-One way to view roots is to view them as places where the curve $Y = f(X)$
+\[ f(X)/g(X) = (X-\alpha_i)^{a_i} \]
+
+One can view roots of a polyonmial $f$
+as places where the curve $Y = f(X)$
 intersects with the curve $Y = 0$. We now generalize by replacing $Y=0$
 with an elliptic curve.
-
 When studying an element $f(X,Y) \in \Fqk[E]$, we take note of points of
 intersection between $f(X,Y)$ and $E$.
-We call these points of intersection \emph{zeroes} of $f$.
+Again, we call these points \emph{zeroes} of $f$.
 
-For example, consider the case $f(X,Y) = X-x$ for some $x\in\Fqk$.
-Then $X-x$ intersects $E$ at one, two, or zero places depending
-on whether $x^3 + a x + b$ is nonzero, and if so, whether it is a quadratic
-residue or not.
-We immediately see that zeroes in this case are harder to work with than
-zeroes of a polynomial: given a polynomial $X - x$ we know it has
-exactly one root $x$, while for elliptic curves, it may have 0,1, or 2
-zeroes.
-
-There are further complications. When $X - x$ intersects $E$ at one point,
-it is analogous to a repeated root of a polynomial: it is in
-fact a zero of multiplicity 2. The point at infinity also needs to be
-considered. It turns out that, roughly speaking, any equation of a line
-has a pole of mulitplicity 3 at $O$, but since $X - x$ passes through $O$,
-$X-x$ has a pole of multiplicity 2 at $O$.
+Complications occur due to the point at infinity $O$.
+We omit the details~\cite{silverman} since we do not wish to discuss
+projective geometry, but it turns out that
+every line
+$\alpha X + \beta Y + \gamma$
+that intersects a given elliptic curve $E$ has a pole
+at $O$ of some multiplicity, though this is not immediately suggested
+from its equation.
+The following two facts are all that we will
+say on this topic, and they need not be retained, nor even read.
+Firstly, if
+a vertical line $X-\alpha$ intersects the curve $E$ then it has a pole
+at $O$ of multiplicity 2. Secondly, if a non-vertical line
+$\alpha X + \beta Y + \gamma$ intersects $E$ then
+it has a pole of multiplicity 3 at $O$.
+From now we will ignore the behaviour of rational functions at $O$.
 
 Recall an element of $\Fqk(E)$ can be written as $f(X,Y)/g(X,Y)$.
 In this case the zeroes are the zeroes of $f$ and the poles of $g$,
 and the poles are the poles of $f$ and the zeroes of $g$.
-
-Note that knowing the zeroes and poles of the quotient of two
-polynomial $f(X)/g(X)$ allows us to write down $f(X)/g(X)$ (up to multiplcation
-by a constant factor). Suppose the zeroes and poles are $\alpha_1,...,\alpha_n$
-with mulitplicites $a_1,...,a_n$ where $\alpha_i$ is a zero of multiplcity
-$a_i$ if $a_i > 0$, and otherwise a pole of multiplicity $-a_i$. Then
-we may write $f(X)/g(X)$ immediately by multiplying equations of
-vertical lines correctly:
-
-\[ f(X)/g(X) = (X-\alpha_i)^{a_i} \]
-
-It turns out knowing the zeroes and poles of
-a rational function on $E$ also allows us to instantly write its equation,
-up to multiplication by a constant. We also build up the function by
-multiplying together equations of lines, but not just using
-vertical lines.
+Just as expressions of the form $X-\alpha$ can be viewed as building blocks of
+quotients of polynomials, we view equations of lines
+$\alpha X + \beta Y + \gamma$ as building blocks of rational functions
+on elliptic curves.
+As with quotients of polynomials, knowing the zeroes and poles of
+a rational function on $E$ allows us to instantly write its equation,
+up to multiplication by a constant. We also build the function by
+multiplying together equations of lines, but need more than just
+vertical ones.
 
 In what follows,
 by abuse of notation we often refer to a single rational function
 $f$ when in fact we are considering a whole family of rational functions
 $c f$ for some nonzero constant $c$. To add to the confusion, having
-chosen a representative of a family, we will sometimes subsequently
+arbitrarily chosen a representative of a family, we will sometimes subsequently
 insist on using that same representative. The reasons for doing so
 will become clear.
 
 \section {Divisors}
 
 Divisors are the standard way
-to notate zeroes and poles and their multiplicities.
+to notate zeroes and poles and their multiplicities, or orders.
 If we wish to record zeroes and poles $P_1,...,P_n$
 of orders $a_1,...,a_n$ (where $P_i$ is a zero of order
 $a_i$ if $a_i > 0$ and is a pole of order $-a_i$ otherwise), then
@@ -216,27 +222,38 @@ then the resulting divisor reflects the zeroes and poles of the product
 of the two functions.
 
 For this chapter we break with tradition and use multiplicative
-notation for divisors instead. In addition, we will omit an arbitrary
-number of poles or zeroes at $O$. This is not problematic because we
-will always be discussing principal divisors, thus the true multiplicity
-of $O$ can be computed from the multiplicities at the finite points.
+notation for divisors instead. In addition, we will omit the
+number of poles or zeroes at $O$, as we are ignoring the behaviour of
+rational functions at that point.
+For divisors of rational functions, we in fact do not lose any information 
+because if we cared,
+we could always recover the order of $(O)$
+from the orders of the finite points
+simply by negating of the sum of their orders.
 
 Let $D$ be the divisor with zeroes and poles $P_1,...,P_n$
-of mulitplicities $a_1,...,a_n$.
+of multiplicities $a_1,...,a_n$.
 We shall write $D$ as
 \[ D = (P_1)^{a_1} ... (P_n)^{a_n} . \]
-Furthermore if $D$ is a principal divisor, we will
-omit as many $(O)$ terms as we like, as its real order
-can be calculated simply by negating
-of the sum of the orders of the other zeroes and poles.
-If we need to switch to conventional additive
-notation we will use angled brackets
-rather than parentheses.
+
+Our unusual notation has several advantages. Using additive group
+notation for the elliptic curve and mutlplicative notation for the divisor
+group emphasizes the difference between them and reduces the likelihood of
+confusing the two. When rational functions are multiplied together,
+their divisors can be multiplied together, which is arguably
+more natural than adding them.
+Leaving out the $(O)$ term allows us to focus less on
+bookkeeping and more on the task at hand,
+and the order of $(O)$ can be readily calculated anyway.
+
+We use $(f)$ to denote the divisor of $f$, thus in our notation
+for any rational functions $f, g$ we have $(f)(g) = (f g)$.
 
 On an elliptic curve, in our unorthodox notation:
 \begin{description}
 \item[Lines:]
-a line $L$ through the points $P, Q$ has divisor
+a line $L$ through the points $P, Q$ intersects $E$ at a third point
+$-P-Q$ by the chord-tangent composition law, and so has divisor
 \[ (L) = (P)(Q)(-P-Q) . \]
 \item[Tangents:]
 when $Q = P$ we have a tangent line $T$ at $P$ with divisor
@@ -247,19 +264,9 @@ with divisor
 \[ (V) = (P)(-P) . \]
 \end{description}
 
-There are advantages to using this notation. Using additive group
-notation for the elliptic curve and mutlplicative notation for the divisor
-group emphasizes the difference between them and reduces the likelihood of
-confusing the two. When rational functions are multiplied together,
-their divisors can be multiplied together, which is arguably
-more natural than adding them.
-Leaving out as many $(O)$ terms as we choose allows us to focus less on
-bookkeeping and more on the task at hand.
-The correct multiplicity of $(O)$ can always be determined later.
-
-We use
-$(f)$ to denote the divisor of $f$, thus in our notation
-for any rational functions $f, g$ we have $(f)(g) = (f g)$.
+One can define evaluation of a function at a divisor by
+\[ f( \prod_P (P)^{a_P} ) = \prod_P f(P)^{a_P} \]
+but we shall only use this notation in explanations that can be skipped.
 
 \section {The Weil Pairing}
 
@@ -291,13 +298,12 @@ $(f_Q) = (Q+S)^r/(S)^r$.
 Define
 \[ f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P+R)/f_Q(R)} \]
 
-Using Weil reciprocity it can be shown that this value is independent
+It can be shown that this value is independent
 of the choices for $R, S$. The conditions for choosing $R, S$ ensure
 we never evaluate $f_P$ nor $f_Q$ at a zero or pole.
 Also both $f_P, f_Q$ are only unique up to a constant,
 but this has no effect on the final answer since quotients
 of these functions are computed and the constants cancel out.
-
 This is an example of the grey area mentioned earlier:
 at first we are free to choose
 any function as long as they have certain zeroes and poles, but we cannot
@@ -349,6 +355,11 @@ For efficiency, if possible we have $k > 1$, and choose
 $G = E(\Fq)[r]$, namely the
 group of points $P \in E(\Fq)$ satisfying $r P = O$.
 
+We note that many of the above can be proved
+using a fact known as Weil reciprocity~\cite{bf}:
+for any rational function $f, g$
+we have $f((g)) = g((f))$.
+
 \section {The Tate Pairing }
 
 Let $E$ be an elliptic curve containing $n$ points over a field $\mathbb{F}_q$.
@@ -395,7 +406,7 @@ by $(q^k - 1) / r$, which can take a substantial amount of time.
 On the positive side, the second input to the Tate pairing is also a coset
 representative. This means it can be any point of $E(K)$ and may
 be of any order. (For example,
-if the order of a point $Q$ is not a mulitple of $r$ then $Q$ represents
+if the order of a point $Q$ is not a multiple of $r$ then $Q$ represents
 the coset $O + r E(K)$. Otherwise $Q$ represents some nonidentity
 element.)
 
@@ -423,16 +434,26 @@ if we replace $G_2$ with $H$, we have now satisfied the asymmetric pairing
 definition of Section~\ref{sec:asymmetricpairing} because the
 trace map nontrivially maps $G_2$ to $G_1$.
 
-Symmetric pairings described in Section~\ref{sec:symmetricpairing} can only
-be obtained by using supersingular curves and distortion maps, which
-we discuss in Section~\ref{sec:inputrestriction}.
-
 We see now why we cannot hash into $G_2$ in general if it is required
 to be cyclic.
 In the case of the Weil pairing, we can easily hash to a point of $E[r]$,
-but it is not known how to hash to an point of
+but it is not known how to hash to a point of
 some cyclic subgroup of $E[r]$ of order $r$ that is not $G$. 
 For the Tate pairing we have a similar problem.
+
+Cryptosystems that require
+symmetric pairings described in Section~\ref{sec:symmetricpairing} with
+cyclic input groups to which strings can be hashed can only be implemented
+using supersingular curves and distortion maps, which
+we discuss in Section~\ref{sec:inputrestriction}.
+
+Some kinds of symmetric pairing can be obtained without resorting to
+supersingular curves. We could treat $G_2$ as the first and second input
+groups and apply the map from $G_2$ to $G_1$ on the first
+input before a pairing computation. However, one must relinquish the
+ability to hash, or the requirement that the input groups be cyclic, or
+a combination of the two. Additionally, one must compute more
+in larger fields for the same level of security.
 
 \section {Miller's Algorithm}
 
@@ -488,11 +509,11 @@ f_k^2 \cdot \frac{T_{kP}}{V_{2kP}}
 A straightforward manipulation of divisors also shows
 $( V_{P+R} / L_{P,R}) = (f_1)$.
 
-Thus we may compute $f_P(Q) = f_r(Q)$ using the following algorithm,
-where the binary representation of $r$ be $r_t ... r_0$.
+Thus we may compute $f_P(Q) = f_r(Q)$ using Algorithm~\ref{alg:millerweil},
+where the binary representation of $r$ is $r_t ... r_0$.
 
 \begin{algorithm}
-\caption{Miller's algorithm for Weil pairing. $x = f_P(Q)$}
+\caption{\label{alg:millerweil}Miller's algorithm for Weil pairing. $x = f_P(Q)$}
 \begin{algorithmic}[1]
 \STATE $x_1 \gets V_{P+R}(Q) / L_{P,R}(Q)$
 \STATE $x \gets x_1$
@@ -523,7 +544,7 @@ Note that
 f_k \cdot \frac{L_{P+R,kP}}{L_{R,(k+1)P}}
 \right) = (f_{k+1}) .
 \]
-thus could replace step 3(c)(i) with
+so we could replace step 8 with
 $x \gets x \cdot L_{P+R, Z}(Q) / L_{R,Z+P}(Q)$
 and avoid computing and storing $x_1$, but unless
 $r$ has very low Hamming weight this is not a good trade
@@ -567,7 +588,7 @@ which can be shown with direct calculation:
 \]
 and similarly we can show
 \[
-(f_{k+1}) = (f_k L_{kP} / V_{(k+1)P}).
+(f_{k+1}) = (f_k L_{kP,P} / V_{(k+1)P}).
 \]
 leading to the following algorithm that
 computes $f_P(Q)$ given points $P,Q$ (where $P$ has order $r$).
@@ -850,8 +871,9 @@ smaller and hence more efficient to compute on than $\F_{q^2}$.
 Similarly, if $f$ now denotes the Tate pairing,
 we wrap $f$ in the map
 $e : G\times G \rightarrow \F_{q^2}$:
-\[ e(U, V) = f(U, \phi(V) + rG) \]
-and use $e$ instead of $f$ in our cryptosystems.
+\[ e(U, V) = f(U, \phi(V)) \]
+and use $e$ instead of $f$ in our cryptosystems. Note in the above
+formula, $\phi(V)$ is actually a coset representative of $\phi(V) + rG$.
 
 \section {The Shipsey-Stange Algorithm}
 There is another procedure for computing Tate pairings that takes a completely

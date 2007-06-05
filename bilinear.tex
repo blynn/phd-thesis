@@ -29,10 +29,9 @@ schemes.
 Boneh and Franklin's identity-based encryption scheme \cite{bf} is perhaps
 the most famous early example of what could be achieved using
 bilinear maps, though not the first \cite{sok, j}.
-First described in 1984 \cite{shamir1984},
-researchers were unable to build an identity-based encryption scheme by
-conventional means for approximately
-twenty years. 
+Shamir first discussed identity-based encryption in 1984 \cite{shamir1984},
+but researchers were unable to build a practical scheme by
+conventional means for approximately twenty years. 
 Boneh and Franklin found an elegant solution using
 bilinear maps~\cite{bf}. Extending the basic idea leads to
 identity-based schemes with additional useful properties
@@ -182,7 +181,7 @@ was at first viewed as experimental. However, they are now much less
 controversial thanks to the efforts of many researchers. A myriad
 of optimizations
 and algorithms were discovered for elliptic curve cryptography,
-and encouringly, a specialized elliptic curve discrete log algorithm
+and encouragingly, a specialized elliptic curve discrete log algorithm
 has yet to be found. In other words, the fastest known way to break discrete log
 for a general elliptic curve is to use a algorithm for a generic
 cyclic group, such as Pollard rho or lambda method, implying that a group
@@ -225,8 +224,10 @@ takes at $e(g,g)$. Essentially there is always exactly one bilinear map
 for any given cyclic group: if
 $e(g,g)=1$ then we have the degenerate case and the other $r-1$ maps are
 equivalent up to a constant,
-in the sense that if $e_1(g,g) = g_1$ and $e_2(g,g) = g_2$
-then $e_2 = g_1^{-1} g_2 e_1$. The difficulty lies in finding such a map
+in the sense that if $e_1, e_2$ are nondegenerate bilinear maps then for
+some constant $c$ we have
+then $e_1(g,h) = e_2(g,h)^c$ for all $g,h \in G$.
+The difficulty lies in finding such a map
 that is efficiently computable.
 
 We can immediately see the power of such a map: given
@@ -236,8 +237,11 @@ $e(g, g^z) = e(g^x, g^y)$. In other words we can solve the Decisional
 Diffie-Hellman problem.
 Thus cryptosystems relying on the intractability of this
 problem cannot be constructed on a cyclic group with
-a computable pairing.
-However, it is not known how to solve the Computational Diffie-Hellman
+a computable pairing, though soon we present a more general pairing
+definition where DDH can still be difficult despite the presence of
+a bilinear map.
+
+Note it is not known how to solve the computational Diffie-Hellman
 or discrete log problem using a pairing.
 
 \section{The BLS Signature Scheme}
@@ -248,7 +252,7 @@ We have just noted that if cyclic group with such a
 bilinear map exists, then we have a group where the Computational
 Diffie-Hellman
 problem is thought to be hard, yet the Decisional variant is easy to solve.
-Such groups are Sometimes called Gap Diffie-Hellman groups~\cite{op}, and
+Such groups are sometimes called Gap Diffie-Hellman groups~\cite{op}, and
 imply a signature scheme,
 often referred to as the BLS Signature Scheme~\cite{bls}:
 
@@ -292,11 +296,11 @@ for a group $G$ of prime order $r$, and let $e$ be a bilinear map
 on $G$.
 
 \begin{description}
-\item [Bilinear Diffie-Hellman Problem.]
+\item [Bilinear Diffie-Hellman Problem~\cite{bf,j}.]
 Given $g,g^x,g^y,g^z$ compute $e(g,g)^{xyz}$
-\item [Decisional Bilinear Diffie-Hellman Problem.]
+\item [Decisional Bilinear Diffie-Hellman Problem~\cite{bf}.]
 Given $g,g^x,g^y,g^z,e(g,g)^w$, determine if $w = x y z$.
-\item [$q$-Strong Diffie-Hellman Problem.]
+\item [$q$-Strong Diffie-Hellman Problem~\cite{bbshort}.]
 Given $g,g^x,...,g^{(x^q)}$, compute $c, g^{1/(x_c)}$
 for any $c\in\{1,...,r-1\}$.
 \end{description}
@@ -381,7 +385,9 @@ and still be able to hash to $G_2$.
 
 To enable certain optimizations (see Section~\ref{sec:denomelim}) and
 to permit hashing to any element of any group including $G_2$,
-we prefer the following definition.
+we prefer the following definition. Additionally, its more flexible nature
+allows a greater number of assumptions which in turn allow more
+cryptosystems to be built.
 
 Let $r$ be a prime.
 Let $G_1, G_T$ be cyclic groups of order $r$.
@@ -411,7 +417,15 @@ both $G_1$ and $G_2$, or a combination of the two. For example, we may
 need to assume that given $g_1, g_1^x \in G_1$ and $g_2 \in G_2$,
 there is no efficient algorithm to compute $g_2^x$. (This particular
 example is sometimes referred to as
-the co-Computational Diffie-Hellman assumption~\cite{bls}.)
+the computational co-Diffie-Hellman assumption~\cite{bls}.)
+This definition also allows hardness assumptions that were previously
+impossible. For example, some schemes such as the group signature scheme
+of Boneh, Boyen and Shacham~\cite{bbs} require discrete log, CDH and
+co-CDH to be hard in $G_1, G_2$ and also DDH to be hard in $G_1$.
+Other cryptosystems still may
+desire DDH to be hard in $G_2$, or require an efficiently computable
+group isomorphism $\phi:G_2 \rightarrow G_1$, all of which are possible
+with this formal definition.
 
 We have not required $r$ to be prime. A composite group
 order is useful for some cryptosystems\cite{bgn},

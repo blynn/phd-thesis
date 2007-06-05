@@ -75,8 +75,10 @@ define curves over a field of prime order and of characteristic greater
 than three.
 Elliptic curves can be implemented over fields of characteristic 2 and 3
 and enjoy many optimizations,
-but suffer from specialized discrete log attacks and should generally
-be avoided.
+but suffer from specialized discrete log attacks~\cite{coppersmith}
+and should generally be avoided. We do consider a certain family of
+characteristic three curves in Section~\ref{sec:comparingpairings}, where
+we also outline their trade-offs.
 
 An elliptic curve $E$ over such a field $\Fq$ is an equation of the form
 \[ E: Y^2 = X^3 + a X + b \]
@@ -97,13 +99,13 @@ along with a special point denoted $O$,
 that is called the \emph{point at infinity}. We write $\#E(\Fqk)$ 
 or $|E(\Fqk)|$ for
 the number of elements of $E(\Fqk)$.
-
-Although irrelevant, the reader may be curious about the point at infinity.
-Briefly, by considering the equation in
-projective coordinates one can show that $O = (0,1,0)$ is always a unique
-infinite solution to the equation. Intuitively,
+Intuitively,
 the point $O$ can be thought of as the point where all lines
 parallel to the Y-axis meet.
+Mathematically, we solve the curve equation using
+\emph{projective coordinates}~\cite{realprojectiveplane} and
+one can show that $O = (0,1,0)$ is always a unique
+infinite solution to the equation. We shall never need this fact.
 
 We quote two well-known theorems.
 
@@ -131,9 +133,10 @@ Define $t_n$ recursively by
 \[ t_n = t_1 t_{n-1} - q t_{n-2} .\]
 Then $\#E(\Fqk) = q^k + 1 - t_k$.
 
-For example, consider the curve E\cite{bk} given by
+For example, consider the curve $E$ given by
 \[ Y^2 = X^3 + X + 6 \]
-over $\F_{19}$. There are 18 points
+over $\F_{19}$, an example used by Balasubramanian and Koblitz~\cite{bk}.
+There are 18 points
 \[
 \begin{array}{llllll}
 (0,5), & (4,6), & (2,4), & (3,6), & (14,3), & (12,13), \\
@@ -474,7 +477,7 @@ Note our most general abstract definition of the pairing in fact permits
 groups with at least three copies of a cyclic group, even though this
 theorem shows this is impossible for elliptic curves.
 
-\begin{theorem}
+\begin{theorem}[See Silverman~\cite{silverman}]
 \[ E(K) = \mathbb{Z}_r^+ \times \mathbb{Z}_s^+ \]
 for some integers $r,s$ with $r \mid s$.
 \end{theorem}
@@ -505,7 +508,7 @@ and furthermore $E(K)$ is always cyclic.
 
 Using singular elliptic curves
 is equivalent to conventional cryptography.
-It can be shown that the set $E_{ns}$ nonsingular points (all but
+It can be shown that the set $E_{ns}$ of nonsingular points (all but
 one) of a singular elliptic curve over a field $K$
 also form a group under the chord-tangent law,
 and $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite[Proposition 2.5]{silverman}.

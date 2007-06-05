@@ -42,13 +42,15 @@ It turns out that such a field $L'$ will always contain the $n$th
 roots of unity, thus we always have $L \subseteq L'$.
 The converse is not true: it is possible for the subset inclusion to be strict.
 In other words, for a field $L$ to contain the $r$th roots of unity but
-at the same time have part of $E[r]$ lying outside $E(L)$.
+at the same time have $E[r]$ contained in $E(L')$ and not $E(L)$, for
+some $L'$ strictly bigger than $L$.
 However, as Balasubramanian and Koblitz have shown~\cite{bk},
-the converse is almost true. We present a slighly different proof:
+the converse is almost true because this event occurs only in
+special circumstances. We present a slighly different proof:
 
 \section {The Embedding Degree}
 
-\begin{theorem}
+\begin{theorem}[Balasubramanian-Koblitz]
 Let $E$ be an elliptic curve defined over $\mathbb{F}_q$.
 Let $G$ be a subgroup of $E(\Fq)$ of order $r$ with
 $r \nmid q-1$.
@@ -145,8 +147,9 @@ The above theorem shows that if the embedding degree $k$ is greater than 1,
 then both the Tate pairing and the Weil pairing may be computed by
 performing field arithmetic in $\mathbb{F}_{q^k}$.
 
-On the other hand, if the embedding degree $k$ is 1, the Tate pairing may
-be computable in $\mathbb{F}_q$, but the Weil pairing may not be.
+On the other hand, if the embedding degree $k$ is 1, the Tate pairing is always
+computable in $\mathbb{F}_q$, but the Weil pairing sometimes cannot be,
+as we are about to show.
 Usually this is not significant because we shall see
 $k > 1$ is preferred.
 Nonetheless, we shall find the Tate pairing to be the best choice in
@@ -165,10 +168,10 @@ since $E[3]$ is not cyclic, thus the Weil pairing cannot be computed.
 In contrast, $3 \mid 19-1$ hence the Tate pairing can be
 computed in $\mathbb{F}_{19}$. In fact, we find $e(P, R + 3G) = 11$, where
 $e$ denotes the Tate pairing.
-(Recall that pairings are only unique up to a constant, so different
+Recall that pairings are only unique up to a constant, so different
 implementations may give different results.
-Sjnce the cube roots of unity in
-$\mathbb{F}_{19}$ are $1, 7, 11$, we expect $7$ or $11$.)
+Since the cube roots of unity in
+$\mathbb{F}_{19}$ are $1, 7, 11$, we expect $7$ or $11$.
 
 \subsection {\label{sec:compositeexample} Composite Group Orders}
 
@@ -230,7 +233,8 @@ we must guard against index calculus.
 
 But although it is true that a pairing exists
 for every nonsingular elliptic curve, in general
-the embedding degree $k$ is so large that it is futile to mount a MOV or
+the embedding degree $k$ is on the order of $q$~\cite{bk},
+that is, so large that it is futile to mount a MOV or
 Frey-Ruck attack on a typical elliptic curve
 because $\Fqk$ will be too large for any practical calculations.
 We shun curves with small $k$ in standard elliptic curve cryptography
@@ -409,7 +413,7 @@ by choice of $h$.
 If $q$ is not prime, we go back to the previous step and choose another
 $h$.
 \item
-For some cryptosystems problems may arise if $r \nmid h$, but this occurs
+For some cryptosystems problems may arise if $r \mid h$, but this occurs
 with negligible probability for realistic parameters. Nonetheless, when toy
 examples are constructed, this may need to be checked.
 \end{enumerate}
@@ -423,7 +427,7 @@ algorithm.
 
 \section {\label{sec:typeb}Type B Curves}
 
-Let $q$ be a prime satisfying $q = 3 \bmod 4$.
+Let $q$ be a prime satisfying $q = 2 \bmod 3$.
 Let $E$ be the curve $y^2 = x^3 + b$ for any $b$. Typically $b=\pm1$ is
 chosen.
 
@@ -468,8 +472,8 @@ $q = 3 \bmod 4$.
 
 We note the remaining case $q = 1 \bmod 12$ can also lead to supersingular
 embedding degree 2 curves~\cite[\S 3.2]{fst} but we do not bother with it here.
-The construction is more involved as it uses the CM method (which
-we shall encounter soon), and these pairings are
+The construction is more involved as it uses the CM method of
+Section~\ref{sec:cm}, and these pairings are usually
 less desirable as no distortion maps are available and the resulting
 curves are harder to optimize.
 
@@ -499,7 +503,7 @@ and $\#E^-(\F_{3^l}) + \#E^+(\F_{3^l}) = 2(3^l + 1)$, that is
 \end{array} \right.
 \]
 and it is easily checked that both types of curve have embedding
-degree 6 (that is, the order divide $3^{6l} -1$ in all cases).
+degree 6 (that is, the order divides $3^{6l} -1$ in all cases).
 
 For an $l = \pm 1, \pm 5$ and a
 curve $E : y^2 = x^3 + 2 x \pm 1$ over $\mathbb{F}_{3^l}$
@@ -515,7 +519,8 @@ Boneh, Lynn and Shacham~\cite{bls}:
 
 \begin{enumerate}
 \item
-Choose $l = \pm 1, \pm 5 \bmod 12$. To avoid Weil descent attacks~\cite{weildescent1, weildescent2},
+Choose $l = \pm 1, \pm 5 \bmod 12$. To avoid algorithms known as
+\emph{Weil descent attacks}~\cite{weildescent1, weildescent2},
 $l$ should not have any small prime factors (say $3,5,7$).
 \item
 Compute $3^l + l \pm 3^{(l+1)/2}$ and check if either has a large prime
@@ -561,28 +566,44 @@ are still ineffectual for this case~\cite{ghsonodd}.
 }
 \end{table}
 
-\section {Complex Multiplication}
+\section {\label{sec:cm}Complex Multiplication}
 
+Blake, Seroussi and Smart outline the complex multiplication, or CM,
+method and provide a brief explanation and many
+references~\cite{bss}. We only quote the algorithm itself.
 Suppose we have integers $D, V, q, t$ satisfying the \emph{CM equation}
 \[ D V^2 = 4 q - t^2 \]
-such that $D = 0, 3 \bmod 4$ is positive and $q$ is prime.
+such that $q$ is prime and we require $D > 0$, no
+square of an odd prime divides $D$ and
+$D = 0, 3 \bmod 4$. The conditions on $D$ are necessary
+because $-D$ represents a \emph{fundamental discriminant},
+the formal definition of which is beyond our scope.
 
-View the Hilbert polynomial $H_D(x)$ as a polynomial in $\F_q[x]$,
-and let $j \in \F_q$ be any root. For $j \ne 0, 1728$, set
-$k = j / (1728 - j)$. Then the curve
+For every such $D$, there exists a polynomial $H_D(x) \in \mathbb{Z}[x]$
+called the Hilbert class field polynomial, the computation of which
+will be described in Section~\ref{sec:hilbertpoly}.
+View this Hilbert polynomial $H_D(x)$ as a polynomial in $\F_q[x]$,
+and let $j \in \F_q$ be any root. For now assume $j \ne 0, 1728$,
+and set
+$k = j / (1728 - j)$. Then consider the elliptic curves given by
 \[ E: y^2 = x^3 + 3 k c^2 x + 2 k c^3 \]
-has $j$-invariant $j$ for any nonzero $c \in \F_q$.
+for any nonzero $c \in \F_q$.
 
 Set $c = 1$. Then $E$ has order $q + t + 1$ or $q - t + 1$.
 Generate a random point $P$ of $E$ and check if
 $(q-t+1)P = O$. If not, then the order must be $q + t + 1$,
 and if we set $c$ to be some quadratic nonresidue in $\F_q$ the
 curve will have order $q - t + 1$.
+In Section~\ref{sec:quadratictwists} we find that the two cases
+are \emph{quadratic twists} of the same curve.
 
 For $j = 0$ the curve has the form $y^2 = x^3 + k$ for some $k$.
 For $j = 1728$ the curve has the form $y^2 = x^3 + k x$ for some $k$.
 In these cases one can try different values of $k$ until a curve
 with the correct order is found.
+In Section~\ref{sec:hightwists} we enumerate all possible orders
+that could arise, and learn that these are caused by the existence
+of \emph{cubic, quartic and sextic twists}.
 
 Thus given a solution the above equation, we may easily write down
 a curve of order $q+t-1$ or $q-t-1$.
@@ -602,16 +623,18 @@ Consider the polynomials $q = x^2 + 1, t = \pm x + 1$.
 It can be checked that $q(x) + 1 - t(x) \mid q(x)^6 - 1$.
 
 The CM equation becomes $D V^2 = 3 x^2 \pm 2 x + 3$. If we make
-the substitution $U = 3x \pm 1$ then we have the generalized Pell equation
+the substitution $U = 3x \pm 1$ then we have
+the \emph{generalized Pell equation}, or a \emph{Pell-type
+equation}, the solution of which is given in Section~\ref{sec:pelleqn}.
 \[
 U^2 - 3DV^2 = -8
 \]
 
-Thus:
+We can now give a procedure for constructing embedding degree 6 curves.
 
 \begin{enumerate}
 \item
-Choose $D$ and solve the Pell-type equation
+Choose $D$ and solve
 \[ U^2 - 3DV^2 = -8 \]
 \item
 We have $U = \pm 1 \pmod 3$. Set $x = (-1 \pm U) / 3$
@@ -620,11 +643,11 @@ Check that $q = x^2 + 1$ is prime
 \item
 Recall $t = \pm x + 1$.
 Check that $q - t + 1 = q \mp x$ has a large prime factor $r$.
-(Ideally it should be prime.)
+Ideally $r$ is also prime.
 \item
 Check that $r$ does not divide $q^j = 1$ for any positive integer $j < k$.
-(This can be omitted in practice as it is extremely unlikely this will
-occur.)
+This can be omitted in practice as it is extremely unlikely this will
+occur.
 \item
 Use the CM method to construct a curve $E$ with order $q \mp x$.
 \end{enumerate}
@@ -678,7 +701,7 @@ The choices $h_{max} = 4$ and $D_{max} \approx 10^8$ or so are reasonable.
 \begin{algorithmic}[1]
 \FOR {$h \gets 1$ to $h_{max}$}
     \FOR {$m \gets 1$ to $4h - 1$}
-	\FOR {$D \gets 1$ to $D_{max}$ such that $D$ is squarefree}
+	\FOR {all fundamental discriminants $D \le D_{max}$}
 	    \STATE solve $DV^2 = 4 h \Phi_k(x) / m - (x-1)^2$ for $x, V$ (generalized Pell equation)
 	    \STATE $r\gets \Phi_k(x) /m$
 	    \STATE $n\gets hr$
@@ -728,8 +751,10 @@ then the curve
 \[
 y^2 = x^3 + 3k x + 2k
 \]
-has order $q - 1$ or $q + 3$. Taking the twist if necessary,
-find the curve with order $q-1$.
+has order $q - 1$ or $q + 3$. If it has order $q+3$, choose some
+quadratic nonresidue $c \in \Fq$, and use the following curve instead:
+\[ y^2 = x^3 + 3 k c^2 x + 2 k c^3 \]
+This is the quadratic twist of Section~\ref{sec:quadratictwists}.
 
 Note $r \mid q-1$ hence the Tate pairing on this curve can be computed
 in $\F_q$. For most applications we choose $r$ to be prime but composite
@@ -781,7 +806,7 @@ residue and $n(1,g) = O$, where $g$ is a square root of $k + 1$.
 \section {Type G Curves}
 
 Freeman unified many approaches for finding curves in a single
-framework\cite{freeman06}, and also showed how to construct curves with
+framework~\cite{freeman06}, and also showed how to construct curves with
 embedding degree 10, with $r$ and $q$ around the same size.
 Freeman also notes that it seems unlikely that curves
 with embedding degrees other than the ones described in this chapter
@@ -875,16 +900,26 @@ Type F and G pairings allow only slightly shorter inputs, but are slower.
 On the other hand, they guard against future improvements to
 finite field discrete log algorithms.
 
-\section {Generalized Pell Equations}
+\section{\label{sec:pelleqn}Generalized Pell Equations}
 
-For completeness we describe how to solve the Diophantine equations that arise
+For completeness we describe how to solve the Pell-type equations that arise
 when searching for some of the above pairing types.
 
 Consider the \emph{Pell equation}
 \[ x^2 - D y^2 = 1 \]
 where $D$ is not a square, $x, y$ are integers.
-We solve such an equation using the
-continued fraction expansion of $\sqrt{D}$:
+We solve such an equation by examining the
+continued fraction expansion of $\sqrt{D}$.
+Recall a continued fraction expansion of a real number $x$
+is obtained by finding
+an integer $a_0$ and positive integers $a_1, a_2, ...$ such that
+\[
+x = a_0 + {1 \over {a_1 + {1 \over {a_2 + ... }} }}
+\]
+which we also denote by $x = [a_0,a_1,a_2,...]$.
+Consulting any text on basic number theory reveals that
+this sequence of integers can be found by computing the following.
+
 \[
 \begin{array}{rcl}
 P_0 &=& 0 \\
@@ -911,12 +946,12 @@ These satisfy
 
 It turns out that $(x, y) = (p_k, q_k)$ is the smallest positive
 integer equation
-of the Pell equation for odd $k$, and $(x, y) = (p_{2k+1}, q_{2k+1}$ is for
-even $k$. Denote this minimal positive solution by $(t, u)$.
+of the Pell equation for odd $k$, and $(x, y) = (p_{2k+1}, q_{2k+1})$
+is smallest for even $k$. Denote this minimal positive solution by $(t, u)$.
 Then all positive solutions $(x, y)$ to the Pell equation can be found via
 \[ x + y\sqrt{D} = (t+u\sqrt{D})^n\]
-(for all positive integers $n$). The negative solutions (which we
-never need) in this case are trivial to find from the positive solutions.
+for all positive integers $n$. We never need the negative solutions,
+but these are trivial to find from the positive solutions in any event.
 
 \subsection {Generalized Pell Equations}
 
@@ -956,7 +991,7 @@ $x^2 - Dy^2 = N$.
 Append any solutions $(x,y)$ to our list. Also append $(x,-y)$ if
 it does not appear in the family of solutions generated by $(x, y)$.
 
-\section {Hilbert Polynomials}
+\section {\label{sec:hilbertpoly}Hilbert Polynomials}
 
 We quote an algorithm to compute Hilbert class
 polynomials as described by Cohen~\cite[section 7.6.2]{1993-cohen}.
@@ -989,7 +1024,8 @@ $b^2 - 4ac = -D$, $|b| \le a \le \sqrt{|D|/3}$, $\gcd(a,b,c)=1$ and
 if $|b| = a$ or $a=c$ then $b\ge0$.
 
 Hence the following algorithm computes Hilbert class polynomials.
-Here, $P$ is a polynomial variable, and $D = 0, -1 \pmod 4$.
+Here, $P$ is a polynomial variable, and $D$ is a fundamental discriminant.
+Recall this means $D > 0$, $D = 0, -1 \pmod 4$ and no odd square divides $D$.
 
 \begin{algorithm}
 \caption {Hilbert class polynomial computation: $P \gets H_D(X)$}
@@ -1053,8 +1089,8 @@ which can be computed using the following algorithm~\cite[Algorithm 5.3.5]{1993-
 \section {\label{sec:balscurves}Arbitrary Embedding Degree}
 
 What if other embedding degrees are desired? It turns out that given any
-positive integer $k$ we can in fact construct pairings with embedding degee $k$,
-but the subgroup size $r$ will have far fewer bits than $q$,
+positive integer $k$ we can in fact construct pairings with embedding
+degree $k$, but the subgroup size $r$ will have far fewer bits than $q$,
 the size of the field.
 
 Define $\rho = \lg q / \lg r$. The quantity $\rho$ is in some sense
@@ -1072,7 +1108,7 @@ curves of Scott and Barreto~\cite{moremnt}.
 Let $E(\Fq)$ be an elliptic curve and suppose it has
 $n = q - t + 1$ points, where $t$ is the trace of Frobenius.
 Let $n = h r$ where $r$ is prime.
-Then the embedding degree (of the subgroup of order $r$) of $E(\Fq)$ is $k$.
+Then the embedding degree (of the subgroup of order $r$) of $E(\Fq)$ is $k$
 if and only if
 $r \mid \Phi_k(t-1)$ and $r \nmid \Phi_i(t-1)$ for all $1 \le i < k$,
 where $\Phi_i$ denotes the $i$th cyclotomic polynomial.
@@ -1110,7 +1146,7 @@ $r$ has embedding degree $k$.
 \begin{proof}
 By construction, $t-1 = x^d$, hence $\Phi_i(t-1) \mid x^{id} - 1$ for
 any positive integer $i$.
-By choice of $r$
+By choice of $r$ we have
 $r \mid \Phi_k(x)$ thus $r \mid x^k - 1 \mid x^{kd} - 1$ and
 $r \nmid \Phi_i(t-1)$.
 
@@ -1153,7 +1189,7 @@ $\Phi_k$ result in higher degree Diophantine equations which are not easily
 solved.
 Instead, if $D$ is now viewed as a variable and $x$ if fixed,
 (and $h$ is still fixed) we can find integer solutions for $D$ and $V$
-easily. Unfortunately, for cryptographically-useful choices of $x$,
+easily. Unfortunately, for cryptographically useful choices of $x$,
 the integer $D$ is too large to allow the Hilbert class field polynomial $H_D$
 to be computed.
 However, by using small $x$ we can exhibit toy examples of high

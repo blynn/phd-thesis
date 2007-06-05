@@ -24,7 +24,7 @@ pairing compression, though most of these techniques
 either depend on certain properties of the cryptosystem,
 or require it to be modified.
 
-\section {Twist Curves}
+\section {\label{sec:quadratictwists}Twist Curves}
 
 Let $E$ be an elliptic curve $Y^2 = X^3 + a X + b$ in $\Fq$ where
 $q$ is a prime power.
@@ -207,7 +207,7 @@ Define the map $\Psi:E'\rightarrow E(\F_{q^k})$ by
 Let $E : y^2 = x^3 + a x + b$ be an elliptic curve over $\Fq$,
 and $P$ be a point of prime order $r$.
 Suppose the embedding degree $k$ of $G = \langle P \rangle$ is even.
-Write $d = 2k$. Let $E'$ be the twist of $E$ in $\Fqd$.
+Write $k = 2d$. Let $E'$ be the twist of $E$ in $\Fqd$.
 
 Then $r \mid \#E'(\Fqd)$.
 \end{theorem}
@@ -437,7 +437,7 @@ a distortion map $\phi$ exists for this curve.
 Let $f$ be the Weil or Tate pairing for this
 curve.
 
-We can symmetric pairings defined in Section~\ref{sec:symmetricpairing}
+We can instantiate the symmetric pairings of Section~\ref{sec:symmetricpairing}
 (i.e. the input groups are the same, cyclic and lie over smaller fields)
 by defining $G = E(\Fq)[r]$,
 $G_T$ to be the group of $r$th roots of unity in $\Fqk$.
@@ -548,7 +548,7 @@ Let us also work through the $k = 6$ case. Suppose we have $\F_{q^6}$
 implemented as $\Fq[\alpha]$. Then
 \[ q^6 - 1 = \Phi_6(q) (q^4 + q^3 - q - 1)\]
 (where $\Phi_6(q) = q^2 - q + 1$).
-If $a = u_0 + u_1 \alpha + ... + u^5 \alpha^5$ we have
+If $a = u_0 + u_1 \alpha + ... + u_5 \alpha^5$ we have
 \[ b =
 a^{q^4 + q^3 - q - 1}
 = \frac{
@@ -800,7 +800,7 @@ smaller cyclotomic polynomial).
 
 These are precisely the conditions
 that occur in the XTR cryptosystem~\cite{xtr}, the
-optimizations and algorithms of which we can use.
+optimizations and algorithms of which we quote here.
 
 Let $\tr$ denote the $\F_{q^2}$-trace in $\F_{q^6}$,
 that is
@@ -821,11 +821,11 @@ Then for any integer $n$,
 we can use a repeated-squaring-like algorithm
 to compute $\tr(x^n)$ from $\tr(x)$.
 
-We have $\tr (x^n) = (\tr(x^{-n}))^p$ so
+One can show $\tr (x^n) = (\tr(x^{-n}))^q$ so
 without loss of generality assume $n \ge 0$.
 Trivially $c_0 = 3, c_1 = \tr(x)$
 and $c_2, c_3, c_4$ can be computed easily
-using the above identities, e.g. $c_2 = c_1^2 - 2c_1^p$.
+using the above identities, e.g. $c_2 = c_1^2 - 2c_1^q$.
 Otherwise:
 
 \begin{enumerate}
@@ -992,14 +992,14 @@ sped up. Furthermore, if $r$ is chosen to
 a base 3 analogue of a Solinas number $3^a \pm 3^b \pm 1$,
 then Miller's algorithm is much faster.
 
-\section {Higher Degree Twists}
+\section {\label{sec:hightwists}Higher Degree Twists}
 
 We quote facts neatly summarized by
 Hess, Smart and Vercauteren~\cite{hsv}.
 
-Let $E$ be an elliptic over $\Fq$ where $q\ge 5$ is prime.
-Let $t$ be the trace of Frobenius, that
-is $t$ satisfies $\#E(\Fq) = q-t+1$.
+Let $E$ be an elliptic curve over $\Fq$ where $q\ge 5$ is prime.
+Let $t$ be the trace of Frobenius, that is,
+$t$ satisfies $\#E(\Fq) = q-t+1$.
 Table~\ref{tbl:twistcurves}
 describes the twists of $E$
 for various choices of $v \in \F_q^*$.
