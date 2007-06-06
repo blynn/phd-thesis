@@ -326,7 +326,6 @@ One only needs to compute in $\Fqk$ for a pairing operation.
 In particular,
 when $k=2$ all cryptosystem operations except for the pairing
 can be computed in $\Fq$.
-
 More generally, for $k=2d$ where $d > 1$,
 if $\Fqk$ is implemented as an extension of $\Fq$ using
 a minimal polynomial consisting only of terms of even degree (that is as
@@ -341,7 +340,10 @@ its distortion map can be thought of as the
 map $\phi$ above that takes points on the twist curve $E'(\Fq)$
 to $E(\F_{q^2})$, since $E' = E$ in this case.
 
-A dilemma arises with type B curves however.
+A dilemma arises with type B curves however:
+
+\subsection {\label{sec:twistcurvetradeoffs}Twist Curve Trade-offs}
+
 Recall a type B curve is given by
 $E : y^2 = x^3 + 1$
 over a field $\Fq$.
@@ -373,6 +375,21 @@ This allows us to eliminate denominators as described in the following
 section, but also means we lose symmetry, since the points from $G_2$
 lie in a different curve.
 \end{enumerate}
+
+Some cryptosystems require DDH to be difficult in both input groups. In
+such cases we must use the trace zero group for the second input group,
+otherwise the trace map enables the pairing to break DDH in $G_2$.
+Other schemes want DDH hard in $G_1$ only, but also a surjective map
+from $G_2$ to $G_1$, in which case we cannot use the trace zero group.
+
+Suppose $G_2$ must be cyclic in an asymmetric pairing.
+Then if we want the ability to hash to $G_2$,
+we must use the trace zero group, and thus cannot have an efficiently
+computable isomorphism from $G_2$ to $G_1$.
+Note we can hash to a point of trace zero
+by first hashing to a point $Q \in E(\F_{q^2})$ and returning $\Phi(Q) - Q$.
+Otherwise, if hashing is not needed for $G_2$, we may pick any point
+$Q \in E(\F_{q^2})$ and use $G_2 = \langle Q \rangle$.
 
 \section {\label{sec:denomelim}Denominator Elimination}
 

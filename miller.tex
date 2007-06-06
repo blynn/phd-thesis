@@ -264,10 +264,6 @@ with divisor
 \[ (V) = (P)(-P) . \]
 \end{description}
 
-One can define evaluation of a function at a divisor by
-\[ f( \prod_P (P)^{a_P} ) = \prod_P f(P)^{a_P} \]
-but we shall only use this notation in explanations that can be skipped.
-
 \section {The Weil Pairing}
 
 Earlier papers on pairing-based cryptosystems advocated the Weil pairing.
@@ -311,7 +307,7 @@ alter it once we have made a choice.
 
 Finding explicit expressions for these functions is infeasible for
 cryptographically useful pairings. Instead, we will soon describe
-an algorithm, known as \emph{Miller's algorithm}~\cite{miller}
+an algorithm, known as \emph{Miller's algorithm}~\cite{miller,millerpub}
 that evaluates these functions in a lazy fashion at the required
 points. This algorithm resembles a typical exponentiation routine
 that performs repeating squaring.
@@ -355,10 +351,28 @@ For efficiency, if possible we have $k > 1$, and choose
 $G = E(\Fq)[r]$, namely the
 group of points $P \in E(\Fq)$ satisfying $r P = O$.
 
-We note that many of the above can be proved
-using a fact known as Weil reciprocity~\cite{bf}:
-for any rational function $f, g$
-we have $f((g)) = g((f))$.
+\subsection {Weil Reciprocity}
+
+Many of the previous statements, including the fact that the
+pairing is well-defined (in other words, the choices of $R,S$ above
+do not matter) and several of the listed properties, can be proved using
+a fact known as Weil reciprocity~\cite{bf}.
+
+First, we define evaluation of a rational function $f$
+at a divisor $\prod_P P^{a_P}$  by
+\[ f( \prod_P (P)^{a_P} ) = \prod_P f(P)^{a_P} \]
+Weil reciprocity states that
+for any rational functions $f, g$,
+\[f((g)) = g((f)) , \]
+that is, evaluating $g$ at the divisor of $f$ produces the
+same result as evaluating $f$ at the divsor of $g$.
+
+Intuitively, Weil reciprocity can be thought of as a generalization
+of the much simpler version of this statement for polynomials: given
+two polynomials $p, q$, the result
+of evaluating $p$ at the zeroes of $q$ and multiplying clearly
+has the same absolute value as evaluating $q$ at the zeroes of
+$p$ and multiplying.
 
 \section {The Tate Pairing }
 
@@ -438,8 +452,10 @@ We see now why we cannot hash into $G_2$ in general if it is required
 to be cyclic.
 In the case of the Weil pairing, we can easily hash to a point of $E[r]$,
 but it is not known how to hash to a point of
-some cyclic subgroup of $E[r]$ of order $r$ that is not $G$. 
-For the Tate pairing we have a similar problem.
+some designated cyclic subgroup of $E[r]$ of order $r$ that is not $G$. 
+For the Tate pairing we have a similar problem. There is one exception
+that we mention in Section~\ref{sec:twistcurvetradeoffs}: we can hash to the
+\emph{trace zero group}.
 
 Cryptosystems that require
 symmetric pairings described in Section~\ref{sec:symmetricpairing} with
@@ -461,7 +477,7 @@ For the Weil pairing we need to evaluate some rational function
 $f_P$ with divisor $(P+R)^r /(R)^r$.
 For the Tate pairing we need to evaluate some rational funciton
 $f_P$ with divisor $(P)^r$.
-In both cases, we can do this using Miller's algorithm~\cite{miller}.
+In both cases, we can do this using Miller's algorithm~\cite{miller,millerpub}.
 
 For any points $U, V$,
 let $L_{U,V}(X,Y)$ be an equation for a line through $U$ and $V$,

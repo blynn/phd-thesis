@@ -460,7 +460,7 @@ points can be represented by their $y$-coordinate alone since there is
 a unique $x$ for each value of $y$.
 
 Type B have one drawback which we discuss in
-Section~\ref{sec:twistcurveremarks}. Unlike the previous type,
+Section~\ref{sec:twistcurvetradeoffs}. Unlike the previous type,
 there is a certain optimization that
 only applies if we forgo symmetry of the pairing. One must choose between
 symmetry and efficiency in this case.
@@ -530,7 +530,7 @@ If so, set $E$ to the corresponding curve equation.
 \end{enumerate}
 
 Table~\ref{tbl:typec} shows the first seven cryptographically useful curves
-found by this algorithm. Evidently they are far and few between.
+found by this algorithm. Evidently they are few and far between.
 Note the third entry has $l = 11^2$. Although this is a fairly low
 prime, there has been some evidence suggesting that Weil descent attacks
 are still ineffectual for this case~\cite{ghsonodd}.
@@ -890,8 +890,13 @@ Of course, size is not the only factor. If one must have
 a symmetric pairing, one is limited to using A, B, C or E pairings.
 
 If speed is the top priority, then A or B pairings should be used. If symmetry
-can be sacrificed as well, then perhaps B pairings are the better choice because
+is not needed, then B pairings are the better choice because
 they also allow faster random point generation and point compression.
+
+When asymmetric pairings are required, for example when DDH must be intractable
+in at least one of the input groups, one must use D, F, or G pairings.
+Depending on the needed assumptions, one must also select the second input
+group carefully as in Section~\ref{sec:twistcurvetradeoffs}.
 
 If a particular group order $r$ is required, one must use A, B or E pairings.
 
@@ -914,7 +919,7 @@ Recall a continued fraction expansion of a real number $x$
 is obtained by finding
 an integer $a_0$ and positive integers $a_1, a_2, ...$ such that
 \[
-x = a_0 + {1 \over {a_1 + {1 \over {a_2 + ... }} }}
+x = a_0 + \frac{1}{a_1 + \frac{1}{a_2 + ...}}
 \]
 which we also denote by $x = [a_0,a_1,a_2,...]$.
 Consulting any text on basic number theory reveals that

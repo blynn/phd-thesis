@@ -542,6 +542,14 @@ those that complain that elliptic curve cryptography is controversial,
 too experimental and untested must qualify
 their remarks by making exceptions for singular curves!
 
+Needless to say, it is entirely possible that researchers may
+one day discover special discrete log algorithms that work only for
+singular curves, in which case we are left only with finite fields for
+cryptography. Similarly, if a subexponential discrete log algorithm applicable
+to any elliptic curve were found, then again finite fields would be the only
+reasonable choice because elliptic curves are less efficient for the same
+field size.
+
 It is clear that if an efficiently bilinear nondegenerate pairing were found
 for singular curves then the Decisional Diffie-Hellman problem could be broken
 in finite fields.

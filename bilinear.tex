@@ -196,12 +196,9 @@ curves due to a correspondence between certain singular curves and
 multipicative groups of finite fields, which we shall explicitly demonstrate
 later.
 
-\section{Bilinear Maps}
-
-We begin with the original and simplest abstract definition of the pairing.
-
 \section{\label{sec:symmetricpairing}The Symmetric Pairing}
 
+We begin with the original and simplest abstract definition of the pairing.
 Let $G, G_T$ be cyclic groups of prime order $r$.
 Let $g$ be a generator of $G$.
 A \emph{bilinear pairing} or \emph{bilinear map}
@@ -296,10 +293,12 @@ for a group $G$ of prime order $r$, and let $e$ be a bilinear map
 on $G$.
 
 \begin{description}
-\item [Bilinear Diffie-Hellman Problem~\cite{bf,j}.]
-Given $g,g^x,g^y,g^z$ compute $e(g,g)^{xyz}$
-\item [Decisional Bilinear Diffie-Hellman Problem~\cite{bf}.]
+\item [Bilinear Diffie-Hellman Problem~\cite{bf}.]
+Given $g,g^x,g^y,g^z$ compute $e(g,g)^{xyz}$. This assumption
+was implicitly used before it was formally defined~\cite{sok, j}.
+\item [Decisional Bilinear Diffie-Hellman Problem~\cite{bbibe}.]
 Given $g,g^x,g^y,g^z,e(g,g)^w$, determine if $w = x y z$.
+This has also been referred to as BDDH~\cite{bf}.
 \item [$q$-Strong Diffie-Hellman Problem~\cite{bbshort}.]
 Given $g,g^x,...,g^{(x^q)}$, compute $c, g^{1/(x_c)}$
 for any $c\in\{1,...,r-1\}$.
@@ -422,10 +421,10 @@ This definition also allows hardness assumptions that were previously
 impossible. For example, some schemes such as the group signature scheme
 of Boneh, Boyen and Shacham~\cite{bbs} require discrete log, CDH and
 co-CDH to be hard in $G_1, G_2$ and also DDH to be hard in $G_1$.
-Other cryptosystems still may
-desire DDH to be hard in $G_2$, or require an efficiently computable
+Other cryptosystems still require in addition
+DDH to be hard in $G_2$, or require an efficiently computable
 group isomorphism $\phi:G_2 \rightarrow G_1$, all of which are possible
-with this formal definition.
+under this formal definition.
 
 We have not required $r$ to be prime. A composite group
 order is useful for some cryptosystems\cite{bgn},
