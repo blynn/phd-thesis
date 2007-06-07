@@ -6,6 +6,9 @@ $r$-torsion points.
 They can be defined using \emph{rational functions}.
 They output an element of a finite field that is an $r$th root of unity.
 
+We shall state facts whose proofs can be found in
+many textbooks on elliptic curves such as Silverman~\cite{silverman}.
+
 \section {Torsion Points}
 
 Let $K$ be a finite field of characteristic $q$, so that
@@ -25,10 +28,11 @@ The case when $r$ is not coprime
 to $q$ leads to \emph{the anomalous attack}~\cite[Section V.3]{bss}
 which breaks discrete log in linear time.
 
-It can be proved~\cite{silverman} that for some integer $k \ge 1$,
-$E(\Fqk)[r]$ contains exactly $r^2$ points and is isomorphic to
-$\mathbb{Z}_r^+ \times \mathbb{Z}_r^+$,
-and furthermore, for all $k' \ge k$ we have $E(\mathbb{F}_{q^{k'}})[r]
+It can be proved that for some integer $k \ge 1$,
+$E(\Fqk)[r]$ contains exactly $r^2$ points and is in fact the direct product
+of two cyclic groups of order $r$, that is, isomorphic to
+$\mathbb{Z}_r \times \mathbb{Z}_r$.
+Furthermore, for all $k' \ge k$ we have $E(\mathbb{F}_{q^{k'}})[r]
 = E(\Fqk)[r]$.
 Roughly speaking, there are no other $r$-torsion points beyond the
 first $r^2$ points found, no matter how many times we extend the field.
@@ -36,10 +40,8 @@ first $r^2$ points found, no matter how many times we extend the field.
 We define $E[r] = E(\Fqk)[r]$, the set of
 \emph{$r$-torsion points} of $E$.
 
-It can be shown that $E[r]$ is the product of two cyclic groups of order $r$:
-
+Thus the above isomorphism may be written
 \[ E[r] \cong \mathbb{Z}_r \times \mathbb{Z}_r . \]
-
 When $r=2$ this is easy to see: a point has order 2 if and only if it has
 a zero $y$-coordinate. Since $E$ is nonsingular,
 $x^3 + ax + b = 0$ has three distinct solutions, thus we can always find
@@ -60,8 +62,7 @@ input is from $E(\Fq)[r]$.
 
 We study the behaviour of quotients of polynomials in two variables on
 points on an elliptic curve.
-
-We denote the ring of polynomials in two variables $X,Y$
+Denote the ring of polynomials in two variables $X,Y$
 with coefficients in $\Fqk$ by $\Fqk[X,Y]$. 
 
 Let $E$ be an elliptic curve $Y^2 = X^3 + aX + b$ over $\Fqk$.
@@ -81,23 +82,28 @@ Elements of $\Fqk(E)$ can be written in the form
 $f(X,Y) / g(X,Y)$ where $f, g$ are polynomials in two variables $X, Y$
 and $g$ is not a multiple of $E$.
 
-\section {Curve Endomorphisms}
+\section {\label{sec:eigenspace}Curve Endomorphisms}
 
 Given a point $P$ and integer $m$ consider the "\emph{multiplication-by-$m$}"
 map $[m]$ given by \[ P \mapsto m P . \]
 If $P$ is viewed as a pair of variables $(X,Y)$, this map
 can be written as $(f(X,Y), g(X,Y))$ for some rational functions $f,g$.
-(Using the explicit formulas for point addition and doubling
+Using the explicit formulas for point addition and doubling
 given in the previous chapter, we can write down
 explicit formulas for $f$ and $g$ for any $m$, but even for relatively
-small $m$ the expressions are unwieldy.)
+small $m$ the expressions are unwieldy.
 
 This is an example of a \emph{curve endomorphism}, because points of
-$E(\Fqk)$ are mapped to points of $E(\Fqk)$. Another important example
+$E(\Fqk)$ are mapped to points of $E(\Fqk)$, and furthermore the map
+preserves point addition. Another important example
 is the $q$th power \emph{Frobenius map} $\Phi$,
 given by $(X, Y) \mapsto (X^{q}, Y^{q})$. In general one defines
 $q^k$th power Frobenius maps but we only define the $q$th power map,
 and if we need higher powers $k$ we shall write $\Phi^k$.
+
+We shall also need the \emph{trace map}, which is defined by
+\[ \tr P = P + \Phi(P) + ... + \Phi^{k-1}(P) \]
+which takes points of $E(\Fqk)$ to $E(\Fq)$.
 
 We state another well-known theorem from the theory of elliptic curves.
 Below, $f \circ g$ denotes the map defined by $P\mapsto f(g(P))$.
@@ -121,9 +127,7 @@ must be $q$ or $1$. We can describe the corresponding eigenspaces.
 Clearly $E(\Fq)[r]$ is a $1$-eigenspace, hence if $E[r] \subset E(\Fq)$
 then $\Phi$ is simply the identity.
 
-Otherwise consider the set $G = \{P \mid \tr P = O \}$
-where the trace is defined by
-\[ \tr P = P + \Phi(P) + ... + \Phi^{k-1}(P)  .\]
+Otherwise consider the set $G = \{P \mid \tr P = O \}$.
 
 We know this set contains more than just the point at infinity
 since for any $P \in E[r] \setminus E(\Fq)[r]$,
@@ -135,7 +139,8 @@ As $G$ cannot be the $1$-eigenspace (which has already been accounted for;
 $E(\Fq)[r]$ is the $1$-eigenspace), $G$ must be the $q$-eigenspace,
 which implies $|G| = r$.
 
-This result will be important later, so we restate it:
+This result is important in Section~\ref{sec:twistcurves},
+so we restate it:
 
 \begin{theorem}
 The set of points of trace zero
@@ -145,8 +150,9 @@ and every $P \in G$ satisfies $\Phi(P) = q P$.
 
 \section {Zeroes and Poles}
 
-When we study a polynomial $f(X)$, the roots of $f(X)$ play an important
-role. Given the roots, or zeroes, of a polynomial $f$, we can
+When we study a polynomial $f(X)$, the roots, or zeroes,
+of $f(X)$ play an important
+role. Given the zeroes of a polynomial $f$, we can
 instantly write down an expression for $f$ that is unique up to a constant
 multiple.
 Extending this idea, when considering the quotient of
@@ -161,7 +167,7 @@ by multiplying equations of appropriate vertical lines:
 
 \[ f(X)/g(X) = (X-\alpha_i)^{a_i} \]
 
-One can view roots of a polyonmial $f$
+One can view roots of a polynomial $f$
 as places where the curve $Y = f(X)$
 intersects with the curve $Y = 0$. We now generalize by replacing $Y=0$
 with an elliptic curve.
@@ -170,9 +176,8 @@ intersection between $f(X,Y)$ and $E$.
 Again, we call these points \emph{zeroes} of $f$.
 
 Complications occur due to the point at infinity $O$.
-We omit the details~\cite{silverman} since we do not wish to discuss
-projective geometry, but it turns out that
-every line
+We omit the details since we do not wish to discuss
+projective geometry, but it turns out that every line
 $\alpha X + \beta Y + \gamma$
 that intersects a given elliptic curve $E$ has a pole
 at $O$ of some multiplicity, though this is not immediately suggested
@@ -225,11 +230,10 @@ For this chapter we break with tradition and use multiplicative
 notation for divisors instead. In addition, we will omit the
 number of poles or zeroes at $O$, as we are ignoring the behaviour of
 rational functions at that point.
-For divisors of rational functions, we in fact do not lose any information 
+For divisors of rational functions, we actually do not lose any information 
 because if we cared,
 we could always recover the order of $(O)$
-from the orders of the finite points
-simply by negating of the sum of their orders.
+simply by negating of the sum of the orders of the finite points.
 
 Let $D$ be the divisor with zeroes and poles $P_1,...,P_n$
 of multiplicities $a_1,...,a_n$.
@@ -237,8 +241,8 @@ We shall write $D$ as
 \[ D = (P_1)^{a_1} ... (P_n)^{a_n} . \]
 
 Our unusual notation has several advantages. Using additive group
-notation for the elliptic curve and mutlplicative notation for the divisor
-group emphasizes the difference between them and reduces the likelihood of
+notation for the elliptic curve and multiplicative notation for divisors
+emphasizes the difference between them and reduces the likelihood of
 confusing the two. When rational functions are multiplied together,
 their divisors can be multiplied together, which is arguably
 more natural than adding them.
@@ -312,7 +316,7 @@ that evaluates these functions in a lazy fashion at the required
 points. This algorithm resembles a typical exponentiation routine
 that performs repeating squaring.
 
-One can prove~\cite{silverman} that
+One can prove that
 \begin{enumerate}
 \item
 $f(a P, b Q) = f(P,Q)^{a b}$ for all $P, Q \in E[r]$ and all integers $a, b$.
@@ -337,20 +341,6 @@ The second to last property, known as antisymmetry, is a property the
 Tate pairing does not have. However it does not yet have
 any use in cryptography.
 
-Let $P$ be a generator of $G$. Suppose
-we have a linear map
-\[ \phi : E[r] \rightarrow E[r] \]
-where $Q = \phi(P)$ linearly independent to $P$ and also generates
-a group of order $r$.
-Then defining $e:E[r]\times E[r]\rightarrow \Fqk$ by
-\[ e(g,h) = f(g,\phi(h)) \]
-for all $g, h \in G$
-gives a symmetric bilinear nondegenerate map.
-
-For efficiency, if possible we have $k > 1$, and choose
-$G = E(\Fq)[r]$, namely the
-group of points $P \in E(\Fq)$ satisfying $r P = O$.
-
 \subsection {Weil Reciprocity}
 
 Many of the previous statements, including the fact that the
@@ -370,7 +360,7 @@ same result as evaluating $f$ at the divsor of $g$.
 Intuitively, Weil reciprocity can be thought of as a generalization
 of the much simpler version of this statement for polynomials: given
 two polynomials $p, q$, the result
-of evaluating $p$ at the zeroes of $q$ and multiplying clearly
+of evaluating $p$ at the zeroes of $q$ and multiplying
 has the same absolute value as evaluating $q$ at the zeroes of
 $p$ and multiplying.
 
@@ -380,9 +370,8 @@ Let $E$ be an elliptic curve containing $n$ points over a field $\mathbb{F}_q$.
 Let $G$ be a cyclic subgroup of $E(\mathbb{F}_q)$ of order $r$ with $r, q$
 coprime. Let $k$ be the smallest positive integer such that $r \mid q^k - 1$.
 For brevity write $K = \Fqk$.
-
 An equivalent characterization is that
-$\Fqk$ is the smallest extension of $\Fq$ containing the $r$th roots of unity.
+$K = \Fqk$ is the smallest extension of $\Fq$ containing the $r$th roots of unity.
 
 The Tate (or Tate-Lichtenbaum) pairing
 \[
@@ -431,15 +420,15 @@ input $Q$ satisfies $r Q = O$.
 
 We have now described the Weil and Tate pairings. It remains to show
 how they fit the abstract definitions given in Chapter 1.
-
 Let $E$ be some elliptic curve defined over $\Fq$ and let $G$ be some
 cyclic subgroup of points in $E(\Fq)$ of order $r$.
-Suppose the embedding degree of $G$ is $k > 1$.
+Suppose the embedding degree of $G$ is $k > 1$, which is usually the case
+in practice.
 
 Then by defining $G_1 = G$, $G_2 = E[r]$, and $G_T$ to be the $r$th roots
 of unity in $\Fqk$, the Weil pairing satisfies the abstract
 definition of a bilinear map given in Section~\ref{sec:generalpairing}.
-Fitting the Tate pairing to the definition is similar.
+Similarly, the Tate pairing fits the definition.
 
 With high probability, a random point $Q \in G_2$, does not
 lie in $G_1$, does not have trace zero,
@@ -454,28 +443,30 @@ In the case of the Weil pairing, we can easily hash to a point of $E[r]$,
 but it is not known how to hash to a point of
 some designated cyclic subgroup of $E[r]$ of order $r$ that is not $G$. 
 For the Tate pairing we have a similar problem. There is one exception
-that we mention in Section~\ref{sec:twistcurvetradeoffs}: we can hash to the
-\emph{trace zero group}.
+that we discuss in Section~\ref{sec:twistcurvetradeoffs}: we can hash to the
+trace zero group. (In fact, the proof in the last section contains a statement
+that suggests how we might do this.)
 
-Cryptosystems that require
-symmetric pairings described in Section~\ref{sec:symmetricpairing} with
-cyclic input groups to which strings can be hashed can only be implemented
-using supersingular curves and distortion maps, which
-we discuss in Section~\ref{sec:inputrestriction}.
+Cryptosystems that require the
+symmetric pairings of Section~\ref{sec:symmetricpairing}
+and require input groups to which strings can be hashed can only be implemented
+using supersingular curves and distortion maps as in
+Section~\ref{sec:inputrestriction}.
 
-Some kinds of symmetric pairing can be obtained without resorting to
+Some kinds of symmetric pairings can be obtained without resorting to
 supersingular curves. We could treat $G_2$ as the first and second input
 groups and apply the map from $G_2$ to $G_1$ on the first
 input before a pairing computation. However, one must relinquish the
 ability to hash, or the requirement that the input groups be cyclic, or
 a combination of the two. Additionally, one must compute more
 in larger fields for the same level of security.
+The details can be found in Section~\ref{sec:twistcurvetradeoffs}.
 
 \section {Miller's Algorithm}
 
 For the Weil pairing we need to evaluate some rational function
 $f_P$ with divisor $(P+R)^r /(R)^r$.
-For the Tate pairing we need to evaluate some rational funciton
+For the Tate pairing we need to evaluate some rational function
 $f_P$ with divisor $(P)^r$.
 In both cases, we can do this using Miller's algorithm~\cite{miller,millerpub}.
 
@@ -486,14 +477,14 @@ let
 $V_{U}(X,Y)$ be an equation for a vertical line through $U$ (e.g.
 $X - x$, where $U = (x, y)$).
 
-Actually, $T_U$ and $V_U$ are unnecessary since
-$T_U = L_{U,U}$ and $V_U = L_{U,-U}$, but they are convenient notation.
-Also if $U = -U$ then $T_U$ is the same as $V_U$.
+Since $T_U = L_{U,U}$ and $V_U = L_{U,-U}$,
+defining $T_U$ and $V_U$ is unnecessary
+but they aid comprehension.
+Note if $U = -U$ then $T_U$ is the same as $V_U$.
 
 \subsection {The Weil Pairing}
 
-Let us handle the Weil pairing first. For an integer $k$, let
-$f_k$ be a rational function with divisor
+For an integer $k$, let $f_k$ be a rational function with divisor
 \[
 (f_k) = \frac{(P+R)^k}{(R)^k(kP)} .
 \]
@@ -564,13 +555,12 @@ so we could replace step 8 with
 $x \gets x \cdot L_{P+R, Z}(Q) / L_{R,Z+P}(Q)$
 and avoid computing and storing $x_1$, but unless
 $r$ has very low Hamming weight this is not a good trade
-because computing vertical lines is much cheaper than general lines.
+because vertical lines are much cheaper to compute than general lines.
 
 \subsection {The Tate Pairing}
 
 We now consider the Tate pairing. Recall we wish to compute
 $f_P(Q)$ where $f_P$ has divisor $(P)^r$.
-
 We can view our current situation as a special case of the above
 with $R = O$.
 Thus define the intermediate functions $f_k$ by
@@ -631,11 +621,12 @@ Note this algorithm can be viewed as the previous algorithm with $x_1 = 1$.
 
 \subsection {Intermediate Poles and Zeroes}
 
-There are complications however. The intermediate functions have zeroes
+We have in fact glossed over some complications.
+The intermediate functions evaluated during Miller's algorithm have zeroes
 and poles that eventually cancel out. If we were dealing with algebraic
 expressions for the rational function then we could manipulate
 them to remove these zeroes and poles at some stage.
-But since we are evaluating the function as we go,
+But since we are evaluating the function iteratively,
 this cannot be done, and attempting to evaluate an
 intermediate function at a zero
 or pole will cause problems.
@@ -643,8 +634,7 @@ or pole will cause problems.
 Recall we have an almost unrestricted choice for the points $R, S$ in
 the Weil pairing and also for the point $R$
 in the Tate pairing. To use Miller's algorithm, we choose them
-to avoid the zeroes or poles
-of the intermediate functions. We can simply
+to avoid the zeroes and poles of the intermediate functions. We can simply
 take points at random since there are only $O(t)$ bad choices.
 
 Alternatively we may ensure their coordinates do not lie in the
@@ -655,7 +645,7 @@ though we must still avoid choices such as $R = S$,
 and in the case of a Tate pairing, neither $R$ nor $Q + R$
 can be a zero or pole.
 
-We shall see that under some conditions there is a much simpler solution
+We shall see that under some conditions there is a much simpler fix
 for the Tate pairing.
 
 \section {Worked Examples}
@@ -670,8 +660,7 @@ E(\F_{59})[5] =
 Feeding any two of these points as inputs to the Weil pairing is pointless
 as the output will be 1 since they are linearly dependent. We must first
 find other 5-torsion points.
-
-The Tate pairing is also useless at the moment, because $5 \nmid 59 - 1$,
+The Tate pairing also does not function at the moment, because $5 \nmid 59 - 1$,
 
 But $5 \mid 59^2 - 1$, and we will see that $E(\F_{59^2})$ contains
 all 25 points of $E[5]$, so in the field extension $\F_{59^2}$
@@ -680,7 +669,7 @@ and Weil pairing exist and are nontrivial.
 Note $-1$ is a quadratic nonresidue in $\F_{59}$
 so we may write $\F_{59^2} = \F_{59}[i]$ where $i = \sqrt{-1}$.
 
-It also turns out that the so-called distortion map given by
+It turns out that the \emph{distortion map} given by
 $\phi(x,y) = (-x, i y)$ enables us to write down all of $E[5]$ easily.
 This map $\phi$ takes $G$ to another subgroup $G'$ in $E[5]$:
 \[ G' =
@@ -729,7 +718,7 @@ Since the second bit of $5 = 101_2$ is zero, the condition for the if statement
 is false and the next iteration begins. Now
 $f_4 = f_2^2 T_2 / V_4$, where
 \[ T_{2P} : 53 X + Y + 2 \]
-\[ V_{4P} : X + 34 \].
+\[ V_{4P} : X + 34 \]
 and we compute $x \gets x^2 T_{2P}(Q+S) / V_{4P}(Q+S)$.
 It can be checked $x = 58 + 23i$ now.
 \item
@@ -741,10 +730,9 @@ $L_{4P, P} = V_P$ which is given by
 and the algorithm stops as we have exhausted all the bits.
 \end{enumerate}
 
-Thus we have found that $f_P(Q+S) = 18+2i$, and yet we have not found
+Thus we have found that $f_P(Q+S) = 18+2i$, and yet we never derived
 an algebraic expression for the rational function $f_P$.
-
-We can repeat the above to find $f_P(S) = 10 + 30i$, but clearly a better way
+We can repeat the above to find $f_P(S) = 10 + 30i$, but a better way
 is to compute $f_P(S)$ concurrently to avoid repeating the same operations.
 In other words, we simultaneously calculate $f_P(Q+S)$ and $f_P(S)$, and
 as each equation for a certain line is found,
@@ -754,7 +742,6 @@ The computation of $f_Q(P+R)$ and $f_Q(R)$ is similar (note since
 $Q$ does not lie in $\Fq$ the $L,T,V$ equations will involve imaginary
 numbers), and it can be verified that
 $f_Q(P+R) = 27+25i$ and $f_Q(R)=10+41i$.
-
 At last we have
 \[
 f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P+R)/f_Q(R)} = 46+56i .
@@ -767,7 +754,7 @@ Again we walk through the computation of
 $f((25,30), (-25,30i))$.
 
 In a later chapter we shall show that in this case,
-for all $R$ we have $f_P(Q) = f_P(Q+R)/f_P(R)$.
+for any $R$ we have $f_P(Q) = f_P(Q+R)/f_P(R)$
 thus we only walk through the calculation of
 $f_P(Q)$.
 Nonetheless, calculating $f_P(Q+R)$ and $f_P(R)$ can be done in
@@ -823,14 +810,14 @@ by raising it to the power of $(q^k - 1)/r$:
 As expected, $(42 + 40i)^5 = 1$.
 
 \subsection {Remarks}
-We point out a few peculiarities in the above examples, that will
+We point out a few peculiarities in the above examples that will
 have significance later.
 
 In both examples,
 degenerate cases appear in the last iteration
 of the main loop.
 
-Also, the vertical line $V_P$ appears
+The vertical line $V_P$ appears
 in the second-last iteration as well as last iteration, effectively canceling
 itself out. After some thought it can be seen this will always happen
 for odd $r$.

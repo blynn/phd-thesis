@@ -184,17 +184,18 @@ and algorithms were discovered for elliptic curve cryptography,
 and encouragingly, a specialized elliptic curve discrete log algorithm
 has yet to be found. In other words, the fastest known way to break discrete log
 for a general elliptic curve is to use a algorithm for a generic
-cyclic group, such as Pollard rho or lambda method, implying that a group
-size of 160 bits is roughly equivalent to 1024-bit finite field security.
+cyclic group, such as the Pollard rho and lambda methods, implying that the
+security of a 160-bit elliptic curve group and a 1024-bit finite
+field are roughly equivalent.
 
 Thus currently elliptic curves present many advantages over finite fields.
 Despite more complex algorithms for basic operations, they are much faster
 and more compact due to a smaller group size.
 
-We note that finite fields can be viewed as a special case of elliptic
+In Section~\ref{sec:singular} we find that
+finite fields can be viewed as a special case of elliptic
 curves due to a correspondence between certain singular curves and
-multipicative groups of finite fields, which we shall explicitly demonstrate
-later.
+multiplicative groups of finite fields.
 
 \section{\label{sec:symmetricpairing}The Symmetric Pairing}
 
@@ -218,8 +219,9 @@ $e(g^a, g^b) = e(g,g)^{a b}$ for all $a, b \in \mathbb{Z}$
 
 A symmetric bilinear map is completely defined by the value it
 takes at $e(g,g)$. Essentially there is always exactly one bilinear map
-for any given cyclic group: if
-$e(g,g)=1$ then we have the degenerate case and the other $r-1$ maps are
+for any given cyclic group:
+we have the degenerate case when $e(g,g)=1$
+while the other $r-1$ maps are
 equivalent up to a constant,
 in the sense that if $e_1, e_2$ are nondegenerate bilinear maps then for
 some constant $c$ we have
@@ -227,14 +229,14 @@ then $e_1(g,h) = e_2(g,h)^c$ for all $g,h \in G$.
 The difficulty lies in finding such a map
 that is efficiently computable.
 
-We can immediately see the power of such a map: given
-$g, g^x, g^y, g^z$, then by bilinearity and nondegeneracy,
+We can immediately demonstrate power of such a map. Given
+$g, g^x, g^y, g^z$, by bilinearity and nondegeneracy,
 $z = x y$ if and only if
-$e(g, g^z) = e(g^x, g^y)$. In other words we can solve the Decisional
+$e(g, g^z) = e(g^x, g^y)$. In other words we can solve the decisional
 Diffie-Hellman problem.
 Thus cryptosystems relying on the intractability of this
 problem cannot be constructed on a cyclic group with
-a computable pairing, though soon we present a more general pairing
+a symmetric pairing, though later we present a more general pairing
 definition where DDH can still be difficult despite the presence of
 a bilinear map.
 
@@ -246,9 +248,9 @@ or discrete log problem using a pairing.
 With the abstract definition and some assumptions,
 we can readily construct cryptosystems.
 We have just noted that if cyclic group with such a
-bilinear map exists, then we have a group where the Computational
+bilinear map exists, then we have a group where the computational
 Diffie-Hellman
-problem is thought to be hard, yet the Decisional variant is easy to solve.
+problem is thought to be hard, yet the decisional variant is easy to solve.
 Such groups are sometimes called Gap Diffie-Hellman groups~\cite{op}, and
 imply a signature scheme,
 often referred to as the BLS Signature Scheme~\cite{bls}:
@@ -308,10 +310,11 @@ Just as an algorithm that solves discrete log can be used to solve
 the computational and decisional Diffie-Hellman problems, security reductions
 exist between some of these new problems~\cite{jouxsurvey}.
 
-The above signature scheme does not use any of these new assumptions,
-instead using the pairing to solve the decisional Diffie-Hellman problem.
-On the other hand some pairing-based cryptosystems not only require the
-pairing, they also rely on one or more of the above problems to be hard.
+The BLS signature scheme does not use any of these new assumptions,
+and merely employs the pairing to solve the decisional Diffie-Hellman problem.
+In contrast, other pairing-based cryptosystems such as the identity-based
+encryption scheme of Boneh and Franklin~\cite{bf} do rely on the hardness
+of one or more problems involving pairings.
 
 Sometimes a conventional cryptosystem suggests
 a pairing-based counterpart. For example,
@@ -367,7 +370,7 @@ pairing, and suppose that we wish to redesign
 the cryptosystem to instead use an asymmetric pairing defined above.
 
 It turns out that there is no
-known method to hash to an element of $G_2$, such that
+known method to hash to an element of $G_2$ such that
 its discrete log to some fixed base is unknown. We can hash to elements of
 $G_1$ and $G_T$, and perform all other cryptographically useful
 operations in $G_2$ such as picking a random element, multiplication
@@ -414,17 +417,20 @@ In this setting the hardness assumptions must be altered further.
 Depending on the scheme, we may have to assume certain problems are hard in
 both $G_1$ and $G_2$, or a combination of the two. For example, we may
 need to assume that given $g_1, g_1^x \in G_1$ and $g_2 \in G_2$,
-there is no efficient algorithm to compute $g_2^x$. (This particular
+there is no efficient algorithm to compute $g_2^x$. This last
 example is sometimes referred to as
-the computational co-Diffie-Hellman assumption~\cite{bls}.)
-This definition also allows hardness assumptions that were previously
+the computational co-Diffie-Hellman assumption~\cite{bls}.
+
+This definition also allows assumptions that were previously
 impossible. For example, some schemes such as the group signature scheme
 of Boneh, Boyen and Shacham~\cite{bbs} require discrete log, CDH and
 co-CDH to be hard in $G_1, G_2$ and also DDH to be hard in $G_1$.
 Other cryptosystems still require in addition
-DDH to be hard in $G_2$, or require an efficiently computable
-group isomorphism $\phi:G_2 \rightarrow G_1$, all of which are possible
-under this formal definition.
+DDH to be hard in $G_2$, require $G_2$ to be cyclic,
+or require an efficiently computable
+group isomorphism $\phi:G_2 \rightarrow G_1$, all of which are variations
+on this formal definition, and in Section~\ref{sec:twistcurvetradeoffs}
+we learn how to construct pairings for each case.
 
 We have not required $r$ to be prime. A composite group
 order is useful for some cryptosystems\cite{bgn},
@@ -448,7 +454,6 @@ $r$ is prime.
 Thus some care is needed when dealing with composite $r$.
 Facts about the pairing that are true for prime $r$ do not always carry over.
 We shall encounter a concrete example of this phenomenon later.
-
 Note when $r$ is chosen to be a product of two primes, the resulting scheme
 is still substantially different to RSA as the groups are cyclic and of
 known order.
@@ -464,7 +469,7 @@ are cyclic, then exponentiation satisfies the definition of a bilinear pairing.
 Thus we may view all discrete log and RSA cryptosystems
 as pairing-based cryptosystems, though there are significant differences
 in this setting. For example, the discrete log problem is easy
-in $G_2$ and $G_1 = G_T$.
+in $G_2$, and $G_1 = G_T$.
 
 Classic problems can be restated in terms of
 pairings. For example:
@@ -485,28 +490,54 @@ can inspire new ideas.
 
 \section{Choosing a Definition}
 
-The symmetric pairing is often selected
+The symmetric pairing with cyclic groups into which strings can be hashed
+is often selected
 as it allows simpler and briefer mathematical statements and definitions,
 and the symmetry can be useful.
-However, there are few families of groups that allow such a pairing.
+However, there are few families of elliptic curves that allow such a pairing.
 
-In practice, one can usually trivially modify such
-schemes and their corresponding
+In practice, one can usually trivially modify symmetric-pairing-based schemes
+and their corresponding
 security proofs to use a more general pairing definition,
-so that other groups can be used. For example, one may have to replace the
+so that more families of curves can be used.
+For example, one may have to replace the
 the Computation Diffie-Hellman assumption with
 the co-Computation Diffie-Hellman problem. Or perhaps
 a minor reworking allows the cryptosystem to function when $G_2$
 is not cyclic.
-Of course, the schemes that cannot be changed have a limited selection
-of pairings.
 
-We shall see there are other subtle caveats.
-For example, if we use a symmetric pairing, then in typical use,
+Ideally a cryptosystem should use the most general definition
+when first proposed, allowing maximum choice for the pairing in an
+implementation.
+If a more restrictive definition is necessary,
+one must pick the extra assumptions carefully
+and be aware that perhaps only a few pairing families may satisfy them.
+For example, there is no known pairing such that
+\begin{enumerate}
+\item Both input groups $G_1, G_2$ are cyclic.
+\item One can hash strings to $G_1$ and $G_2$ without knowing the
+discrete log of the output to some fixed base.
+\item There is an efficiently computable isomorphism $\phi:G_2\rightarrow G_1$
+whose inverse is difficult to compute.
+\end{enumerate}
+yet for any two of the three conditions, we can find pairings that satisfy
+both.
+
+Familiarizing oneself with the mathematics behind pairings
+has several advantages over merely memorizing valid assumptions
+and properties of the pairings that correspond to them.
+Being ignorant of the inner workings of
+available pairings means we do not know when we have made one assumption
+too many. For instance, it is not obvious that
+we can only stipulate up to two of the three conditions in the above list.
+Knowledge of the computations being performed also enables us to estimate
+the time and space taken by cryptographic operations, which is affected
+by the pairing choice in subtle ways.
+For example, if we use a symmetric pairing, then typically
 elements will be 512 bits long.
 If we forgo symmetry and use two groups $G_1, G_2$,
 then it turns out we may achieve a 160-bit $G_1$ and a 320-bit $G_2$,
-though pairings will be slower.
+though pairings are slower.
 
 \section{Concrete Bilinear Maps}
 

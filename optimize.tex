@@ -1,4 +1,4 @@
-\chapter{Faster Pairings}
+\chapter{\label{chap:optimize}Faster Pairings}
 
 We now focus on optimizing pairings.
 Firstly, one can improve the running time of the rational function computation
@@ -68,9 +68,7 @@ $\#E(\Fq) + \#E(\Fq) = 2q + 2$, proving the theorem.
 On the other hand if $v$ is a quadratic residue then $v = c^2$ for some
 $c \in \Fq$. Then we have a map $\Psi : E'(\Fq) \rightarrow E(\Fq)$
 given by
-
 \[ \Psi(x,y) = (c^2 x,c^3 y) \]
-
 hence in some sense $E$ and $E'$ are the same curve, so the choice of
 quadratic nonresidue $v$ does not matter as they all lead to the same twist.
 
@@ -80,7 +78,7 @@ can find a square root $c$ of $v$)
 and we have a map between
 $E'(\F_{q^2})$ and $E(\F_{q^2})$. Roughly speaking, curves that are twists
 of each other become the same curve when considered in a quadratic extension
-of the field they are defined in.
+of the field within which they are defined.
 
 For example, since $2$ is a quadratic nonresidue in $\F_{19}$,
 the curve $E : Y^2 = X^3 + X + 6$ (over $\F_{19}$) has the
@@ -93,8 +91,8 @@ We can use quadratic residues to transform the equation of a given elliptic
 curve $E$ into a form that allows certain optimizations.
 We would like $a = 0$ to reduce the amount of multiplications
 needed for a projective point doubling, but for a general curve
-this an impossible transformation. As mentioned before, a
-reasonable alternative is $a = -3$.
+this an impossible transformation. Recall from Section~\ref{sec:projcoord}
+that a reasonable alternative is $a = -3$.
 
 Then from above, a curve $Y^2 = X^3 + aX + b$ can be transformed into
 one of the form $Y^2 = X^3 - 3X + b'$ if we can find $v\in \Fq$
@@ -232,22 +230,26 @@ Let $G = \langle P \rangle, H = \langle Q' + r E'(\Fqd) \rangle$.
 Note $H$ is a subgroup of $E'(\Fqd) / rE'(\Fqd)$.
 
 Let $f$ be the Tate pairing.
-Then $e$ definied by
+Then $e$ defined by
 \[e(P,Q') = f(P, \Psi(Q')) \]
 is a bilinear map.
-We may subsitute the Weil pairing if additionally
-$r Q' = O$.
+We may subsitute the Weil pairing if we ensure
+$r Q' = O$ by suitable premultiplication.
 
 In practical terms, this means most operations are performed in
 $\F_{q^d}$  or $\F_q$. The $\Psi$ map and
 other computations in $\Fqk$ are only performed
 when a pairing is being evaluated.
+Also note $G_2$ is cyclic, and that we can hash into $G_2$, features
+useful to some cryptosystems.
 
-We may view this trick as a
-generalization of the $\Psi$ map used in Type A curves.
-(We have $k =2 , d = 1$.
-The curve $E : y^2 = x^3 + x$ is equivalent to $E' : y^2 = x^3 + v^2 x$
-because either $v$ or $-v$ is a quadratic residue.)
+We can view this trick as a
+generalization of type A pairings.
+Observe we have $k =2 , d = 1$, and
+that the curve $E : y^2 = x^3 + x$ is equivalent to $E' : y^2 = x^3 + v^2 x$
+because either $v$ or $-v$ is a quadratic residue, thus a type A curve is the
+quadratic twist of itself. In this case, the pairing
+is symmetric as well.
 
 We can say more about this particular group selection.
 
@@ -269,11 +271,12 @@ Given $Q' = (X,Y) \in E'(\F_{q^d})$ we have $\Psi(Q') = (a, b)$
 where $a \in \F_{q^d}$, and $b$ has the form $b = c \sqrt{v}$ for some
 $c \in \F_{q^d}$.
 
-Now $\Phi^d(\sqrt{v}) = -\sqrt{v}$ (by direct verification and using
+Now $\Phi^d(\sqrt{v}) = -\sqrt{v}$, which
+can be verified using
 $v^{(q^d - 1)/2} = -1$ since $v$ is a quadratic nonresidue, or
-from Galois theory: $\sqrt{v}$ must
+with Galois theory: $\sqrt{v}$ must
 be mapped to some other root of its minimal polynomial as $\Phi^d$ fixes
-$\F_{q^d}$ but not $\F_{q^k}$).
+$\F_{q^d}$ but not $\F_{q^k}$.
 Thus $\Phi^d(a) = a$ and $\Phi^d(b) = -b$, whence
 
 \[ \Phi^d(\Psi(Q')) = \Phi^d(a,b) = (a, -b) = -\Psi(Q') \]
@@ -283,7 +286,7 @@ any point $Q \in E(\Fqk)$ satisfying $\Phi^d(Q) = -Q$ also satisfies
 $\tr Q = O$, hence $\Psi(Q')$ is a point of trace zero.
 
 Conversely, suppose $Q$ is a point of trace zero in $E(\Fqk)[r]$.
-We have previously seen this implies $\Phi(Q) = q Q$,
+From Section~\ref{sec:eigenspace} we have $\Phi(Q) = q Q$,
 thus $\Phi^d(Q) = q^d Q$.
 
 Since $q^k = 1 \bmod r$, we have $q^d = -1 \bmod r$ (we cannot
@@ -299,22 +302,21 @@ $r$ points in $E'(\F_{q^d})[r]$ and exactly $r$ points in $E(\Fqk)[r]$ of trace
 zero.
 \end{proof}
 
-One consequence of this is that we
-now have an asymmetric bilinear pairing
+One consequence is that, aside from type A pairings,
+this group selection leads to an asymmetric bilinear pairing
 \[
 e:G_1 \times G_2 \rightarrow G_T
 \]
-but no known efficiently computable group isomorphism
+with no known efficiently computable group isomorphism
 $\phi : G_2 \rightarrow G_1$. Cryptosystems relying on the existence of
-such a map must be modified accordingly.
+such a map must be modified accordingly if they are to use this trick.
 
-For a randomly chosen $Q$ in $E(\Fqk)[r]$ we have $\tr Q \ne O$ with
+Recall for a randomly chosen $Q$ in $E(\Fqk)[r]$ we have $\tr Q \ne O$ with
 overwhelming probability, and one can take $\phi$ to be the trace map
 as an efficiently computable isomorphism between $\langle Q \rangle$
-and $E(\Fq)[r]$.
-
-However, as we are picking $Q$ to be a point of trace zero, this choice
-of $\phi$ no longer applies, thus we must use the more general definition
+and $E(\Fq)[r]$. However, as our second input is always a point of trace zero,
+this choice of $\phi$ no longer applies,
+thus we must use the more general definition
 of a bilinear pairing.
 
 \subsection {\label{sec:twistcurveremarks}Remarks on Implementation}
@@ -376,6 +378,9 @@ section, but also means we lose symmetry, since the points from $G_2$
 lie in a different curve.
 \end{enumerate}
 
+More generally, for other curves, whether or not to use the twist curve
+trick depends on if particular properties of the pairing are needed.
+
 Some cryptosystems require DDH to be difficult in both input groups. In
 such cases we must use the trace zero group for the second input group,
 otherwise the trace map enables the pairing to break DDH in $G_2$.
@@ -395,7 +400,6 @@ $Q \in E(\F_{q^2})$ and use $G_2 = \langle Q \rangle$.
 
 When using twist curves, we can halve the running time of a pairing by applying
 a technique due to Barreto, Lynn and Scott~\cite{bals2}.
-
 We use the same notation and assumptions as the previous section.
 In other words, again let $E : y^2 = x^3 + a x + b$ be an elliptic curve
 over $\F_q$,
@@ -438,22 +442,25 @@ the line between $Z$ and $P$.
 \end{algorithmic}
 \end{algorithm}
 
-Assuming $r$ is odd (which is true for all practical applications),
+Assuming $r$ is odd, which holds for all practical applications,
 the if condition is true during the last iteration and
 the last multiplication is
 \[ f \leftarrow f L_{(r-1)P}(Q) .\]
 Since $(r-1)P = -P$, this is equivalent to $f \leftarrow f V_P(Q)$
 and hence can be skipped since no vertical line computations are needed.
-In this case we have $f_r = f_{r-1}$ and the logic can be simplified.
+In other words, we have $f_r = f_{r-1}$ and the logic can be simplified.
 
 \section {\label{sec:inputrestriction}Input Restriction}
+
+We have already covered most of the facts of this section, but we wish
+to emphasize that, from an efficiency standpoint, choosing the input
+groups to be certain subgroups is desirable for all pairings.
 
 Consider a supersingular type A, B or C curve $E$ over $\Fq$ containing
 a cyclic group of order $r$ of embedding degree $k$. Recall
 a distortion map $\phi$ exists for this curve.
 Let $f$ be the Weil or Tate pairing for this
 curve.
-
 We can instantiate the symmetric pairings of Section~\ref{sec:symmetricpairing}
 (i.e. the input groups are the same, cyclic and lie over smaller fields)
 by defining $G = E(\Fq)[r]$,
@@ -461,20 +468,25 @@ $G_T$ to be the group of $r$th roots of unity in $\Fqk$.
 and $e : G \times G \rightarrow G_T$ by
 $e(P,Q) = e(P, \phi(Q))$.
 
-Let $E(\Fq)$ be an elliptic curve containing a cyclic
+More generally let $E(\Fq)$ be an elliptic curve containing a cyclic
 group of order $r$ of embedding degree $k$.
-In general, distortion maps might not exist for our curve $E$.
+Distortion maps might not exist for our curve $E$.
 However, we can always restrict the first input to $E(\Fq)[r]$,
-which is cyclic when $k > 1$.
-
-We have just seen that for even $k = 2d$,
+which is cyclic when $k > 1$,
+and we have just seen that for even $k = 2d$,
 the other input can be restricted to some curve over $\F_{q^d}$.
-This is an improvement over $\F_{q^k}$, and moreover, the
-subgroup to which we have restricted the second input turns out to be cyclic.
-The only drawback from the theory standpoint
+
+This is faster to compute in than $\F_{q^k}$ and allows denominator
+elimination. Moreover, the
+second input group is now cyclic and we can hash into it.
+The only potential drawback
 is that there is no known efficient method
-for mapping elements of one input group to the other, resulting in an
-asymmetric pairing.
+for mapping elements of one input group to the other,
+which could complicate security proofs or even render the pairing
+unsuitable for certain cryptosystems.
+
+For certain pairings, the higher degree twists of Section~\ref{sec:hightwists}
+can be used for greater savings.
 
 \section {Miller-Lite Operations}
 
@@ -489,23 +501,22 @@ than $\Fqk$.
 This has been dubbed a \emph{Miller-Lite} operation in the literature.
 When $P$ does not lie in the base field but rather is some element of
 $E(\Fqk)$ then we refer to an iteration of Miller's algorithm with
-first input $P$ as a full Miller, or Miller-Full, operation.
+first input $P$ as a \emph{full Miller}, or \emph{Miller-Full}, operation.
 
 \section{Last-Second Conversions}
 
 One easy optimization is also easy to overlook as it is hidden by
 notation.
-In a Miller-Lite operation, even if we use distortion maps or twists,
+In a Miller-Lite operation,
 at some point we must encounter $\Fqk$ arithmetic.
 Distortion maps or twist maps must be applied
 on the second input point $Q$ to obtain a point on $E(\Fqk)$, which in turn
 is fed to line equations.
 
 However this should be done carefully.
-In general, we wish to avoid computing in $\Fqk$
+We wish to avoid computing in $\Fqk$
 until absolutely necessary. We describe the procedure in detail for
-type A pairings. Similar statements can be made for other pairing types,
-with greater savings in some cases.
+type A pairings. Similar statements can be made for other pairing types.
 
 Let $e : E(\mathbb{F}_q) \times E(\mathbb{F}_q)
 \rightarrow \mathbb{F}_{q^2}$ be a type A pairing 
@@ -534,7 +545,8 @@ to exponentiate some quantity $a$ by
 Since $k$ is the embedding degree, we have $r \mid \Phi_k(q)$ (and no
 cyclotomic polynomial of smaller degree).
 
-Then $a^{(q^k-1)/r}$ may be computed as follows:
+The following method for computing $a^{(q^k-1)/r}$ is faster
+than the obvious approach~\cite{bakls}.
 \begin{enumerate}
 \item
 Compute $b = a^d $ where
@@ -660,7 +672,7 @@ Weil pairing by a constant factor.
 
 In particular, if we choose $n = q - 1$ then denominator elimination
 also applies to the Weil pairing. Additionally, the above powering trick
-means the exponentiation is cheap.
+makes the exponentiation cheap.
 
 \section {Preprocessing}
 
@@ -689,7 +701,7 @@ During Miller's algorithm, the coefficients in equations of the form
 $aX + bY + c$ are calculated. These lines
 are derived entirely from one of the input points,
 hence much time can be saved every time the same input point is encountered
-if we precompute and store $a, b, c$ for every line.
+if we precompute and store $a, b, c$ for every line~\cite{bakls}.
 
 \subsection {Elliptic Net Precomputation}
 
@@ -983,8 +995,9 @@ we have that $L_{rP}$ is a vertical line at $P$ and hence $f_{r+1} = f_r$
 Sometimes it is possible to choose the order $r$ of the input and output
 groups. In such cases it is desirable to pick $r$ so that the resulting
 addition-subtraction-chain is as short as possible. For example,
-a good choice is an $r$ that has low Hamming weight or that has the form
-$2^a \pm 2^b \pm 1$. Such numbers have been called Solinas numbers.
+a good choice is an $r$ that has
+the form $2^a \pm 2^b \pm 1$ (Solinas numbers) or has
+low Hamming weight~\cite{bakls}.
 
 Like multiexponentiation,
 when computing products or quotients of pairings we

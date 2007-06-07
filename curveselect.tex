@@ -2,31 +2,32 @@
 
 Let $E$ be an elliptic curve defined over a finite field $K$.
 Let $P \in E(K)$ be a point of prime order $r$. Let $G = \langle P \rangle$.
-
 We intend to build cryptosystems that operate in $G$. Hence
-we perform field arithemtic in $K$ during cryptographic operations,
-while the security of the resulting systems partly depends on the size of $r$.
-Recall the size of $K$ is roughly the size of $\#E(K)$,
-thus we desire $r$ to be as close to $\#E(K)$ as possible. Ideally,
-$r$ and $\#E(K)$ are the same size, both being say $l$-bit numbers,
-meaning we have $l$-bit security
-in $G$ and the running times depend on operations on $l$-bit numbers.
-
-We focus on this case, namely when
-$r$ and $\#E(K)$ take roughly the same number of
-bits. Relaxing this condition
+we perform field arithmetic in $K$ during cryptographic operations,
+while the security of the resulting systems partly depends on the size of $r$,
+which is a factor of $\#E(K)$.
+We focus on the cases when $\#E(K)$ is a small multiple of $r$.
+Relaxing this condition
 permits us to use a wider variety of pairings, and we discuss one
-such case later.
+such family later.
 
-If $L$ is a field extension of $K$
-that contains the $r$th roots of unity (so $r$ divides $|L| - 1$),
-then the Tate pairing
-on $G$ can be computed by performing operations in $L$.
+Recall the size of $K$ is roughly the size of $\#E(K)$,
+thus if both $r$ and $\#E(K)$ are about $l$-bits in length,
+we obtain a pairing-based cryptosystem with $l$-bit security
+in $G$ whose running times depend on operations on $l$-bit numbers.
+A pairing with this feature is needed by BLS signatures to
+achieve short signatures.
 
-On the other hand, let $E[r]$ denote the group of points of order $r$.
-The Weil pairing is defined on $E[r]$. For some field extension
-$L'$ of $K$, $E(L')$ contains $E[r]$, and the Weil pairing can be
-computed by performing operations in $L'$.
+Happily, it turns out that among the pairings we cover are
+symmetric pairings with cyclic input groups that can be
+hashed to, and pairings where $r$ can be specified, both of which can be
+useful features.
+
+Recall the Tate pairing must be computed in some field extension
+$L$ of $K$ that contains the $r$th roots of unity (so $r$ divides $|L| - 1$).
+On the other hand,
+the Weil pairing is defined on $E[r]$, the $r$-torsion points of $E$,
+which lie in $E(L')$ for some field extension $L'$ of $K$.
 
 In order for the Tate pairing to be efficiently computable,
 operations must be efficient in $L$.
@@ -35,11 +36,10 @@ computable, operations must be efficient in $L'$.
 Thus we seek fields $L$ or $L'$ that are small enough so that field
 operations are still fast.
 
-We will define the \emph{embedding degree} which can be thought of as measuring
-how much larger $L$ or $L'$ is compared to the field $K$.
-
 It turns out that such a field $L'$ will always contain the $n$th
 roots of unity, thus we always have $L \subseteq L'$.
+We will define the \emph{embedding degree} which can be thought of as measuring
+the size of $L$ compared to the field $K$.
 The converse is not true: it is possible for the subset inclusion to be strict.
 In other words, for a field $L$ to contain the $r$th roots of unity but
 at the same time have $E[r]$ contained in $E(L')$ and not $E(L)$, for
@@ -95,9 +95,9 @@ Then we say that the embedding degree of $G$ is $k$.
 \end{definition}
 
 As already mentioned, we mostly focus on curves where
-$r$ and $\#E(K)$ are as close as possible.
-For this case, we can abuse the terminology a little
-when talking about embedding degrees: when we speak of an embedding degree
+$r$ and $\#E(K)$ are as close as possible, and
+we can abuse the terminology a little when talking about embedding degrees.
+When we speak of an embedding degree
 of a curve $E(\Fq)$, we mean the embedding degree of the subgroup of
 $E(\Fq)$ of order $r$ where $r$ is the largest prime dividing $\#E(\Fq)$
 (or in some applications, the largest factor of $\#E(\Fq)$ that cannot be
@@ -121,7 +121,6 @@ However, in practice, when we do use such a group $G$ and
 $r$ is a large prime factor of $\#E(\Fq)$ it is almost always the case that
 $\mathbb{F}_{q^k}$ is the smallest field extension that allows the computation
 of the pairing.
-
 In other words, in general, for a cyclic subgroup $G \subset \#E(\Fq)$
 the embedding degree $k$ of $E(\Fq)$
 may not be the smallest positive integer such that $r \mid q^k - 1$,
@@ -130,7 +129,7 @@ the probability that $k$ is not the integer we seek is negligible.
 Below, we shall make statements
 about embedding degrees ignoring the unlikely event that the
 real embedding degree could be smaller.
-(Note for small toy examples it is more likely that there exists
+(Of course, for small toy examples one must be wary of the existence of
 some $j < k$ with $r \mid q^j - 1$.)
 
 At this point, our goal seems to be minimizing this embedding degree,
@@ -138,7 +137,7 @@ so that $L$ is as close as possible to $K$, and if possible,
 to have $K = L$ and have all computations in a
 small a field as possible.
 Unfortunately, things are not quite this simple, because of
-pairing security issues which we will soon examine in
+pairing security issues discussed in
 Section~\ref{sec:pairingsec}.
 
 \section {Weil and Tate Pairing Comparison}
@@ -166,7 +165,8 @@ since $E[3]$ is not cyclic, thus the Weil pairing cannot be computed.
 (In fact, we must move to $\mathbb{F}_{19^3}$ to do so.)
 
 In contrast, $3 \mid 19-1$ hence the Tate pairing can be
-computed in $\mathbb{F}_{19}$. In fact, we find $e(P, R + 3G) = 11$, where
+computed in $\mathbb{F}_{19}$. In fact, in one program by the author, it was
+found that $e(P, R + 3G) = 11$, where
 $e$ denotes the Tate pairing.
 Recall that pairings are only unique up to a constant, so different
 implementations may give different results.
@@ -236,7 +236,7 @@ for every nonsingular elliptic curve, in general
 the embedding degree $k$ is on the order of $q$~\cite{bk},
 that is, so large that it is futile to mount a MOV or
 Frey-Ruck attack on a typical elliptic curve
-because $\Fqk$ will be too large for any practical calculations.
+because $\Fqk$ will be too big for any practical calculations.
 We shun curves with small $k$ in standard elliptic curve cryptography
 and thus can ignore these attacks, which is why they were not mentioned before.
 
@@ -379,8 +379,8 @@ $G = E(\Fq)[r]$ is cyclic and has embedding degree $k = 2$.
 Note $-1$ is a quadratic nonresidue in $\mathbb{F}_q$ since $q = 3\pmod{4}$.
 Let $i$ be a square root of $-1$. Then $\mathbb{F}_q[i]$ is a degree 2
 extension of $\Fq$.
-Consider the following map, sometimes referred to as a distortion
-map~\cite{verheul}:
+Consider the following map, sometimes referred to as a \emph{distortion
+map}~\cite{verheul}:
 \[ \Psi(x, y) = (-x, i y) \]
 
 Then $\Psi$ maps points of $E(\mathbb{F}_q)$ to points of
@@ -481,9 +481,8 @@ curves are harder to optimize.
 
 Define the curves $E^{+} : y^2 = x^3 + 2 x + 1$ over $\F_{3^l}$
 and $E^{-} : y^2 = x^3 + 2 x - 1$, also over $\F_{3^l}$.
-
 Unlike all the other curves we consider,
-we are work in a low characteristic field. Thus these pairings
+we are working in a low characteristic field. Thus these pairings
 are susceptible to certain discrete log attacks due to
 Coppersmith~\cite{coppersmith} and are perhaps better avoided.
 We describe them here for completeness.
@@ -654,7 +653,7 @@ Use the CM method to construct a curve $E$ with order $q \mp x$.
 
 The resulting curve $E$ will have embedding degree 6.
 
-Though this was not how the method was discovered.
+Though not how the method was discovered,
 we can explain the MNT algorithm via cyclotomic polynomials $\Phi_k(x)$.
 Suppose $t = x + 1$.
 Recall $\Phi_6(x) = x^2 - x + 1$, thus
@@ -675,13 +674,13 @@ Since $\Phi_3(x) \mid x^6 - 1$ the embedding degree of $E$ is 6.
 Of course $\Phi_3(x) \mid x^3 - 1$ but $x^3 \ne (-x)^3$ in general
 thus the embedding degree is not 3 (with high probability).
 
-For an embedding degree of 4, we may also use cyclotomic polynomials.
+For embedding degree $k=4$, we may also use cyclotomic polynomials.
 Recall $\Phi_4(x) = x^2 + 1$. Then set $q = \pm x + \Phi_4(x)$
 so that $t = \pm x + 1$. Since $n = \Phi_4(x)$ we have
 \[ q^4 - x = (\pm x)^4 - 1 \bmod n \]
 thus $n \mid q^4 - 1$.
-(When the minus sign is chosen and $x$ replaced by $x+1$ 
-we match the notation of Miyaji et al.\cite{mnt}.)
+When the minus sign is chosen and $x$ replaced by $x+1$ 
+we match the notation of Miyaji et al.\cite{mnt}.
 
 For $k=3$ Miyaji et al. give $q = 3 x^2 - 1$, $t = -1 \pm 3x$ where $x$ is
 even.
@@ -691,9 +690,9 @@ types than the original MNT algorithm~\cite{moremnt}
 which can be viewed as a generalization of a method due to
 Barreto, Lynn and Scott to be described in Section~\ref{sec:balscurves}.
 
-We quote their algorithm without proof, though we suggest how it works
-in Section~\ref{sec:balscurves}. In the algorithm, $k$ is 3, 4 or 6.
+We quote their algorithm without proof.
 The CM method is used to construct curves from the algorithm's output.
+The embedding degree $k$ must be chosen to be 3, 4 or 6.
 The choices $h_{max} = 4$ and $D_{max} \approx 10^8$ or so are reasonable.
 
 \begin{algorithm}
@@ -905,14 +904,15 @@ Type F and G pairings allow only slightly shorter inputs, but are slower.
 On the other hand, they guard against future improvements to
 finite field discrete log algorithms.
 
-\section{\label{sec:pelleqn}Generalized Pell Equations}
+\section{\label{sec:pelleqn}Pell Equations}
 
 For completeness we describe how to solve the Pell-type equations that arise
-when searching for some of the above pairing types.
+when searching for some of the above pairing types. First we must learn
+how to solve a standard Pell equation.
 
-Consider the \emph{Pell equation}
+A \emph{Pell equation} is an equation of the form
 \[ x^2 - D y^2 = 1 \]
-where $D$ is not a square, $x, y$ are integers.
+where $D, x, y$ are integers and $D$ is not a square.
 We solve such an equation by examining the
 continued fraction expansion of $\sqrt{D}$.
 Recall a continued fraction expansion of a real number $x$
@@ -958,7 +958,7 @@ Then all positive solutions $(x, y)$ to the Pell equation can be found via
 for all positive integers $n$. We never need the negative solutions,
 but these are trivial to find from the positive solutions in any event.
 
-\subsection {Generalized Pell Equations}
+\section {Generalized Pell Equations}
 
 Now suppose we are to solve the \emph{generalized Pell equation}
 \[ x^2 - D y^2 = N \]
@@ -1217,8 +1217,8 @@ originally described ~\cite{moremnt}.
 
 Freeman, Scott and Teske~\cite{fst} note the approach of Barreto, Lynn and
 Scott is a special case of a more recent construction by
-Brezing and Weng~\cite{bw}. which in turn can be thought of as a specific
+Brezing and Weng~\cite{bw}, which in turn can be thought of as a specific
 application of a general strategy suggested by Cocks and Pinch~\cite{cp}.
-Other methods to construct pairings of arbitrary embedding degree,
-some of which with $\rho$ substantially less than 2, are beyond our scope.
-For details, refer to Freeman, Scott and Teske~\cite{fst}.
+They also outline
+other methods to construct pairings of arbitrary embedding degree,
+some of which with $\rho$ substantially less than 2.

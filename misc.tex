@@ -18,7 +18,7 @@ Speeding up the pairing has only been a high priority relatively recently,
 and is the main topic of the next chapter.
 \item
 Sometimes high-level modifications to a scheme, such as tolerating the
-loss of a few bits, choosing a different group to contain a key, etc.
+loss of a few bits, choosing a different group to contain a key, and so on
 will garner savings by permitting one to exploit other pairing properties,
 move exponentiations or multiplications to cheaper groups,
 precompute more elements, compress or reduce points or pairings, and so on.
@@ -44,7 +44,7 @@ a section dedicated to optimizations.
 Also, optimizations from different areas can have much in common. For example,
 sliding windows and multiexponentiation apply to every repeated-squaring-like
 algorithm. Seeing all variants at once can provide a deeper understanding of
-a principle, and may even inspire one to apply the same principle to a
+a principle, and may even inspire the application of the same principle to a
 different situation.
 
 Lastly, the organization of these chapters reflects good software
@@ -56,7 +56,6 @@ Once the code for this has been tested satisfactorily, a simple
 pairing algorithm should be built.
 Only when the pairing is correctly functioning
 should one at last consider efficiency improvements.
-
 The slowest parts of the system should be attacked first.
 Educated guessing can meet with some success, but
 ideally profiling should be employed to identify the
@@ -65,7 +64,8 @@ bottlenecks.
 \section{Multiprecision Arithmetic}
 
 In the author's pairing implementations, to avoid the drawbacks
-of assembly code (e.g. loss of portability, the need to learn platform-specific
+of assembly code (including
+loss of portability, the need to learn platform-specific
 low-level tricks, frequent rewrites due to new hardware,
 fewer potential developers, increase in debugging difficulty, longer
 development time),
@@ -74,7 +74,6 @@ were utilized.
 
 One can easily graft finite field routines to any such library,
 though there are costs.
-
 For example, the GMP library has a highly optimized modular exponentiation
 routine that uses Montgomery reduction,
 but expects the input not to be
@@ -144,10 +143,9 @@ field~\cite{bss, handbook}.
 Suppose we are implementing the finite field $\F_p$ for some prime $p$.
 Let $b$ be the word size of the machine. Let $R = b^t$ be the smallest
 power of $b$ greater than $p$. Let $p' = -p^{-1} \pmod b$.
-
-We note since $b$ is a power of 2, one can use a specialized procedure
+Since $b$ is a power of 2, one can use a specialized procedure
 to find $p'$~\cite[Algorithm II.5]{bss}. However this is usually unimportant
-because $p'$ can be precomputed.
+because $p'$ can be precomputed once and stored.
 
 Expressions modulo $b$ should obviously be implemented as
 operations on machine words. Similarly, multiplications and divisions

@@ -89,10 +89,10 @@ and \emph{nonsingular} otherwise, i.e. the cubic has distinct roots.
 
 Unless otherwise stated we always consider nonsingular elliptic curves.
 Later we will encounter \emph{supersingular} curves, a particular
-breed of nonsingular curves and are not singular despite their name.
+breed of nonsingular curves that are not singular despite their name.
 The antonym of supersingular is \emph{ordinary} or \emph{nonsupersingular}.
 
-For any field $\Fqk$ define $E(\Fqk)$ (or $E/\Fqk$)
+For any field $\Fqk$ define $E(\Fqk)$
 to be the set of all solutions
 of $E$ over $\Fqk$, called the \emph{finite points}
 along with a special point denoted $O$,
@@ -224,9 +224,9 @@ to compute square roots~\cite{bss, handbook}, which we quote below.
 
 For a general finite field,
 one must use a more complex algorithm. Perhaps the simplest of these
-Legendre's method which can be viewed as a special
-case of the Cantor-Zassenhaus algorithm for factoring polynomials that
-will be described in a later chapter.
+Legendre's method which can be viewed as using
+the Cantor-Zassenhaus algorithm
+of Section~\ref{sec:rootfinding} to factor $X^2 - x$.
 Faster algorithms exist, though sometimes require precomputation~\cite{djb}.
 
 \subsection {Tonelli-Shanks Algorithm}
@@ -325,10 +325,10 @@ Point multiplication can be performed efficiently via carefully
 chosen point additions, in a process that mirrors the repeated
 squaring technique for exponentiation in finite fields.
 
-Recall the previous chapter used mulitplicative group notation to emphasize
+Recall the previous chapter used multiplicative group notation to emphasize
 the connection
-between discrete log cryptosystems and pairing-based cryptosystems:
-we are using elliptic curve groups where one would use
+between discrete log cryptosystems and pairing-based cryptosystems,
+as we are using elliptic curve groups where one would use
 the multiplicative group of a finite field.
 
 Mathematicians use additive group notation for the elliptic curve group
@@ -454,7 +454,7 @@ of order $r$.
 \item
 When a random group element of $G$ is required, first choose a random point
 of $E(K)$ and then multiply by $n / r$. Similarly, when hashing to
-a point of $G$, first hash to a point in $E(K)$ and then mulitply by
+a point of $G$, first hash to a point in $E(K)$ and then multiply by
 $n / r$.
 \item
 Other operations are straightforward: every time a group
@@ -504,7 +504,7 @@ a subject of a later chapter.
 For now, we exhibit one case where $\#E(K)$ is always easy to determine
 and furthermore $E(K)$ is always cyclic.
 
-\section {Singular Elliptic Curves}
+\section {\label{sec:singular}Singular Elliptic Curves}
 
 Using singular elliptic curves
 is equivalent to conventional cryptography.

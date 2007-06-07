@@ -4,9 +4,9 @@ give rise to cryptosystems with new functionality.
 
 There is only one known mathematical setting where desirable
 pairings exist: hyperelliptic curves. We focus on elliptic curves,
-which are the simplest case, and also the only curves ever to be implemented
-in real life pairing-based cryptosystems at present.
-Accordingly,
+which are the simplest case, and also the only curves used in practice.
+All existing implementations of pairing-based cryptosystems are built
+with elliptic curves. Accordingly,
 we provide a brief overview of elliptic curves, and functions known as
 the Tate and Weil pairings from which cryptographic pairings are derived.
 
@@ -19,3 +19,7 @@ of a naive implementation of any pairing-based cryptosystem. These
 techniques were used to reduce the
 cost of a pairing from several minutes
 to several milliseconds on a modern consumer-level machine.
+
+Applications of pairings are largely beyond our scope, but we
+do show how pairings allow the construction of a digital signature scheme
+with the shortest known signature lengths at typical security levels.
