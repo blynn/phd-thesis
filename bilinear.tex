@@ -306,8 +306,9 @@ Given $g,g^x,...,g^{(x^q)}$, compute $c, g^{1/(x_c)}$
 for any $c\in\{1,...,r-1\}$.
 \end{description}
 
-Just as an algorithm that solves discrete log can be used to solve
-the computational and decisional Diffie-Hellman problems, security reductions
+An algorithm that solves discrete log would yield algorithms that solve
+the computational and decisional Diffie-Hellman problems. Similarly
+security reductions
 exist between some of these new problems~\cite{jouxsurvey}.
 
 The BLS signature scheme does not use any of these new assumptions,
@@ -482,7 +483,7 @@ Given $a \in G_2, c \in G_T$, find $g \in G_1$ with
 $e(g,a) = c$.
 \item[Strong RSA Problem.]
 Given $c \in G_T$, find $g \in G_1, a\in G_2$ with
-$e(g,a) = c$
+$e(g,a) = c$.
 \end{description}
 
 Thinking of conventional cryptosystems as pairing-based cryptosystems
@@ -520,12 +521,11 @@ discrete log of the output to some fixed base.
 \item There is an efficiently computable isomorphism $\phi:G_2\rightarrow G_1$
 whose inverse is difficult to compute.
 \end{enumerate}
-yet for any two of the three conditions, we can find pairings that satisfy
-both.
+yet we can find pairings that satisfy any two of the three conditions.
 
 Familiarizing oneself with the mathematics behind pairings
-has several advantages over merely memorizing valid assumptions
-and properties of the pairings that correspond to them.
+has several advantages over merely memorizing their properties
+and common assumptions.
 Being ignorant of the inner workings of
 available pairings means we do not know when we have made one assumption
 too many. For instance, it is not obvious that

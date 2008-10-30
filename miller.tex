@@ -690,9 +690,9 @@ These points $R$ and $S$ must be selected so that we never encounter a
 zero or pole while evaluating these functions.
 
 In practice, the probability that randomly chosen $R, S$ are unsuitable
-is negligible. This is not the case for our toy example, but it turns
-out that choosing $R = (40,54)$ and $S = (48+55i,28+51i)$
-will work. Note that $R, S$ do not need to lie in $E[5]$.
+is negligible. But our toy example is tiny, so we must choose carefully.
+It turns out $R = (40,54)$ and $S = (48+55i,28+51i)$ are suitable choices.
+Note $R, S$ do not need to lie in $E[5]$.
 
 We describe in detail how Miller's algorithm arrives at $f_P(Q+S) = f_5(Q+S)$:
 \begin{enumerate}
