@@ -1,45 +1,40 @@
 \beforepreface
 \prefacesection{Preface}
 Pairing-based cryptography is a relatively young area of cryptography that
-revolves around a particular function with interesting propreties.
-It allows the construction of novel cryptosystems that are otherwise
-difficult or impossible to assemble using standard primitives.
+revolves around a particular family of functions informally called
+\emph{pairings} or \emph{bilinear maps}, whose remarkable properties allow the
+construction of novel cryptosystems that are otherwise difficult or impossible
+to assemble using standard primitives.
 
-We first define a cryptographic pairing abstractly and show how it
-can be used to build a signature scheme that is simple yet has many
-desirable properties.
-Next we examine how a pairing can be implemented in practice. The only known
-mathematical setting where suitable pairings exist are groups on certain
-families of curves. We focus on the simplest and most well-understood case:
-elliptic curves.
+We first provide an abstract definition of a cryptographic pairing and use it
+to build a simple yet versatile signature scheme. Next we examine how a pairing
+can be implemented in practice. The only known mathematical setting where
+suitable pairings exist are groups on certain families of curves. We focus on
+the simplest and most well-understood case: elliptic curves.
 
-We discuss methods for finding curves that yield cryptographic pairings,
-and outline various optimizations that can be applied. We shall see that
+We discuss methods for finding curves that yield cryptographic pairings, and
+outline various optimizations that can be applied. We shall see that
 pairing-based cryptosystems are quite practical and compare well against
 traditional cryptosystems.
 
-It is hoped that this work will be a useful guide to implementing pairing-based
+We hope this work will be a useful guide to implementing pairing-based
 cryptography to a programmer who has experience with conventional
-cryptosystems. While not comprehensive,
-the information contained herein should be enough to allow one to build
-practical pairing-based applications from scratch.
-Notably absent are in-depth discussion of the characteristic 3 case,
-pairings where the subgroup size is necessarily significantly
-smaller than the field size, and hyperelliptic curves,
+cryptosystems. While not comprehensive, the information contained herein should
+be enough to allow one to build practical pairing-based applications from
+scratch. Notably absent are in-depth discussion of the characteristic 3 case,
+pairings where the subgroup size is necessarily significantly smaller than the
+field size, and hyperelliptic curves,
 
-This text is intended to be self-contained. Aside from
-arithmetic at the lowest level, algorithms not likely to
-be found in a basic course in number theory or cryptography are quoted here,
-enabling the reader to implement pairings without referring to any other
-sources.
+This text is intended to be self-contained. Aside from arithmetic at the lowest
+level, algorithms unlikely to be found in a basic course in number theory or
+cryptography are quoted here, enabling the reader to implement pairings without
+referring to any other sources.
 
-Some background is required by the reader as
-we do not review basic abstract algebra.
-On the other hand, we introduce enough elliptic curve theory for
+Some background is required by the reader as we do not review basic abstract
+algebra. On the other hand, we introduce enough elliptic curve theory for
 cryptographic purposes.
 
-The following publications
-form the foundation of this thesis:
+The following publications form the foundation of this thesis:
 \begin{itemize}
 \item D.Boneh, B. Lynn, and H. Shacham. Short signatures from the Weil pairing.
 {\it Journal of Cryptology}, 17(1):297--319, 2004.
@@ -56,7 +51,6 @@ On the selection of pairing-friendly groups. In {\it Selected Areas of Cryptogra
 More polished versions of the above works can be found
 in the Journal of Cryptology~\cite{blsjournal, balsjournal}.
 
-Most of the described algorithms and optimizations
-feature in the PBC (Pairing-Based Cryptography) library, maintained by the
-author, and available under the GNU Public License at 
-\url{http://crypto.stanford.edu/pbc/}.
+Most of the described algorithms and optimizations feature in the PBC
+(Pairing-Based Cryptography) library, maintained by the author, and available
+under the GNU Public License at \url{http://crypto.stanford.edu/pbc/}.
