@@ -49,10 +49,12 @@ Given $g, g^x, g^y, g^z$, determine if $x y = z$.
 \end{description}
 
 Observe if we could solve the discrete log problem then we could solve
-the other problems.
+the other problems. Proving the converse is an unsolved problem. In fact,
+we later exploit a group where the Computational Diffie-Hellman Problem is
+thought to be hard, yet the Decisional form is definitely easy.
 
 We can build a vast array of cryptosystems, such as the Diffie-Hellman key
-exchange protocol, by assuming these problems or variantions on them are
+exchange protocol, by assuming these problems or variations on them are
 difficult to solve.
 
 \section{Formal Security Definitions}
@@ -102,7 +104,7 @@ and where $B$ returns 1 if $x y = z$ and 0 otherwise.
 
 The other flavour, the fixed-security-parameter definition, is couched
 explicitly in terms of running times and probabilities, and is typically used
-with problems whose inputs have a fixed size. A classic example is breaking the
+with problems whose inputs have a fixed size. A classic example is analyzing the
 DES cipher: defining the difficulty of this problem asymptotically is
 nonsensical since DES keys are always 56 bits long.
 
