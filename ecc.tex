@@ -465,22 +465,19 @@ and furthermore $E(K)$ is always cyclic.
 
 \section {\label{sec:singular}Singular Elliptic Curves}
 
-Using singular elliptic curves
-is equivalent to conventional cryptography.
-It can be shown that the set $E_{ns}$ of nonsingular points (all but
-one) of a singular elliptic curve over a field $K$
-also form a group under the chord-tangent law,
-and $E_{ns} \cong K^*$ or $E_{ns} \cong K^+$ \cite[Proposition 2.5]{silverman}.
-Furthermore these isomorphisms are efficiently computable in either
-direction.
-Note the latter case is useless for cryptographically
-as discrete log is easy in $K^+$.
+Using singular elliptic curves is equivalent to conventional cryptography.
+It can be shown that the set $E_{ns}$ of nonsingular points (all but one) of a
+singular elliptic curve over a field $K$ also form a group under the
+chord-tangent law, and $E_{ns} \cong K^*$ or
+$E_{ns} \cong K^+$~\cite[Proposition 2.5]{silverman}. Furthermore these
+isomorphisms are efficiently computable in either direction. Note the latter
+case is useless for cryptographically as discrete log is easy in $K^+$.
 
 For example, consider the curve
 \[ E : y^2 = x^3 + x^2 \]
-This has a singular point at $(0,0)$. Then the other solutions to
-this curve (including the point at infinity) form a group
-$E_{ns}(\Fqk)$ for any finite field $\Fqk$.
+This has a singular point at $(0,0)$, while the remaining solutions to this
+curve (including the point at infinity) form a group $E_{ns}(\Fqk)$ for any
+finite field $\Fqk$.
 
 Furthermore, there is an isomorphism $E_{ns}(\Fqk) \rightarrow \Fqk^*$
 given by
@@ -516,22 +513,22 @@ efficient for the same field size.
 We have not yet shown any benefits to using elliptic curves instead of finite
 fields. On the contrary, although a group inversion is almost free, the group
 operation, hashing, and random element generation are considerably more
-expensive for the same field.
+expensive, as each of these translates to a sequence of several finite field
+operations.
 
-Their strength derives from the fact that no discrete log algorithm for general
-elliptic curves that outperforms generic methods has ever been discovered.
-
-The best generic methods are based on the birthday paradox, and have
-$O(\sqrt{n})$ expected running time, where $n$ is the group order. A group
-order around 160 bits in length is sufficient to defeat such attacks. In
-contrast, subexponential discrete log algorithms for finite fields mean that
-one must use at least 1024-bit finite fields for security.
+Their strength derives from the fact that no specialized discrete log algorithm for general elliptic curves has ever been discovered. Currently, the only
+way to break discrete log on a general elliptic curve is to use a generic
+method: a discrete log algorithm that works on any cyclic group. The best are
+based on the birthday paradox, and have $O(\sqrt{n})$ expected running time,
+where $n$ is the group order. A group order around 160 bits in length is
+sufficient to defeat such attacks. In contrast, the existence of specialized
+discrete log algorithms for finite fields with subexponential running time mean
+that one must use at least 1024-bit finite fields for security.
 
 Hence one may work with fields over six times smaller in length if elliptic
 curves are used. The increase in speed in the underlying field arithmetic
-easily compensates for the more complex group operations. Thus choosing
-elliptic curves instead of finite fields results in savings in both space and
-time.
+easily compensates for the more complex group operations. Choosing elliptic
+curves instead of finite fields results in savings in both space and time.
 
 The most important attribute of elliptic curves for our purposes is that
 without them, we cannot construct a cryptographically useful bilinear map. That
@@ -540,29 +537,26 @@ coincidence and makes pairings even more attractive.
 
 \section {Short Signatures}
 
-At this point we can see why
-the BLS signature scheme introduced
-in the first chapter features a short signature length.
-Recall in abstract terms,
-a signature is a single element of a cyclic group $G$ of prime order $r$
-and we need a bilinear map to exist on $G$.
+At last we can explain why the BLS signature scheme introduced in the first
+chapter features a short signature length. Recall in abstract terms, a
+signature is a single element of a cyclic group $G$ of prime order $r$ and we
+need a bilinear map to exist on $G$.
 
-In Section~\ref{sec:comparingpairings} we give examples
-of pairings where one input group is a subgroup of points
-on an elliptic curve $E$ over some field $\Fq$ where
-$q$ is about 160 bits long.
+In Section~\ref{sec:comparingpairings} we give examples of pairings where one
+input group is a subgroup of points on an elliptic curve $E$ over some field
+$\Fq$ where $q$ is about 160 bits long.
 
 A point has two coordinates, both taking about 160 bits to represent.
 We can use point reduction, that is, discard the $y$-coordinate entirely,
-and represent signatures by their $x$-coordinate only if we modify
-verification as follows:
+and represent signatures by their $x$-coordinate alone. This requires
+the following modification to signature verification:
 \begin{enumerate}
 \item
-Given an $x$-coordinate of a signature, find any solution $y$
-in the curve equation $E$.
+Given an $x$-coordinate of a signature, find any solution $y$ in the curve
+equation $E$.
 \item
-If the signature $(x,y)$ does not verify,
-check if the signature $(x, -y)$ verifies.
+If the signature $(x,y)$ does not verify, check if the signature $(x, -y)$
+verifies.
 \item
 If the signature still does not verify then reject it.
 \end{enumerate}
@@ -575,10 +569,9 @@ wrongly, we can obtain the value of $e(P,-Q) = e(P,Q)^{-1}$ by performing
 an inversion rather than recompute another pairing.
 
 In Section~\ref{sec:compressedpairings} we will see we can do better
-than this by using a technique known
-as \emph{pairing compression}, and in effect check both
-cases at once.
+than this by using a technique known as \emph{pairing compression}, and in
+effect check both cases at once.
 
-Instead of discarding the $y$-coordinate, we can
-replace it with a single bit signifying which solution of $y$ to take,
-a technique known as \emph{point compression}~\cite[Section IV.4]{bss}.
+Instead of discarding the $y$-coordinate, we can replace it with a single bit
+signifying which solution of $y$ to take, a technique known as \emph{point
+compression}~\cite[Section IV.4]{bss}.
