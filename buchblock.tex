@@ -1,0 +1,50 @@
+\documentclass[12pt,a4paper,twoside]{report}
+% note that the documentclass can take other option such as
+% twoside - for double sided printing
+% openright - if double side  chapters always start on odd pages
+% openany - if double side chapters start on the next page even or odd
+% 12pt can be replaced by 11pt
+
+\usepackage{amsfonts,amssymb,amsmath,amsthm}
+
+\usepackage{algorithm,algorithmic,url}
+
+\usepackage{macros}
+
+\usepackage[margin=2cm]{geometry}
+
+\begin{document}
+
+\pagenumbering{roman}
+\include{preface}
+
+\newpage
+\tableofcontents
+\cleardoublepage
+\pagenumbering{arabic}
+%\pagestyle{headings}
+\pagestyle{plain}
+
+\include{bilinear}
+\include{ecc}
+\include{miller}
+\include{curveselect}
+\include{misc}
+\include{optimize}
+%\include{summary}
+
+%\appendix
+
+%\include{appendix1}
+%\include{appendix2}
+
+% bibliography.tex should include either 
+% \bibliographystyle{...}
+% \bibliography{mythesis}
+% or some other way of doing the bibliography
+%\include{bibliography}
+
+\bibliographystyle{abbrv}
+\bibliography{thesis}
+
+\end{document}

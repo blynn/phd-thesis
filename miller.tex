@@ -84,7 +84,7 @@ and $g$ is not a multiple of $E$.
 
 \section {\label{sec:eigenspace}Curve Endomorphisms}
 
-Given a point $P$ and integer $m$ consider the "\emph{multiplication-by-$m$}"
+Given a point $P$ and integer $m$ consider the \emph{multiplication-by-$m$}
 map $[m]$ given by \[ P \mapsto m P . \]
 If $P$ is viewed as a pair of variables $(X,Y)$, this map
 can be written as $(f(X,Y), g(X,Y))$ for some rational functions $f,g$.
@@ -169,26 +169,23 @@ by multiplying equations of appropriate vertical lines:
 
 One can view roots of a polynomial $f$
 as places where the curve $Y = f(X)$
-intersects with the curve $Y = 0$. We now generalize by replacing $Y=0$
-with an elliptic curve.
+intersects with the curve $Y = 0$.
+
+Let us generalize by replacing $Y=0$ with an elliptic curve $E$.
 When studying an element $f(X,Y) \in \Fqk[E]$, we take note of points of
 intersection between $f(X,Y)$ and $E$.
 Again, we call these points \emph{zeroes} of $f$.
 
-Complications occur due to the point at infinity $O$.
-We omit the details since we do not wish to discuss
-projective geometry, but it turns out that every line
+Complications occur at the point at infinity $O$. Though not immediately
+suggested from its equation, it turns out that every line
 $\alpha X + \beta Y + \gamma$
-that intersects a given elliptic curve $E$ has a pole
-at $O$ of some multiplicity, though this is not immediately suggested
-from its equation.
-The following two facts are all that we will
-say on this topic, and they need not be retained, nor even read.
-Firstly, if
+intersecting an elliptic curve $E$ has a pole
+at $O$ of some multiplicity. We omit the details since we do not wish to
+discuss projective geometry. The following two facts are all that we will say
+on this topic, and they need not be retained, nor even read. Firstly, if
 a vertical line $X-\alpha$ intersects the curve $E$ then it has a pole
-at $O$ of multiplicity 2. Secondly, if a non-vertical line
-$\alpha X + \beta Y + \gamma$ intersects $E$ then
-it has a pole of multiplicity 3 at $O$.
+at $O$ of multiplicity 2. Secondly, if a non-vertical line $\alpha X + \beta Y
++ \gamma$ intersects $E$ then it has a pole of multiplicity 3 at $O$.
 From now we will ignore the behaviour of rational functions at $O$.
 
 Recall an element of $\Fqk(E)$ can be written as $f(X,Y)/g(X,Y)$.
@@ -204,19 +201,17 @@ up to multiplication by a constant. We also build the function by
 multiplying together equations of lines, but need more than just
 vertical ones.
 
-In what follows,
-by abuse of notation we often refer to a single rational function
-$f$ when in fact we are considering a whole family of rational functions
-$c f$ for some nonzero constant $c$. To add to the confusion, having
-arbitrarily chosen a representative of a family, we will sometimes subsequently
-insist on using that same representative. The reasons for doing so
-will become clear.
+In what follows, by abuse of notation we often refer to a single rational
+function $f$ when in fact we are considering a whole family of rational
+functions $c f$ for some nonzero constant $c$. To add to the confusion, having
+arbitrarily chosen a representative of a family, we sometimes subsequently
+insist on using that same representative. The reasons for doing so will become
+clear.
 
 \section {Divisors}
 
-Divisors are the standard way
-to notate zeroes and poles and their multiplicities, or orders.
-If we wish to record zeroes and poles $P_1,...,P_n$
+Divisors are the standard way to notate zeroes and poles and their
+multiplicities, or orders. If we wish to record zeroes and poles $P_1,...,P_n$
 of orders $a_1,...,a_n$ (where $P_i$ is a zero of order
 $a_i$ if $a_i > 0$ and is a pole of order $-a_i$ otherwise), then
 we may write:
@@ -226,38 +221,32 @@ With this notation, if we add the divisors of two functions together,
 then the resulting divisor reflects the zeroes and poles of the product
 of the two functions.
 
-For this chapter we break with tradition and use multiplicative
-notation for divisors instead. In addition, we will omit the
-number of poles or zeroes at $O$, as we are ignoring the behaviour of
-rational functions at that point.
-For divisors of rational functions, we actually do not lose any information 
-because if we cared,
-we could always recover the order of $(O)$
-simply by negating of the sum of the orders of the finite points.
+For this chapter we break with tradition and instead use multiplicative
+notation for divisors. In addition, we omit the number of poles or zeroes at
+$O$, as we are ignoring the behaviour of rational functions at that point.
+For divisors of rational functions, we do not lose any information because we
+can recover the order of $(O)$ simply by negating of the sum of the orders of
+the finite points.
 
 Let $D$ be the divisor with zeroes and poles $P_1,...,P_n$
-of multiplicities $a_1,...,a_n$.
-We shall write $D$ as
+of multiplicities $a_1,...,a_n$. We shall write $D$ as
 \[ D = (P_1)^{a_1} ... (P_n)^{a_n} . \]
 
-Our unusual notation has several advantages. Using additive group
-notation for the elliptic curve and multiplicative notation for divisors
-emphasizes the difference between them and reduces the likelihood of
-confusing the two. When rational functions are multiplied together,
-their divisors can be multiplied together, which is arguably
-more natural than adding them.
-Leaving out the $(O)$ term allows us to focus less on
-bookkeeping and more on the task at hand,
-and the order of $(O)$ can be readily calculated anyway.
+Our unusual notation has several advantages. Using additive group notation for
+the elliptic curve and multiplicative notation for divisors emphasizes the
+difference between them and reduces the likelihood of confusing the two. When
+rational functions are multiplied together, their divisors can be multiplied
+together, which is arguably more natural than adding them. Leaving out the
+$(O)$ term allows us to focus less on bookkeeping and more on the task at hand;
+the order of $(O)$ can be readily calculated anyway.
 
 We use $(f)$ to denote the divisor of $f$, thus in our notation
 for any rational functions $f, g$ we have $(f)(g) = (f g)$.
-
-On an elliptic curve, in our unorthodox notation:
+On an elliptic curve:
 \begin{description}
 \item[Lines:]
 a line $L$ through the points $P, Q$ intersects $E$ at a third point
-$-P-Q$ by the chord-tangent composition law, and so has divisor
+$-P-Q$ by the chord-tangent composition law, so has divisor
 \[ (L) = (P)(Q)(-P-Q) . \]
 \item[Tangents:]
 when $Q = P$ we have a tangent line $T$ at $P$ with divisor
@@ -272,21 +261,18 @@ with divisor
 
 Earlier papers on pairing-based cryptosystems advocated the Weil pairing.
 We shall see that the related Tate pairing is preferable for our purposes.
-Nonetheless we first describe the Weil pairing
-for historical reasons, and also because its simpler description
-serves well as an introduction. The inputs to the Tate pairing come
-from different groups, and the definition involves quotient groups,
-which can obscure the basic idea. However, the actual computation
-of the Tate pairing is simpler.
+Nonetheless we first describe the Weil pairing for historical reasons, and also
+because its simpler description serves well as an introduction. The inputs to
+the Tate pairing come from different groups, and the definition involves
+quotient groups, which can obscure the basic idea. However, the actual
+computation of the Tate pairing is simpler.
 
 Let $E$ be an elliptic curve containing $n$ points over a field $\mathbb{F}_q$.
 Let $G$ be a cyclic subgroup of $E(\mathbb{F}_q)$ of order $r$ with $r, q$
 coprime. Let $k$ be the smallest positive integer such that $E(\Fqk)$
 contains all of $E[r]$.
 
-We define the Weil pairing
-$f:E[r] \times E[r] \rightarrow \Fqk$ as follows.
-
+We define the Weil pairing $f:E[r] \times E[r] \rightarrow \Fqk$ as follows.
 For a pair of points $P, Q \in E[r]$,
 choose any $R, S \in E[\Fqk]$ such that $S \ne R, P+R, P+R - Q, R-Q$.
 Let $f_P$ be a rational function with divisor $(f_P) = (P+R)^r /(R)^r$,
@@ -294,7 +280,6 @@ Let $f_P$ be a rational function with divisor $(f_P) = (P+R)^r /(R)^r$,
 In standard notation this is $r\langle P+R\rangle  - r\langle R\rangle$.)
 and similarly let $f_Q$ be a rational function with divisor
 $(f_Q) = (Q+S)^r/(S)^r$.
-
 Define
 \[ f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P+R)/f_Q(R)} \]
 
@@ -338,15 +323,14 @@ $f(\alpha(P),\alpha(Q)) = f(P,Q)^{\deg \alpha}$ for any nonzero
 endomorphism $\alpha$.)
 
 The second to last property, known as antisymmetry, is a property the
-Tate pairing does not have. However it does not yet have
-any use in cryptography.
+Tate pairing does not possess. However it has no known use in cryptography.
 
 \subsection {Weil Reciprocity}
 
-Many of the previous statements, including the fact that the
-pairing is well-defined (in other words, the choices of $R,S$ above
-do not matter) and several of the listed properties, can be proved using
-a fact known as Weil reciprocity~\cite{bf}.
+Many of the previous statements, including the fact that the pairing is
+well-defined (in other words, the choices of $R,S$ above do not matter) and
+several of the listed properties, can be proved using a fact known as Weil
+reciprocity~\cite{bf}.
 
 First, we define evaluation of a rational function $f$
 at a divisor $\prod_P P^{a_P}$  by
@@ -357,12 +341,10 @@ for any rational functions $f, g$,
 that is, evaluating $g$ at the divisor of $f$ produces the
 same result as evaluating $f$ at the divsor of $g$.
 
-Intuitively, Weil reciprocity can be thought of as a generalization
-of the much simpler version of this statement for polynomials: given
-two polynomials $p, q$, the result
-of evaluating $p$ at the zeroes of $q$ and multiplying
-has the same absolute value as evaluating $q$ at the zeroes of
-$p$ and multiplying.
+Intuitively, Weil reciprocity can be thought of as a generalization of the much
+simpler version of this statement for polynomials: given two polynomials $p,
+q$, the result of evaluating $p$ at the zeroes of $q$ and multiplying has the
+same absolute value as evaluating $q$ at the zeroes of $p$ and multiplying.
 
 \section {The Tate Pairing }
 
@@ -749,16 +731,11 @@ f(P,Q) = \frac{f_P(Q+S)/f_P(S)}{f_Q(P+R)/f_Q(R)} = 46+56i .
 
 \subsection {The Tate Pairing}
 
-Let $f$ denote the Tate pairing.
-Again we walk through the computation of
-$f((25,30), (-25,30i))$.
-
-In a later chapter we shall show that in this case,
-for any $R$ we have $f_P(Q) = f_P(Q+R)/f_P(R)$
-thus we only walk through the calculation of
-$f_P(Q)$.
-Nonetheless, calculating $f_P(Q+R)$ and $f_P(R)$ can be done in
-a similar fashion.
+Let $f$ denote the Tate pairing. Again we walk through the computation of
+$f((25,30), (-25,30i))$. In a later chapter we show that in this case, for any
+$R$ we have $f_P(Q) = f_P(Q+R)/f_P(R)$ thus we only walk through the
+calculation of $f_P(Q)$. Nonetheless, calculating $f_P(Q+R)$ and $f_P(R)$ could
+be done in a similar fashion.
 
 \begin{enumerate}
 \item
@@ -773,9 +750,8 @@ the tangent $T_P = 0$ at $P$ and the vertical line $V_{2P} = 0$ at $2P$:
 As stated before there are other choices for the equations.
 If we were computing $f_P(Q+R)$ and $f_P(R)$ we would need
 to use the same choices both times. However, for our current case it
-can be shown
-there are no restrictions save that the coefficients of the functions
-lie in $\Fq$.
+can be shown there are no restrictions save that the coefficients of the
+functions lie in $\Fq$.
 
 From
 $T_1(34, 30i) = 12 \times 34 + 30i + 24 = 19 + 30i$ and
@@ -810,20 +786,18 @@ by raising it to the power of $(q^k - 1)/r$:
 As expected, $(42 + 40i)^5 = 1$.
 
 \subsection {Remarks}
-We point out a few peculiarities in the above examples that will
-have significance later.
+We point out peculiarities in the above examples that will have significance
+later.
 
-In both examples,
-degenerate cases appear in the last iteration
-of the main loop.
+In both examples, degenerate cases appear in the last iteration of the main
+loop.
 
-The vertical line $V_P$ appears
-in the second-last iteration as well as last iteration, effectively canceling
-itself out. After some thought it can be seen this will always happen
-for odd $r$.
+The vertical line $V_P$ appears in the second-last iteration as well as last
+iteration, effectively canceling itself out. After some thought it can be seen
+this will always happen for odd $r$.
 
-Whenever a vertical line is evaluated in the Tate pairing
-example, the result is an element of $\Fq$.
+Whenever a vertical line is evaluated in the Tate pairing example, the result
+is an element of $\Fq$.
 
 The Weil pairing requires Miller's algorithm to be run twice, once for
 $f_P(Q+S) / f_P(S)$ and once for $f_Q(P+R)/f_Q(R)$. In the computation
@@ -839,10 +813,9 @@ in the base field $\Fq$.
 
 \section {Restricting Inputs}
 
-We shall have much to say on this topic in Section~\ref{sec:inputrestriction},
-but the above example serves as a good introduction.
-Recall we have the Weil pairing $f$ on
-the curve $E : Y^2 = X^3 + X$ over some field $\Fq$
+We have much to say on this topic in Section~\ref{sec:inputrestriction}, but
+the above example serves as a good introduction. Recall we have the Weil
+pairing $f$ on the curve $E : Y^2 = X^3 + X$ over some field $\Fq$
 where $q = 3 \bmod 4$. We have a distortion
 map $\phi(x,y) = (-x, i y)$, and we have
 a group $G$ of $r$-torsion points in $E(\Fq)$ for some $r$.
@@ -853,26 +826,21 @@ $e : G\times G \rightarrow \F_{q^2}$:
 We use $e$, not $f$, as our pairing.
 There are at least two reasons for doing this.
 
-The input points to $e$ have coordinates in $\Fq$ and lie on the
-same curve (that is, $e$ is symmetrical) and
+The input points to $e$ have coordinates in $\Fq$ and lie on the same curve,
+that is, the inputs of $e$ are members of the same cyclic group (so $e$ is
+symmetric). Thus the construction of cryptosystems and their
+security proofs are simpler. We could work with the Weil pairing directly but
+then both input groups would be $E[r]$, which is not cyclic.
 
-Both input groups of $e$ are cyclic.
-Thus the construction of cryptosystems and their
-security proofs are simpler. We could work with the
-Weil pairing directly but then both input groups would be $E[r]$,
-which is not cyclic.
-
-As $U, \phi(V)$ are always linearly independent,
-the wrapper function $e$ guarantees
-a nontrivial pairing output whenever $U$ and $V$ are nontrivial.
-This is not the case with the Weil pairing,
-where one must be mindful of linearly dependent inputs.
+As $U, \phi(V)$ are always linearly independent, the wrapper function $e$
+guarantees a nontrivial pairing output whenever $U$ and $V$ are nontrivial.
+This is not the case with the Weil pairing, where one must be mindful of
+linearly dependent inputs.
 
 Lastly, the input points have coordinates in the field $\Fq$ which is
 smaller and hence more efficient to compute on than $\F_{q^2}$.
 
-Similarly, if $f$ now denotes the Tate pairing,
-we wrap $f$ in the map
+Similarly, if $f$ now denotes the Tate pairing, we wrap $f$ in the map
 $e : G\times G \rightarrow \F_{q^2}$:
 \[ e(U, V) = f(U, \phi(V)) \]
 and use $e$ instead of $f$ in our cryptosystems. Note in the above
@@ -1002,15 +970,14 @@ giving the final answer of $42 + 40i$.
 \subsection {Remarks}
 
 The above example is artificially small, and we do not in fact need to bother
-computing $c_7, c_8, c_9$. Also, many sequence values
-are calculated more than once. For realistic sizes, this only happens in the
-first few iterations, and the time taken by unnecssary computations
-is a small fraction of the total running time. Nonetheless, checks to avoid
-superfluous operations can be easily implemented for a slight efficiency gain.
+computing $c_7, c_8, c_9$. Also, many sequence values are calculated more than
+once. For realistic sizes, this only happens in the first few iterations, and
+the time taken by unnecssary computations is a small fraction of the total
+running time. Nonetheless, checks to avoid superfluous operations can be easily
+implemented for a slight efficiency gain.
 
-There are many common subexpressions in the above formulas which
-would be exploited in an implementation but were omitted above
-for clarity. Setting
+There are many common subexpressions in the above formulas which would be
+exploited in an implementation but were omitted above for clarity. Setting
 \[
 S_k = c_k^2, T_k = c_{k-1} c_{k+1}, U_k = d_k^2, V_k = d_{k-1}d_{k+1}
 \]

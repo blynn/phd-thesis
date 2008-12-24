@@ -1,111 +1,92 @@
 \chapter {Elliptic Curves}
 
-We review basic facts about elliptic curves.
-Aside from the problem of generating suitable elliptic curves
-and counting the size of the resulting group,
-we will cover enough theory to replace finite fields with
-elliptic curves in cryptosystems based on cyclic groups.
+We review basic facts about elliptic curves. Aside from the problem of
+generating suitable elliptic curves and counting the size of the resulting
+group, we cover enough theory to replace finite fields with elliptic
+curves in cryptosystems based on cyclic groups.
 
-We discuss pairings and algorithms to find pairing-friendly curves
-in future chapters. We will not
-discuss curve-finding and point-counting algorithms geared
-towards standard elliptic curve cryptography which necessarily requires
-curves that are not pairing-friendly, but instead direct
-the interested reader to Blake, Seroussi and Smart~\cite{bss}.
+We discuss pairings and algorithms to find pairing-friendly curves in future
+chapters. We will not discuss curve-finding and point-counting algorithms
+geared towards standard elliptic curve cryptography which necessarily requires
+curves that are not pairing-friendly, but instead direct the interested reader
+to Blake, Seroussi and Smart~\cite{bss}.
 
 \section {Informal Overview of Elliptic Curves}
 
-We present a highly informal overview to elliptic curve theory,
-which may aid those that have not encountered them before.
-This section can be safely skipped.
+We present a highly informal overview to elliptic curve theory, which may aid
+those who have yet to encounter them. This section can be safely skipped.
 
-Consider a polynomial $C$ in two variables $X, Y$.
-We are interested in the solutions to $C = 0$
-which describe a curve on a two-dimensional plane.
+Consider a polynomial $C$ in two variables $X, Y$. We are interested in the
+solutions to $C = 0$. If we seek solutions amongst the reals, then they
+describe a curve on a two-dimensional plane.
 
 We first observe that if $C'$ is another curve that is an affine transformation
-of $C$, that is, if we can linearly transform (e.g. rotate, scale, shear)
-and then translate $C$ to
-obtain $C'$ then a correspondence exists between
-the solutions to $C = 0$ and the solutions to $C' = 0$. Knowing
-the solutions of one allows us to easily compute the solutions of the other,
-For this reason we consider such curves $C$ and $C'$ to be equivalent.
+of $C$, that is, if we can linearly transform (e.g. rotate, scale, shear) and
+then translate $C$ to obtain $C'$ then a correspondence exists between
+the solutions to $C = 0$ and the solutions to $C' = 0$. Knowing the solutions
+of one allows us to easily compute the solutions of the other. For this reason
+we consider such curves $C$ and $C'$ to be equivalent.
 
-If every term in $C$ has combined degree of at most 1, that is,
-if $C = a X + b Y + c$ then $C$ describes a line. The geometry of lines
-is too simple to yield anything cryptographically useful.
+If every term in $C$ has combined degree of at most 1, that is, if
+$C = a X + b Y + c$
+then $C$ describes a line. The geometry of lines is too simple to yield
+anything cryptographically useful.
 
-If every term in $C$ has combined degree at most 2, then $C$ describes
-a single line, a pair of lines, an ellipse, a parabola or a hyperbola.
-The first two possiblities can be viewed as special cases, occuring
-when $C$ is reducible or degenerate in some sense.
+If every term in $C$ has combined degree at most 2, then $C$ describes a single
+line, a pair of lines, an ellipse, a parabola or a hyperbola. The first two
+possiblities can be viewed as special cases, occuring when $C$ is reducible or
+degenerate in some sense.
 
 By adding \emph{points of infinity} to the plane, we can find affine
-transformations that change any ellipse, parabola or hyperbola into the
-unit circle centred at the origin. Intuitively, the two ends of the parabola
-can be thought of as meeting
-at a point at infinity, forming a circle,
-and similarly opposite ends of hyperbolas connect at infinite points.
+transformations that change any ellipse, parabola or hyperbola into the unit
+circle centered at the origin. Intuitively, the two ends of the parabola can be
+thought of as meeting at a point at infinity, forming a circle, and similarly
+opposite ends of hyperbolas connect at infinite points. Thus to study degree 2
+curves is essentially to study the unit circle, whose geometry is again is too
+simple for our purposes.
 
-Thus to study degree 2 curves is essentially to study the unit circle,
-whose geometry is again is too simple for our purposes.
+However, degree 3 curves, called elliptic curves, are nontrivial. For example,
+unlike the previous two cases we cannot transform any elliptic curve into any
+other. They have a rich structure, yet are simple enough to compute efficiently
+upon. Elliptic curves are well-suited for cryptography.
 
-However, degree 3 curves, called elliptic curves,
-are nontrivial (for instance, unlike the previous two
-cases we cannot transform any elliptic curve into
-any other)
-and have a rich structure well-suited for cryptography.
-
-For any irreducible elliptic curve $C$,
-applying appropriate affine transformations
-produces an equation $C'$ of a certain form known
-as the \emph{Weierstrass form}.
-In this form, $C'$ always contains exactly one point at infinity.
-Transforming $C$ so
-that no points are infinite is
-possible but leads to more complicated
-equations. Using an equation that has
-exactly one point at infinity simplifies some of the expressions.
+For any irreducible elliptic curve $C$, applying appropriate affine
+transformations produces an equation $C'$ of a certain form known as the
+\emph{Weierstrass form}. In this form, $C'$ always contains exactly one point
+at infinity. Transforming $C$ so that no points are infinite is possible but
+leads to more complicated equations. Using an equation that has exactly one
+point at infinity simplifies some of the expressions.
 
 \section {Points on Elliptic Curves}
 
-Let $\Fq$ be a field for some prime $q > 3$.
-Unless otherwise specified we shall always
-define curves over a field of prime order and of characteristic greater
-than three.
-Elliptic curves can be implemented over fields of characteristic 2 and 3
-and enjoy many optimizations,
-but suffer from specialized discrete log attacks~\cite{coppersmith}
-and should generally be avoided. We do consider a certain family of
-characteristic three curves in Section~\ref{sec:comparingpairings}, where
-we also outline their trade-offs.
+Let $\Fq$ be a field for some prime $q > 3$. Unless otherwise specified we
+shall always define curves over a field of prime order and of characteristic
+greater than three. Elliptic curves can be implemented over fields of
+characteristic 2 and 3 and enjoy many optimizations, but suffer from
+specialized discrete log attacks~\cite{coppersmith} and should generally be
+avoided. We do consider a certain family of characteristic three curves in
+Section~\ref{sec:comparingpairings}, where we also outline their trade-offs.
 
 An elliptic curve $E$ over such a field $\Fq$ is an equation of the form
 \[ E: Y^2 = X^3 + a X + b \]
-where $a, b \in \Fq$.
-Let $\Delta = 4 a^3 + 27b^2$, the discriminant of the cubic in $x$. Then
-$E$ is \emph{singular} if $\Delta = 0$, i.e. the cubic has a repeated root,
-and \emph{nonsingular} otherwise, i.e. the cubic has distinct roots.
+where $a, b \in \Fq$. Let $\Delta = 4 a^3 + 27b^2$, the discriminant of the
+cubic in $x$. Then $E$ is \emph{singular} if $\Delta = 0$, i.e. the cubic has a
+repeated root, and \emph{nonsingular} otherwise, i.e. the cubic has distinct
+roots.
 
-Unless otherwise stated we always consider nonsingular elliptic curves.
-Later we will encounter \emph{supersingular} curves, a particular
-breed of nonsingular curves that are not singular despite their name.
-The antonym of supersingular is \emph{ordinary} or \emph{nonsupersingular}.
+Unless otherwise stated we always consider nonsingular elliptic curves. Later
+we encounter \emph{supersingular} curves, a particular breed of nonsingular
+curves that, despite the nomenclature, are not singular. The antonym of
+supersingular is \emph{ordinary} or \emph{nonsupersingular}.
 
-For any field $\Fqk$ define $E(\Fqk)$
-to be the set of all solutions
-of $E$ over $\Fqk$, called the \emph{finite points}
-along with a special point denoted $O$,
-that is called the \emph{point at infinity}. We write $\#E(\Fqk)$ 
-or $|E(\Fqk)|$ for
-the number of elements of $E(\Fqk)$.
-Intuitively,
-the point $O$ can be thought of as the point where all lines
-parallel to the Y-axis meet.
-Mathematically, we solve the curve equation using
-\emph{projective coordinates}~\cite{realprojectiveplane} and
-one can show that $O = (0,1,0)$ is always a unique
-infinite solution to the equation. We shall never need this fact.
+For any field $\Fqk$ define $E(\Fqk)$ to be the set of all solutions of $E$
+over $\Fqk$, called the \emph{finite points} along with a special point denoted
+$O$, that is called the \emph{point at infinity}. We write $\#E(\Fqk)$ or
+$|E(\Fqk)|$ for the number of elements of $E(\Fqk)$. Intuitively, the point $O$
+can be thought of as the point where all lines parallel to the Y-axis meet.
+Mathematically, we solve the curve equation using \emph{projective
+coordinates}~\cite{realprojectiveplane} and one can show that $O = (0,1,0)$ is
+always a unique infinite solution to the equation.
 
 We quote two well-known theorems.
 
@@ -114,9 +95,9 @@ We quote two well-known theorems.
 Then $|t| \le 2\sqrt{q^k}$.
 \end{theorem}
 
-Thus the number of points on an elliptic curve in a given field
-is on the same order as the size of the field.
-The quantity $t$ is called the \emph{trace of Frobenius}.
+Thus the number of points on an elliptic curve in a given field is on the same
+order as the size of the field. The quantity $t$ is called the \emph{trace of
+Frobenius}.
 
 \begin{theorem}
 [Weil] Let $t = q + 1 - \#E(\Fq)$
@@ -155,85 +136,67 @@ $\#E(\F_{{19}^2}) = 396$.
 
 \section {Finding Points}
 
-Let $E : Y^2 = X^3 + a X + b$
-be an elliptic curve over a field $K$.
-There always exists an unique infinite solution, namely $O$.
-We describe a simple method for finding the finite points of $E$.
+Let $E : Y^2 = X^3 + a X + b$ be an elliptic curve over a field $K$. There
+always exists an unique infinite solution, namely $O$. We describe a simple
+method for finding the finite points of $E$.
 
-For any $x \in K$, we may attempt to
-solve $Y^2 = x^3 + a x + b$ for $Y$ by finding a square root
-of the right-hand side. We momentarily postpone describing the
-details of square root algorithms.
-For now, assume we can find square roots.
+For any $x \in K$, we may attempt to solve $Y^2 = x^3 + a x + b$ for $Y$ by
+finding a square root of the right-hand side. We momentarily postpone
+describing square-root algorithms.
 
-When solutions for $Y$ do exist for a given $x$,
-we have found exactly two points, one for each square root, except
-in the rare case when the point lies on the $X$-axis, which can happen in
-at most three places.
+When solutions for $Y$ exist for a given $x$, we have found exactly two
+points, one for each square root, except in the rare case when the point lies
+on the $X$-axis. The latter occurs at most three places.
 
-Also, recall from an above theorem that the size of $K$ is roughly the same
+Recall from an above theorem that the size of $K$ is roughly the same
 as the number of points on $E(K)$.
 
-Combining these two facts shows that
-for approximately half of the choices for $x \in K$,
-a square root exists and we can solve $E$ to
-find a point. Thus we have a fast method of finding random points on
-$E$:
+Combining these two facts shows that for approximately half of the choices for
+$x \in K$, a square root exists and we can solve $E$ to find a point. Thus we
+have a fast method of finding random points on $E$:
 
 \begin{enumerate}
 \item
 Choose $x \in K$ at random.
 \item
 Solve $Y^2 = x^3 + a x + b$ for $Y$. If there are no solutions
-then go to the previous step.
+then start again.
 \item
 Flip a coin to decide which solution of $Y$ to use.
 \end{enumerate}
 
-Of course, it is impossible to choose the point at infinity with this method,
-and points that lie on the $X$-axis have a slightly higher probability of
-been picked than other points. For cryptography this is of no concern
-since the point of infinity is usually unwanted, and the probability
-of finishing at a point with zero $Y$-coordinate is negligible since there
-are at most three of them. Moreover, it is often unimportant which
-square root is chosen.
+This method never chooses the point at infinity, and points that lie on the
+$X$-axis have a slightly higher probability of been picked than other points.
+For cryptography this is of no concern since the point of infinity is usually
+unwanted, and the probability of finishing at a point with zero $Y$-coordinate
+is negligible since there are at most three of them. Moreover, it is often
+unimportant which square root is chosen.
 
-If one insists on choosing all points of $E(K)$ uniformly, one could simply
-add a step before choosing $x$.
-Let $n = \#E(K)$. Then with
-with $1/n$ probability,
-choose $O$ or one of the points lying
-on the $X$-axis, otherwise proceed with the above algorithm, except
-in the second step, we also go back to the first step if the only solution
-is $Y = 0$.
+If one insists on choosing all points of $E(K)$ uniformly, one could simply add
+a step before choosing $x$. Let $n = \#E(K)$. Then with with $1/n$ probability,
+choose $O$ or one of the points lying on the $X$-axis, otherwise proceed with
+the above algorithm, except in the second step, we also start again if
+the only solution is $Y = 0$.
 
-Before attempting to find a square root of a given element $x \in K$,
-we can check that one actually exists first.
-When $K$ has prime order,
-one can compute the Legendre symbol before attempting to square root $x$.
-More generally it can be checked that $X^2 - x$ is reducible.
+Before attempting to find a square root of a given element $x \in K$, we can
+check that one actually exists first. When $K$ has prime order, one can compute
+the Legendre symbol before attempting to square root $x$. More generally it can
+be checked that $X^2 - x$ is reducible. Alternatively, one can omit the check,
+proceed with a square root algorithm, and compare the square of the output with
+$x$: if there is a mismatch then $x$ is not a square after all.
 
-Alternatively,
-one can omit the check, proceed with a square root algorithm,
-and compare the square of the output with $x$: if there is a mismatch
-then $x$ is not a square after all.
-
-It remains to describe how to take square roots.
-For a field of prime order one can use the Tonelli-Shanks algorithm
-to compute square roots~\cite{bss, handbook}, which we quote below.
-
-For a general finite field,
-one must use a more complex algorithm. Perhaps the simplest of these
-Legendre's method which can be viewed as using
-the Cantor-Zassenhaus algorithm
-of Section~\ref{sec:rootfinding} to factor $X^2 - x$.
-Faster algorithms exist, though sometimes require precomputation~\cite{djb}.
+It remains to describe how to take square roots. For a field of prime order we
+can use the Tonelli-Shanks algorithm~\cite{bss, handbook} of the next section.
+For a general finite field, one must use a more complex algorithm. Perhaps the
+simplest of these is Legendre's method, which can be viewed as applying the
+Cantor-Zassenhaus algorithm of Section~\ref{sec:rootfinding} to factor $X^2 -
+x$. Faster algorithms exist, though sometimes require precomputation~\cite{djb}.
 
 \subsection {Tonelli-Shanks Algorithm}
 
-Suppose we wish to compute $b = \sqrt{a}$ in
-a field $\Fq$ for some prime $q$. (These paragraphs should be viewed
-as self-contained; the notation from earlier paragraphs does not apply here.)
+Suppose we wish to compute $b = \sqrt{a}$ in a field $\Fq$ for some prime $q$.
+(These paragraphs should be viewed as self-contained; the notation from earlier
+paragraphs does not apply here.)
 
 \begin{algorithm}
 \caption{(Tonelli-Shanks) Find $b =\sqrt{a}$ in a prime field}
@@ -253,10 +216,9 @@ we may write $q - 1 = 2^s t$ for some odd $t$.
 \end{algorithmic}
 \end{algorithm}
 
-The first step can be accomplished
-by choosing random elements $g \in\Fq$ until $g^{(q-1)/2} = -1$. 
-Clearly this $g$ can be stored for use in future square root computations
-in the same field.
+The first step can be accomplished by choosing random elements $g \in\Fq$ until
+$g^{(q-1)/2} = -1$. Clearly this $g$ can be stored for use in future square
+root computations in the same field.
 
 We can briefly explain the Tonelli-Shanks algorithm as follows.
 Observe square roots in a cyclic group of order $t$ where $t$ is odd can be
@@ -271,25 +233,23 @@ suggests an efficient algorithm for hashing to a point in $E$.
 The input is hashed to some $x \in K$, and then a corresponding $y$ is sought.
 On failure, a new $x$-coordinate is deterministically generated from $x$,
 and again we attempt to solve $E$ for $y$. Repeating this process as many
-times as
-necessary eventually yields a valid point $(x,y) \in E(K)$.
+times as necessary eventually yields a valid point $(x,y) \in E(K)$.
 
 \section {Point Compression and Reduction}
 
 Another implication of taking square roots to find a $Y$ corresponding to
-a particular $X$ value is that
-a point $(x,y)$ can be represented by $x$ along with a single bit indicating
-which solution of $y$ to take. This technique is known as \emph{point
-compression}.
+a particular $X$ value is that a point $(x,y)$ can be represented by $x$ along
+with a single bit indicating which solution of $y$ to take. This technique is
+known as \emph{point compression}.
 
-Alternatively, for some cases we can simply use $x$ alone, which
-is sometimes called \emph{point reduction}. For example,
-suppose Alice needs to send Bob a point in some cryptosystem. She sends
-Bob $x$, who guesses the solution $y$. Bob attempts to proceed normally.
-If the protocol fails e.g. the signature does not verify, then Bob tries again
-with $-y$. This does not cost much more since the solutions are
-related by negation, and in Section~\ref{sec:pairingcompressioneven}
-we show how to check both possibilities with only one operation.
+Alternatively, for some cases we can simply use $x$ alone, which is sometimes
+called \emph{point reduction}. For example, suppose Alice needs to send Bob a
+point in some cryptosystem. She sends Bob $x$, who guesses the solution $y$.
+Bob attempts to proceed normally. If the protocol fails e.g. the signature does
+not verify, then Bob tries again with $-y$. This does not cost much more since
+the solutions are related by negation, and in
+Section~\ref{sec:pairingcompressioneven} we show how to check both
+possibilities with only one operation.
 
 Trivially we can take this principle further. Alice can
 omit $k$ bits of $x$, and leave Bob to try all $2^k$ possibilities.
@@ -320,15 +280,14 @@ of a point $P = (x,y)$ is the point $-P = (x,-y)$.
 As usual, define $0 P = O$, $1 P = P$,
 $n P = (n-1)P + P$ for integers $n > 1$ and $n P = -(-n)P$ for integers
 $n < 0$.
-This operation is termed \emph{point multiplication}.
-Point multiplication can be performed efficiently via carefully
-chosen point additions, in a process that mirrors the repeated
-squaring technique for exponentiation in finite fields.
+This operation is termed \emph{point multiplication}. Point multiplication can
+be performed efficiently via carefully chosen point additions, in a process
+that mirrors the repeated squaring technique for exponentiation in finite
+fields.
 
 Recall the previous chapter used multiplicative group notation to emphasize
-the connection
-between discrete log cryptosystems and pairing-based cryptosystems,
-as we are using elliptic curve groups where one would use
+the connection between discrete log cryptosystems and pairing-based
+cryptosystems, as we are using elliptic curve groups where one would use
 the multiplicative group of a finite field.
 
 Mathematicians use additive group notation for the elliptic curve group
@@ -535,53 +494,49 @@ where $x' = 4z/(1-z)^2$ for $z \ne 1$, and $1 \mapsto O$.
 
 This example has little practical value as point additions are slower than
 modular multiplications, and keeping both coordinates of a point in memory
-takes twice as much space. However, it does suggest
-that cryptography in finite fields can be viewed as a special
-case of elliptic curve cryptography, and strictly speaking,
-those that complain that elliptic curve cryptography is controversial,
-too experimental and untested must qualify
-their remarks by making exceptions for singular curves!
+takes twice as much space. However, it does suggest that cryptography in finite
+fields can be viewed as a special case of elliptic curve cryptography, and
+strictly speaking, those that complain that elliptic curve cryptography is
+controversial, too experimental and untested must qualify their remarks by
+making exceptions for singular curves!
 
-Needless to say, it is entirely possible that researchers may
-one day discover special discrete log algorithms that work only for
-singular curves, in which case we are left only with finite fields for
-cryptography. Similarly, if a subexponential discrete log algorithm applicable
-to any elliptic curve were found, then again finite fields would be the only
-reasonable choice because elliptic curves are less efficient for the same
-field size.
+Needless to say, it is entirely possible that researchers may one day discover
+efficient discrete log algorithms specialized for nonsingular curves,
+in which case we are left only with finite fields for cryptography, and
+furthermore, we must retire schemes relying on the hardness of the Decisional
+Diffie-Hellman problem.
 
-It is clear that if an efficiently bilinear nondegenerate pairing were found
-for singular curves then the Decisional Diffie-Hellman problem could be broken
-in finite fields.
+Similarly, if researchers found subexponential discrete log algorithm
+applicable to any elliptic curve, singular or nonsingular, then again finite
+fields would be the only reasonable choice because elliptic curves are less
+efficient for the same field size.
 
 \section {\label{sec:eccsec}Security}
 
-We have not yet shown any benefits to using elliptic curves instead
-of finite fields. On the contrary, although a group inversion is
-almost free, the group operation, hashing, and random element generation
-are considerably more expensive for the same field.
+We have not yet shown any benefits to using elliptic curves instead of finite
+fields. On the contrary, although a group inversion is almost free, the group
+operation, hashing, and random element generation are considerably more
+expensive for the same field.
 
-Their strength derives from the fact that no discrete log algorithm for
-general elliptic curves that outperforms generic methods has ever been
-discovered.
+Their strength derives from the fact that no discrete log algorithm for general
+elliptic curves that outperforms generic methods has ever been discovered.
 
 The best generic methods are based on the birthday paradox, and have
-$O(\sqrt{n})$ expected running time, where $n$ is the group order.
-A group order around 160 bits in length is sufficient to defeat such attacks.
-In contrast, subexponential discrete log algorithms for finite fields
-mean that one must use at least 1024-bit finite fields for security.
+$O(\sqrt{n})$ expected running time, where $n$ is the group order. A group
+order around 160 bits in length is sufficient to defeat such attacks. In
+contrast, subexponential discrete log algorithms for finite fields mean that
+one must use at least 1024-bit finite fields for security.
 
-Hence one may work with fields over six times smaller in length
-if elliptic curves are used. The increase in speed in
-the underlying field arithmetic easily compensates for the more
-complex group operations. Thus choosing elliptic curves instead of
-finite fields results in savings in both space and time.
+Hence one may work with fields over six times smaller in length if elliptic
+curves are used. The increase in speed in the underlying field arithmetic
+easily compensates for the more complex group operations. Thus choosing
+elliptic curves instead of finite fields results in savings in both space and
+time.
 
-The most important attribute of elliptic curves for our purposes
-is that without them, we cannot construct a cryptographically
-useful bilinear map. That elliptic curves happen to be more
-efficient than finite fields
-is a happy coincidence and makes pairings even more attractive.
+The most important attribute of elliptic curves for our purposes is that
+without them, we cannot construct a cryptographically useful bilinear map. That
+elliptic curves happen to be more efficient than finite fields is a happy
+coincidence and makes pairings even more attractive.
 
 \section {Short Signatures}
 

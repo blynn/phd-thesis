@@ -412,12 +412,12 @@ We present a concrete example later in Section~\ref{sec:compositeexample}.
 
 This also means that $e(g_1, g_2) = 1$ does not imply at least
 one of $g_1, g_2$ is the identity element, in contrast to the case when
-$r$ is prime. Thus when $r$ is composite, we must be careful to avoid
+$r$ is prime. When $r$ is composite, we must be careful to avoid
 making statements about the pairing only true for prime $r$.
 We shall encounter a concrete example later.
 
 Note when $r$ is chosen to be a product of two primes, the resulting scheme
-is still substantially different to RSA as the groups are cyclic and of
+is substantially different to RSA as the groups are cyclic and of
 known order.
 
 \section{Exponentiation as a Bilinear Pairing}
@@ -493,11 +493,10 @@ groups $G_1, G_2$, then it turns out we may achieve a 160-bit $G_1$ and a
 
 There is only one known setting for cryptographically useful bilinear maps,
 namely elliptic curves with an efficiently computable Tate pairing.
-
 Strictly speaking, much of the theory in fact generalizes to hyperelliptic
 curves~\cite{galbraith,rubinsilverberg,freemanhyper}. Although hyperelliptic
 curve cryptography appears to be a promising avenue for future research, there
-are no compelling reasons to use them yet. To the author's knowledge, there are
+are no compelling reasons to use them. To the author's knowledge, there are
 no implementations of pairing-based cryptosystems based on hyperelliptic
 curves. Thus we ignore hyperelliptic curves, so $G$, or $G_1$ and $G_2$ are
 always groups of points on an elliptic curve, and $G_T$ is always a subgroup of
@@ -534,16 +533,16 @@ Suppose a message hashes to
 \[ h = (370499138522, 78458612837) . \]
 Then the corresponding signature is
 \[ \sigma = h^x = (278647014375, 78919786700) . \]
-To verify, we must check that $e(g, \sigma) = e(g^x , h)$
-which turns out to be
+To verify, we must check that $e(g, \sigma) = e(g^x , h)$.
+In my test program, both sides are equal to
 \[ 85791756805 + 99975533880i , \]
 an element of $K[i]$ that has order $r$.
-The exact value of the last result may vary
-from implementation to implementation since the pairing is only unique up to a
-constant and different implementations may result in different constants,
-but both sides of the equation always match.
+The exact value varies from implementation to implementation since the pairing
+is only unique up to a constant. Different implementations may give different
+results, but both sides of the equation always match, and are equal to an
+element of order $r$.
 
 The order $r$ in the above example is roughly 20 bits in length, while the
 order $q$ of the field, and the space required by compressed elements of $G_1$
-and $G_2$ is roughly 40 bits. In real life, one would require a 160-bit $r$ and
-512-bit $q$ for secure signatures.
+and $G_2$ is roughly 40 bits. Typically we require a 160-bit $r$ and 512-bit
+$q$ for secure signatures.

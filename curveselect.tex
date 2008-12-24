@@ -7,9 +7,8 @@ we perform field arithmetic in $K$ during cryptographic operations,
 while the security of the resulting systems partly depends on the size of $r$,
 which is a factor of $\#E(K)$.
 We focus on the cases when $\#E(K)$ is a small multiple of $r$.
-Relaxing this condition
-permits us to use a wider variety of pairings, and we discuss one
-such family later.
+Relaxing this condition permits us to use a wider variety of pairings, and we
+discuss one such family later.
 
 Recall the size of $K$ is roughly the size of $\#E(K)$,
 thus if both $r$ and $\#E(K)$ are about $l$-bits in length,
@@ -18,23 +17,19 @@ in $G$ whose running times depend on operations on $l$-bit numbers.
 A pairing with this feature is needed by BLS signatures to
 achieve short signatures.
 
-Happily, it turns out that among the pairings we cover are
-symmetric pairings with cyclic input groups that can be
-hashed to, and pairings where $r$ can be specified, both of which can be
-useful features.
+We also show how to construct symmetric pairings with cyclic input groups that
+can be hashed to, and pairings where $r$ can be specified, both of which are
+exploited in various cryptosystems.
 
-Recall the Tate pairing must be computed in some field extension
-$L$ of $K$ that contains the $r$th roots of unity (so $r$ divides $|L| - 1$).
-On the other hand,
-the Weil pairing is defined on $E[r]$, the $r$-torsion points of $E$,
+Recall the Tate pairing must be computed in some field extension $L$ of $K$
+that contains the $r$th roots of unity (so $r$ divides $|L| - 1$). On the other
+hand, the Weil pairing is defined on $E[r]$, the $r$-torsion points of $E$,
 which lie in $E(L')$ for some field extension $L'$ of $K$.
 
-In order for the Tate pairing to be efficiently computable,
-operations must be efficient in $L$.
-Similarly, for the Weil pairing to be efficiently
-computable, operations must be efficient in $L'$.
-Thus we seek fields $L$ or $L'$ that are small enough so that field
-operations are still fast.
+In order for the Tate pairing to be efficiently computable, operations must be
+efficient in $L$. Similarly, for the Weil pairing to be efficiently computable,
+operations must be efficient in $L'$. Thus we seek fields $L$ or $L'$ that are
+small enough so that field operations are still fast.
 
 It turns out that such a field $L'$ will always contain the $n$th
 roots of unity, thus we always have $L \subseteq L'$.

@@ -8,7 +8,16 @@ thesis.ps: *.tex thesis.bib
 	latex thesis.tex
 	bibtex thesis
 	latex thesis.tex
-	dvips thesis.dvi
+	dvips -t letter thesis.dvi
+
+buchblock.ps: *.tex thesis.bib
+	latex buchblock.tex
+	bibtex buchblock
+	latex buchblock.tex
+	dvips -t a4 buchblock.dvi
+
+buchblock.pdf: buchblock.ps
+	ps2pdf $^
 
 clean:
 	-rm -rf *.aux *.log *.dvi *.ps

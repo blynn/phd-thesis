@@ -98,17 +98,15 @@ Then from above, a curve $Y^2 = X^3 + aX + b$ can be transformed into
 one of the form $Y^2 = X^3 - 3X + b'$ if we can find $v\in \Fq$
 satisfying $a v^2 = -3$.
 
-When no such $c$ exists, a compromise is to have
-$a = 1$ or $a = -3 d^2$ for some small integer $d$
-(or $d$ of low Hamming weight), which can be achieved in a similar manner,
-again to reduce the number of multiplications required by a projective point
-doubling.
+When no such $c$ exists, a compromise is to have $a = 1$ or $a = -3 d^2$ for
+some small integer $d$ (or $d$ of low Hamming weight), which can be achieved in
+a similar manner, again to reduce the number of multiplications required by a
+projective point doubling.
 
 \section {Simplified Tate Pairing}
 
-A result due to Barreto, Kim, Lynn and Scott states that
-when the embedding degree is greater than $1$ we may simplify
-the Tate pairing as follows \cite{bakls, bals2}.
+When the embedding degree is greater than $1$, we may simplify the Tate
+pairing as follows~\cite{bakls, bals2}.
 
 \begin{theorem}
 Let $E$ be an elliptic curve over $\F_q$.
@@ -477,46 +475,38 @@ and we have just seen that for even $k = 2d$,
 the other input can be restricted to some curve over $\F_{q^d}$.
 
 This is faster to compute in than $\F_{q^k}$ and allows denominator
-elimination. Moreover, the
-second input group is now cyclic and we can hash into it.
-The only potential drawback
-is that there is no known efficient method
-for mapping elements of one input group to the other,
-which could complicate security proofs or even render the pairing
-unsuitable for certain cryptosystems.
+elimination. Moreover, the second input group is now cyclic and we can hash
+into it. The only potential drawback is that there is no known efficient method
+for mapping elements of one input group to the other, which could complicate
+security proofs or even render the pairing unsuitable for certain
+cryptosystems.
 
 For certain pairings, the higher degree twists of Section~\ref{sec:hightwists}
 can be used for greater savings.
 
 \section {Miller-Lite Operations}
 
-One advantage of restricting the first input $P$ of a pairing
-to $E(\Fq)[r]$ is that during Miller's algorithm, we perform point additions
-and doubling involving $P$ and also compute equations of lines that
-pass through various multiples of $P$. Thus if $P \in E(\Fq)[r]$ all the
-arithmetic involved for these operations, which form the bulk of Miller's
-algorithm, can be performed in $\Fq$ rather
-than $\Fqk$.
+Let $P$ be the first input to a pairing. During Miller's algorithm, we compute
+multiples of $P$ and equations of lines that pass through multiples of $P$.
+Thus if we restrict $P \in E(\Fq)[r]$ then all the arithmetic involved for
+these operations, which form the bulk of Miller's algorithm, can be performed
+in $\Fq$ rather than $\Fqk$.
 
 This has been dubbed a \emph{Miller-Lite} operation in the literature.
 When $P$ does not lie in the base field but rather is some element of
-$E(\Fqk)$ then we refer to an iteration of Miller's algorithm with
-first input $P$ as a \emph{full Miller}, or \emph{Miller-Full}, operation.
+$E(\Fqk)$ then we refer to an iteration of Miller's algorithm
+as a \emph{full Miller} or \emph{Miller-Full} operation.
 
 \section{Last-Second Conversions}
 
-One easy optimization is also easy to overlook as it is hidden by
-notation.
-In a Miller-Lite operation,
-at some point we must encounter $\Fqk$ arithmetic.
-Distortion maps or twist maps must be applied
-on the second input point $Q$ to obtain a point on $E(\Fqk)$, which in turn
-is fed to line equations.
+One easy optimization is also easy to overlook as it is hidden by notation. In
+a Miller-Lite operation, at some point we must encounter $\Fqk$ arithmetic.
+Distortion maps or twist maps must be applied on the second input point $Q$ to
+obtain a point on $E(\Fqk)$, which in turn is fed to line equations.
 
-However this should be done carefully.
-We wish to avoid computing in $\Fqk$
-until absolutely necessary. We describe the procedure in detail for
-type A pairings. Similar statements can be made for other pairing types.
+However this should be done carefully. We wish to avoid computing in $\Fqk$
+until absolutely necessary. We describe the procedure in detail for type A
+pairings. Similar statements can be made for other pairing types.
 
 Let $e : E(\mathbb{F}_q) \times E(\mathbb{F}_q)
 \rightarrow \mathbb{F}_{q^2}$ be a type A pairing 
@@ -716,8 +706,7 @@ In the next few sections we quote without proof observations
 due to Scott and Barreto~\cite{compressedpairings} that speed up pairings and
 reduce their output size, though in some cases at the cost of losing a few bits.
 
-We first examine the simplest case.
-Suppose we have constructed a pairing
+We first examine the simplest case. Suppose we have constructed a pairing
 with an elliptic curve $E$ over a field $\Fq$ with embedding degree 2,
 so that the output of the pairing is an element of order $r$
 in $\F_{q^2}$, where $r$ is the order of the cyclic subgroup being used.
@@ -791,10 +780,9 @@ solutions of $a^2 - \alpha^2 b^2 = 1$ the $b$ takes.
 To invert a group element on an elliptic curve is to negate the $y$-coordinate.
 Similarly, we have $(a + \alpha b)^{-1} = a - \alpha b$ for pairing values.
 
-Furthermore, in some applications it may
-be possible to dispose of $b$ entirely and not bother recording which solution
-to take. This is similar to the point reduction described earlier, and
-in fact, these two tricks work well in unison.
+Furthermore, in some applications it may be possible to dispose of $b$ entirely
+and not bother recording which solution to take. This is similar to the point
+reduction described earlier, and in fact, these two tricks work well in unison.
 
 The BLS signature scheme is a good example of this.
 Recall a signature is an $x$-coordinate of some point $P$ and we need to
@@ -827,9 +815,9 @@ Recall from the discussion of Tate exponentiation that
 $r \mid \Phi_6(q) = q^2 - q + 1$ (and $r$ does not divide any
 smaller cyclotomic polynomial).
 
-These are precisely the conditions
-that occur in the XTR cryptosystem~\cite{xtr}, the
-optimizations and algorithms of which we quote here.
+These are precisely the conditions that occur in the XTR
+cryptosystem~\cite{xtr}, the optimizations and algorithms of which we quote
+here.
 
 Let $\tr$ denote the $\F_{q^2}$-trace in $\F_{q^6}$,
 that is
@@ -846,15 +834,12 @@ which leads to the identities:
 \[ c_{2n-1} = c_n c_{n-1} - c_1 c_n^q + c_{n+1}^q \]
 \[ c_{2n+1} = c_n c_{n+1} - c_1 c_n^q + c_{n-1}^q \]
 
-Then for any integer $n$,
-we can use a repeated-squaring-like algorithm
-to compute $\tr(x^n)$ from $\tr(x)$.
+Then for any integer $n$, we can use a repeated-squaring-like algorithm to
+compute $\tr(x^n)$ from $\tr(x)$.
 
-One can show $\tr (x^n) = (\tr(x^{-n}))^q$ so
-without loss of generality assume $n \ge 0$.
-Trivially $c_0 = 3, c_1 = \tr(x)$
-and $c_2, c_3, c_4$ can be computed easily
-using the above identities, e.g. $c_2 = c_1^2 - 2c_1^q$.
+One can show $\tr (x^n) = (\tr(x^{-n}))^q$ so without loss of generality assume
+$n \ge 0$. Trivially $c_0 = 3, c_1 = \tr(x)$ and $c_2, c_3, c_4$ can be
+computed easily using the above identities, e.g. $c_2 = c_1^2 - 2c_1^q$.
 Otherwise:
 
 \begin{enumerate}
@@ -969,13 +954,12 @@ We see a division in Miller's algorithm is slightly more expensive than
 a multiplication, requiring also an inversion in $G_T$ along with
 another vertical line.
 
-Denominator elimination allows us to ignore vertical lines.
-Also, the inversions can be collated. We can defer divisions,
-and have one inversion at the end instead of one per iteration,
-by maintaining numerator and denominator variables during the main loop
-and only dividing at the end.
-(In other words, compute $(g_1(Q) ... g_m(Q)) / (h_1(Q) ... h_m(Q))$
-instead of $(g_1(Q) / h_1(Q)) ... (g_m(Q) / h_m(Q))$.)
+Denominator elimination allows us to ignore vertical lines. Also, the
+inversions can be collated. We can defer divisions, and have one inversion at
+the end instead of one per iteration, by maintaining numerator and denominator
+variables during the main loop and only dividing at the end. (In other words,
+compute $(g_1(Q) ... g_m(Q)) / (h_1(Q) ... h_m(Q))$ instead of $(g_1(Q) /
+h_1(Q)) ... (g_m(Q) / h_m(Q))$.)
 
 Thus addition-subtraction-chain exponentiation can be
 better than plain addition-chain exponentiation and as with
@@ -994,21 +978,17 @@ we have that $L_{rP}$ is a vertical line at $P$ and hence $f_{r+1} = f_r$
 
 Sometimes it is possible to choose the order $r$ of the input and output
 groups. In such cases it is desirable to pick $r$ so that the resulting
-addition-subtraction-chain is as short as possible. For example,
-a good choice is an $r$ that has
-the form $2^a \pm 2^b \pm 1$ (Solinas numbers) or has
-low Hamming weight~\cite{bakls}.
+addition-subtraction-chain is as short as possible. For example, a good choice
+is an $r$ that has the form $2^a \pm 2^b \pm 1$ (Solinas numbers) or has low
+Hamming weight~\cite{bakls}.
 
-Like multiexponentiation,
-when computing products or quotients of pairings we
-benefit from using vector addition chains~\cite[Chapter 14]{handbook},
-with much time saved by using a precomputed table.
+Like multiexponentiation, when computing products or quotients of pairings we
+benefit from using vector addition chains~\cite[Chapter 14]{handbook}, with
+much time saved by using a precomputed table.
 
-Although we recommend avoiding characteristic 3 curves,
-we note some special optimizations for them~\cite{bakls}.
-Firstly, point tripling is extremely fast.
-Given a point $(x,y)$ we can quickly
-compute $(x_3,y_3) = 3(x,y)$ via
+Although we recommend avoiding characteristic 3 curves, we note some special
+optimizations for them~\cite{bakls}. Firstly, point tripling is extremely fast.
+Given a point $(x,y)$ we can quickly compute $(x_3,y_3) = 3(x,y)$ via
 \[
 \begin{array}{lcl}
 x_3 &=& (x^3)^3 - b \\
