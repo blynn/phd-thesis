@@ -35,13 +35,11 @@ It turns out that such a field $L'$ will always contain the $n$th
 roots of unity, thus we always have $L \subseteq L'$.
 We will define the \emph{embedding degree} which can be thought of as measuring
 the size of $L$ compared to the field $K$.
-The converse is not true: it is possible for the subset inclusion to be strict.
-In other words, for a field $L$ to contain the $r$th roots of unity but
-at the same time have $E[r]$ contained in $E(L')$ and not $E(L)$, for
-some $L'$ strictly bigger than $L$.
+The converse is false: it is possible for the subset inclusion to be strict.
+In other words,
+a field $L$ could contain the $r$th roots of unity but not all of $E[r]$.
 However, as Balasubramanian and Koblitz have shown~\cite{bk},
-the converse is almost true because this event occurs only in
-special circumstances. We present a slightly different proof:
+this only occurs under special circumstances.
 
 \section {The Embedding Degree}
 
@@ -525,9 +523,9 @@ If so, set $E$ to the corresponding curve equation.
 
 Table~\ref{tbl:typec} shows the first seven cryptographically useful curves
 found by this algorithm. Evidently they are few and far between.
-Note the third entry has $l = 11^2$. Although this is a fairly low
+The third entry has $l = 11^2$; although 11 is a small
 prime, there has been some evidence suggesting that Weil descent attacks
-are still ineffectual for this case~\cite{ghsonodd}.
+are ineffectual for this case~\cite{ghsonodd}.
 
 \begin{table}
 \begin{center}
@@ -718,7 +716,7 @@ If $k = 4$, set $a \gets m$.
 
 If $k = 6$, set $a \gets -2h + m$.
 
-Note these three statements can be condensed into
+These three statements can be condensed into
 $a \gets (-2 \lfloor k/2 \rfloor + 4)h + m$.
 
 Set $b \gets 4h - m$. Then the variable substitution
@@ -750,7 +748,7 @@ quadratic nonresidue $c \in \Fq$, and use the following curve instead:
 \[ y^2 = x^3 + 3 k c^2 x + 2 k c^3 \]
 This is the quadratic twist of Section~\ref{sec:quadratictwists}.
 
-Note $r \mid q-1$ hence the Tate pairing on this curve can be computed
+Since $r \mid q-1$, the Tate pairing on this curve can be computed
 in $\F_q$. For most applications we choose $r$ to be prime but composite
 orders can be chosen instead.
 

@@ -577,8 +577,10 @@ a^{q^4 + q^3 - q - 1}
 (u_0 + u_1 \alpha^q + ... + u_5 \alpha^{5q})a
 }
 \]
-where each power of $\alpha^q$ can be precomputed. Then exponentiate $b$
-by $(q^2 - q + 1)/r$ using a standard algorithm.
+through liberal use of the identity $(x + y)^q = x^q + y^q \bmod q$.
+Again, each power of $\alpha^q$ can be precomputed.
+Exponentiate $b$
+by $(q^2 - q + 1)/r$ using a standard algorithm to produce the final answer.
 In this case we have shrunk the exponent to roughly one third its original
 size.
 

@@ -210,38 +210,32 @@ clear.
 
 \section {Divisors}
 
-Divisors are the standard way to notate zeroes and poles and their
-multiplicities, or orders. If we wish to record zeroes and poles $P_1,...,P_n$
-of orders $a_1,...,a_n$ (where $P_i$ is a zero of order
-$a_i$ if $a_i > 0$ and is a pole of order $-a_i$ otherwise), then
-we may write:
+Divisors are merely a notational tool to express zeroes and poles and their
+multiplicities, or \emph{orders}.
+Rather than waste space writing about zeroes and poles $P_1,...,P_n$
+of orders $a_1,...,a_n$, where $P_i$ is a zero of multiplicity
+$a_i$ if $a_i > 0$ and is a pole of multiplicity $-a_i$ otherwise,
+one can simply write down the following \emph{divisor}:
 \[ D = a_1\langle P_1\rangle + ... + a_n \langle P_n\rangle .\]
 
-With this notation, if we add the divisors of two functions together,
-then the resulting divisor reflects the zeroes and poles of the product
-of the two functions.
-
-For this chapter we break with tradition and instead use multiplicative
-notation for divisors. In addition, we omit the number of poles or zeroes at
-$O$, as we are ignoring the behaviour of rational functions at that point.
-For divisors of rational functions, we do not lose any information because we
-can recover the order of $(O)$ simply by negating of the sum of the orders of
-the finite points.
+We break with tradition and instead use multiplicative notation for the divisor
+group. Additionally, we omit the number of poles or zeroes at the point $O$.
+For divisors of rational functions, we do not lose any information because its
+order is the negation of the sum of the orders of the other points.
 
 Let $D$ be the divisor with zeroes and poles $P_1,...,P_n$
-of multiplicities $a_1,...,a_n$. We shall write $D$ as
+of multiplicities $a_1,...,a_n$. Instead of the above, we write $D$ as
 \[ D = (P_1)^{a_1} ... (P_n)^{a_n} . \]
 
-Our unusual notation has several advantages. Using additive group notation for
-the elliptic curve and multiplicative notation for divisors emphasizes the
-difference between them and reduces the likelihood of confusing the two. When
-rational functions are multiplied together, their divisors can be multiplied
-together, which is arguably more natural than adding them. Leaving out the
-$(O)$ term allows us to focus less on bookkeeping and more on the task at hand;
-the order of $(O)$ can be readily calculated anyway.
+Our nonstandard notation has several advantages. Using additive group notation
+for the elliptic curve and multiplicative notation for divisors reduces the
+likelihood of confusing the two groups.
+Also, leaving out the $(O)$ term allows us to focus less on bookkeeping and
+more on the task at hand: in any case, the order of $(O)$ could be readily
+calculated if we cared. Lastly, consider taking the product of two functions.
+Let $(f)$ denote the divisor of $f$. Then for any rational functions $f, g$ we
+have $(f)(g) = (f g)$.
 
-We use $(f)$ to denote the divisor of $f$, thus in our notation
-for any rational functions $f, g$ we have $(f)(g) = (f g)$.
 On an elliptic curve:
 \begin{description}
 \item[Lines:]
@@ -801,9 +795,9 @@ is an element of $\Fq$.
 
 The Weil pairing requires Miller's algorithm to be run twice, once for
 $f_P(Q+S) / f_P(S)$ and once for $f_Q(P+R)/f_Q(R)$. In the computation
-of $f_P$ every line equation has coefficients lying in $\Fq$, where
-as to compute the equations of the lines, tangents and verticals of $f_Q$
-we had to perform arithmetic in the larger field $\Fq[i]$.
+of $f_P$ every line equation has coefficients lying in $\Fq$, whereas
+we had to perform arithmetic in the larger field $\Fq[i]$
+to compute the equations of the lines, tangents and verticals of $f_Q$.
 
 The Tate pairing needs but one call to Miller's algorithm,
 but requires an exponentiation by $(q^k - 1)/r$. Like the computation
