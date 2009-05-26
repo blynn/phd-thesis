@@ -385,30 +385,28 @@ by
 
 gives a bilinear nondegenerate map.
 
-Setup for this type of pairing for a cryptosystem can be done as follows.
+This type of pairing can be set up as follows:
 
 \begin{enumerate}
 \item
-An order $r$ is chosen, large enough to avoid generic discrete logarithm
-attacks. Other properties may be desired. For some cryptosystems $r$ is
-an RSA modulus. As we will see, careful choices of $r$ will speed up Miller's
-algorithm substantially.
+Choose the order $r$, which must be large enough to avoid generic discrete
+logarithm attacks. Other properties may be desired. For some cryptosystems $r$
+is an RSA modulus. As we will see, careful choices of $r$ will speed up
+Miller's algorithm substantially.
 \item
 Recall we require finite field discrete logarithm attacks on $\mathbb{F}_{q^2}$
 to be impractical. Thus we randomly generate $h$ where
-where $h$ is a multiple of four and sufficiently large to guarantee $(hr)^2$
-is big enough to resist
+where $h$ is a multiple of 4 and $(hr)^2$ is large enough to resist
 finite field attacks. For example, if $r$ is 160 bits long, and we want
 $q^2$ about 1024 bits long, then $h$ must be about 352 bits long.
 \item
-Next it is checked that $q = h r - 1$ is prime. We have $q = 3 \bmod 4$
-by choice of $h$.
+Check $q = h r - 1$ is prime. We have $q = 3 \bmod 4$ by choice of $h$.
 If $q$ is not prime, we go back to the previous step and choose another
 $h$.
 \item
-For some cryptosystems problems may arise if $r \mid h$, but this occurs
-with negligible probability for realistic parameters. Nonetheless, when toy
-examples are constructed, this may need to be checked.
+Problems may arise if $r \mid h$, but this occurs
+with negligible probability for realistic parameters. In toy examples,
+this may need to be checked.
 \end{enumerate}
 
 If $h$ is constrained to be a multiple of $3$ as well, then cube roots are
