@@ -585,7 +585,7 @@ In this case we have shrunk the exponent to roughly one third its original
 size.
 
 The $k=12$ case (which occurs for the type F pairing) is similar.
-We need to compute $a^{(q^12-1)/r}$ for some $a \in \F_{q^{12}}$
+We need to compute $a^{(q^{12}-1)/r}$ for some $a \in \F_{q^{12}}$
 for some prime $q$ and group order $r$.
 This is best done by computing $b=a^{q^8 +q^6 -q^2 -1}$ followed by
 exponentiating $b$ by $\Phi_{12}(q)/r = (q^4 - q^2 + 1)/r$.
@@ -645,6 +645,9 @@ can be computed via
 \right)
 }
 \]
+
+The right-hand factor of the denominator is simply $a$ and the right-hand
+factor of the numerator is its conjugate.
 
 A similar formula applies when $k=10$ (type G pairings).
 In this case we compute $b = a^{q^6 + q^5 - q - 1}$, before
@@ -762,10 +765,7 @@ can assume $n = (q + 1) / r$ is even.
 
 Clearly the above is faster than a standard $\F_{q^2}$ exponentiation
 procedure as all operations take place in the smaller field $\Fq$.
-
-This method applies to any curve of even embedding degree, but we shall
-find that for embedding degree $k = 6$ an even better algorithm exists.
-However, before describing it, we first discuss pairing compression.
+This method applies to any curve of even embedding degree.
 
 \section {\label{sec:pairingcompressioneven}Pairing Compression For Even Embedding Degree}
 
